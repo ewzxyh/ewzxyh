@@ -14,6 +14,8 @@ const fragmentShader = /* glsl */ `
 
   uniform float uTime;
   uniform vec2 uResolution;
+  uniform vec2 uMouse;
+  uniform float uMouseInfluence;
 
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -156,7 +158,12 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     const uniforms = {
       uTime: { value: 0 },
       uResolution: { value: new THREE.Vector2(1, 1) },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uMouseInfluence: { value: 0.03 },
     }
+
+    const targetMouse = new THREE.Vector2(0.5, 0.5)
+    const currentMouse = new THREE.Vector2(0.5, 0.5)
 
     const material = new THREE.ShaderMaterial({
       uniforms,
@@ -178,11 +185,23 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     resize()
     window.addEventListener("resize", resize)
 
+    function handlePointerMove(event: PointerEvent) {
+      if (!container) return
+      const rect = container.getBoundingClientRect()
+      const x = (event.clientX - rect.left) / rect.width
+      const y = 1.0 - (event.clientY - rect.top) / rect.height
+      targetMouse.set(x, y)
+    }
+
+    container.addEventListener("pointermove", handlePointerMove, { passive: true })
+
     let animationId: number
     const startTime = performance.now()
 
     function animate() {
       uniforms.uTime.value = (performance.now() - startTime) * 0.001
+      currentMouse.lerp(targetMouse, 0.1)
+      uniforms.uMouse.value.copy(currentMouse)
       renderer.render(scene, camera)
       animationId = requestAnimationFrame(animate)
     }
@@ -192,6 +211,7 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     return () => {
       cancelAnimationFrame(animationId)
       window.removeEventListener("resize", resize)
+      container.removeEventListener("pointermove", handlePointerMove)
       renderer.dispose()
       geometry.dispose()
       material.dispose()
