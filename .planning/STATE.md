@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Visual fiel ao efeito landonorris.com — multiplas camadas de blobs fluidos com isolinhas topograficas sutis
-**Current focus:** Phase 4 - Performance & Accessibility
+**Current focus:** All phases complete - FluidBackground v1 done
 
 ## Current Position
 
-Phase: 4 of 4 (Performance & Accessibility)
-Plan: 0 of 2 in current phase
-Status: Ready to execute
-Last activity: 2026-01-22 — Phase 3 complete (verified)
+Phase: 4 of 4 (Performance & Accessibility) - COMPLETE
+Plan: 2 of 2 in current phase
+Status: Milestone complete
+Last activity: 2026-01-22 — Phase 4 complete (verified)
 
-Progress: [███████░░░] 75%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -30,10 +30,11 @@ Progress: [███████░░░] 75%
 | 01 | 2/2 | ~8min | ~4min |
 | 02 | 1/1 | ~15min | ~15min |
 | 03 | 2/2 | ~12min | ~6min |
+| 04 | 2/2 | ~10min | ~5min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02, 02-01, 03-01, 03-02
-- Trend: Phase 03 fast execution, no user feedback needed
+- Last 5 plans: 02-01, 03-01, 03-02, 04-01, 04-02
+- Trend: Phase 04 fast execution, all automated tasks
 
 *Updated after each plan completion*
 
@@ -52,6 +53,8 @@ Recent decisions affecting current work:
 - [02-01]: Outline-only contours, same color for blobs and background
 - [03-01]: Mouse tracking via pointermove with passive: true for performance
 - [03-02]: Keep 3 isolines (user feedback: 8 was too many), add mouse distortion (3% influence)
+- [04-01]: useReducedMotion hook with static fallback for accessibility
+- [04-02]: WebGL context loss handling, adaptive DPR (mobile 1.5, desktop 2), mediump shader
 
 ### Pending Todos
 
@@ -86,3 +89,10 @@ Resume file: None
 |------|-------------|------|--------|
 | 03-01 | Mouse tracking infrastructure with lerped uniforms | 1 | Complete |
 | 03-02 | Expand isolines to 8 and add mouse distortion | 2 | Complete |
+
+## Phase 4 Plans
+
+| Plan | Description | Wave | Status |
+|------|-------------|------|--------|
+| 04-01 | Reduced-motion detection with static fallback | 1 | Complete |
+| 04-02 | Context loss handling and adaptive resolution | 2 | Complete |

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 const vertexShader = /* glsl */ `
   void main() {
@@ -9,10 +10,23 @@ const vertexShader = /* glsl */ `
   }
 `
 
-const fragmentShader = /* glsl */ `
-  precision highp float;
+function getAdaptivePixelRatio(): number {
+  const dpr = window.devicePixelRatio || 1
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  if (isMobile) {
+    return Math.min(dpr, 1.5)
+  }
+  return Math.min(dpr, 2)
+}
 
-  uniform float uTime;
+const fragmentShader = /* glsl */ `
+  #ifdef GL_ES
+  precision mediump float;
+  #else
+  precision highp float;
+  #endif
+
+  uniform highp float uTime;
   uniform vec2 uResolution;
   uniform vec2 uMouse;
   uniform float uMouseInfluence;
@@ -146,8 +160,12 @@ interface FluidBackgroundProps {
 
 export function FluidBackground({ className = "" }: FluidBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
+    // Skip WebGL setup if user prefers reduced motion
+    if (reducedMotion) return
+
     const container = containerRef.current
     if (!container) return
 
@@ -157,7 +175,23 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     renderer.domElement.style.inset = "0"
     renderer.domElement.style.width = "100%"
     renderer.domElement.style.height = "100%"
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
+    renderer.setPixelRatio(getAdaptivePixelRatio())
+
+    let contextLost = false
+    const canvas = renderer.domElement
+
+    function handleContextLost(event: Event) {
+      event.preventDefault()
+      contextLost = true
+    }
+
+    function handleContextRestored() {
+      contextLost = false
+      animate()
+    }
+
+    canvas.addEventListener("webglcontextlost", handleContextLost, false)
+    canvas.addEventListener("webglcontextrestored", handleContextRestored, false)
 
     const scene = new THREE.Scene()
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
@@ -207,6 +241,7 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     const startTime = performance.now()
 
     function animate() {
+      if (contextLost) return
       uniforms.uTime.value = (performance.now() - startTime) * 0.001
       currentMouse.lerp(targetMouse, 0.1)
       uniforms.uMouse.value.copy(currentMouse)
@@ -220,6 +255,8 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
       cancelAnimationFrame(animationId)
       window.removeEventListener("resize", resize)
       container.removeEventListener("pointermove", handlePointerMove)
+      canvas.removeEventListener("webglcontextlost", handleContextLost)
+      canvas.removeEventListener("webglcontextrestored", handleContextRestored)
       renderer.dispose()
       geometry.dispose()
       material.dispose()
@@ -227,7 +264,21 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
         container.removeChild(renderer.domElement)
       }
     }
-  }, [])
+  }, [reducedMotion])
+
+  // Static fallback for users who prefer reduced motion
+  if (reducedMotion) {
+    return (
+      <div
+        className={`overflow-hidden ${className}`}
+        style={{
+          isolation: "isolate",
+          contain: "layout style paint",
+          backgroundColor: "#F5F5F0",
+        }}
+      />
+    )
+  }
 
   return (
     <div
