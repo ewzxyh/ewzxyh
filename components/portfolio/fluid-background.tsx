@@ -96,8 +96,8 @@ const fragmentShader = /* glsl */ `
     // Remap noise to 0-1 range
     float value = n * 0.5 + 0.5;
 
-    // Edge detection using fwidth for thin outline
-    float edgeWidth = fwidth(value) * 1.5;
+    // Edge detection using fwidth for outline
+    float edgeWidth = fwidth(value) * 3.0;
     float threshold = 0.5;
 
     // Create thin line at threshold crossing
