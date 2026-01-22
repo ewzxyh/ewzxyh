@@ -14,6 +14,7 @@ Este roadmap transforma os 31 requisitos v1 em 4 fases que entregam um backgroun
 - [x] **Phase 2: Core Shader** - Domain warping com isolinhas topograficas no estilo landonorris.com
 - [x] **Phase 3: Isolines & Interactivity** - Isolinhas topograficas com antialiasing e mouse tracking sutil
 - [x] **Phase 4: Performance & Accessibility** - 60fps em devices mid-range, reduced-motion, mobile fallback
+- [x] **Phase 5: Mouse Trail Blob** - Hover trail com blob escuro semi-transparente seguindo o mouse
 
 ## Phase Details
 
@@ -80,10 +81,25 @@ Plans:
 - [x] 04-01-PLAN.md - Reduced-motion detection with static fallback
 - [x] 04-02-PLAN.md - Context loss handling and adaptive resolution
 
+### Phase 5: Mouse Trail Blob
+**Goal**: Blob escuro semi-transparente que segue o mouse e deixa rastro visivel ao passar sobre os blobs existentes, similar ao efeito do landonorris.com
+**Depends on**: Phase 4
+**Requirements**: INTR-04 (novo)
+**Success Criteria** (what must be TRUE):
+  1. Ao mover o mouse, um blob escuro aparece na posicao do cursor
+  2. O blob do mouse tem cor mais escura que os blobs de fundo (~20-30% mais escuro)
+  3. O blob do mouse tem transparencia (~50-70% opacidade)
+  4. O movimento do mouse deixa rastro (trail) que se dissipa gradualmente
+  5. O rastro persiste por alguns segundos antes de desaparecer completamente
+**Plans**: 1 plan
+
+Plans:
+- [x] 05-01-PLAN.md - Trail buffer infrastructure and shader blob rendering
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -91,6 +107,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 2. Core Shader | 1/1 | Complete | 2026-01-22 |
 | 3. Isolines & Interactivity | 2/2 | Complete | 2026-01-22 |
 | 4. Performance & Accessibility | 2/2 | Complete | 2026-01-22 |
+| 5. Mouse Trail Blob | 1/1 | Complete | 2026-01-22 |
 
 ---
 *Roadmap created: 2026-01-22*
