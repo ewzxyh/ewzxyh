@@ -111,31 +111,24 @@ const fragmentShader = /* glsl */ `
     float noise = getNoiseField(uvAspect);
 
     // Colors
-    vec3 bgColor = vec3(0.96, 0.96, 0.94);    // #F5F5F0
-    vec3 blobColor = vec3(0.88, 0.88, 0.84);  // Slightly darker for blob fill
+    vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0 - light background
+    vec3 blobColor = vec3(0.91, 0.91, 0.88);    // #E8E8E0 - slightly darker blob fill
+    vec3 lineColor = vec3(0.75, 0.75, 0.72);    // Darker line for outlines
 
-    // Multiple isolines at different thresholds (like topographic contours)
-    // Lower thresholds = outer blobs, higher thresholds = inner blobs
-    float outline1 = isoline(noise, 0.35, 2.5);  // Outer contour
-    float outline2 = isoline(noise, 0.50, 2.5);  // Middle contour
-    float outline3 = isoline(noise, 0.65, 2.5);  // Inner contour (appears inside, grows, shrinks, disappears)
+    // Isolines at different thresholds
+    float outline1 = isoline(noise, 0.40, 2.5);  // Outer contour
+    float outline2 = isoline(noise, 0.55, 2.5);  // Middle contour
+    float outline3 = isoline(noise, 0.70, 2.5);  // Inner contour
 
-    // Fill areas above each threshold with background color (creating "holes")
-    float fill1 = smoothstep(0.34, 0.36, noise);  // Fill for outer blob
-    float fill2 = smoothstep(0.49, 0.51, noise);  // Fill for middle blob
-    float fill3 = smoothstep(0.64, 0.66, noise);  // Fill for inner blob
+    // Single fill - areas above threshold are "inside" the blob
+    float insideBlob = smoothstep(0.39, 0.41, noise);
 
-    // Start with blob color as base
-    vec3 color = blobColor;
+    // Outside blob = bgColor (light), inside blob = blobColor (darker)
+    vec3 color = mix(bgColor, blobColor, insideBlob);
 
-    // Layer fills - each higher threshold creates a "hole" filled with bg color
-    color = mix(color, bgColor, fill1 * 0.6);
-    color = mix(color, bgColor, fill2 * 0.7);
-    color = mix(color, bgColor, fill3 * 0.8);
-
-    // Draw outlines on top
+    // Draw all outlines on top with same line color
     float allOutlines = max(max(outline1, outline2), outline3);
-    color = mix(color, blobColor * 0.7, allOutlines);
+    color = mix(color, lineColor, allOutlines);
 
     gl_FragColor = vec4(color, 1.0);
   }
