@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-21)
 
 **Core value:** Visual fiel ao efeito landonorris.com — multiplas camadas de blobs fluidos com isolinhas topograficas sutis
-**Current focus:** All phases complete - FluidBackground v1 done
+**Current focus:** Phase 5 - Mouse Trail Blob
 
 ## Current Position
 
-Phase: 4 of 4 (Performance & Accessibility) - COMPLETE
-Plan: 2 of 2 in current phase
-Status: Milestone complete
-Last activity: 2026-01-22 — Phase 4 complete (verified)
+Phase: 5 of 5 (Mouse Trail Blob)
+Plan: 1 of 1 in current phase
+Status: Phase complete - Project complete
+Last activity: 2026-01-22 — Completed 05-01-PLAN.md
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: ~7min
-- Total execution time: ~35min
+- Total plans completed: 6
+- Average duration: ~6.7min
+- Total execution time: ~40min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [██████████] 100%
 | 02 | 1/1 | ~15min | ~15min |
 | 03 | 2/2 | ~12min | ~6min |
 | 04 | 2/2 | ~10min | ~5min |
+| 05 | 1/1 | ~5min | ~5min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01, 03-01, 03-02, 04-01, 04-02
-- Trend: Phase 04 fast execution, all automated tasks
+- Last 5 plans: 03-01, 03-02, 04-01, 04-02, 05-01
+- Trend: Consistent fast execution, all automated tasks
 
 *Updated after each plan completion*
 
@@ -55,6 +56,9 @@ Recent decisions affecting current work:
 - [03-02]: Keep 3 isolines (user feedback: 8 was too many), add mouse distortion (3% influence)
 - [04-01]: useReducedMotion hook with static fallback for accessibility
 - [04-02]: WebGL context loss handling, adaptive DPR (mobile 1.5, desktop 2), mediump shader
+- [05-01]: Adaptive trail point count (10 mobile, 16 desktop) for performance optimization
+- [05-01]: Trail renders before isolines to preserve topographic contour visibility
+- [05-01]: Exponential decay with 2.5s lifetime for smooth natural dissipation
 
 ### Pending Todos
 
@@ -67,7 +71,7 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-22
-Stopped at: Completed Phase 3 (Isolines & Interactivity)
+Stopped at: Completed 05-01-PLAN.md (Project complete)
 Resume file: None
 
 ## Phase 1 Plans
@@ -96,3 +100,10 @@ Resume file: None
 |------|-------------|------|--------|
 | 04-01 | Reduced-motion detection with static fallback | 1 | Complete |
 | 04-02 | Context loss handling and adaptive resolution | 2 | Complete |
+
+
+## Phase 5 Plans
+
+| Plan | Description | Wave | Status |
+|------|-------------|------|--------|
+| 05-01 | Mouse trail blob with exponential decay | 1 | Complete |
