@@ -89,10 +89,17 @@ export function BentoGallery() {
   useEffect(() => {
     createFlipAnimation()
 
-    const handleResize = () => createFlipAnimation()
+    let resizeTimeout: NodeJS.Timeout
+    const handleResize = () => {
+      clearTimeout(resizeTimeout)
+      resizeTimeout = setTimeout(() => {
+        window.location.reload()
+      }, 150)
+    }
     window.addEventListener("resize", handleResize)
 
     return () => {
+      clearTimeout(resizeTimeout)
       window.removeEventListener("resize", handleResize)
       if (flipCtxRef.current) {
         flipCtxRef.current.revert()

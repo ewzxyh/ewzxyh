@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 import * as THREE from "three"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
@@ -357,332 +357,45 @@ const fragmentShader = /* glsl */ `
 
 interface FluidBackgroundProps {
   className?: string
+  defer?: boolean
 }
 
-export function FluidBackground({ className = "" }: FluidBackgroundProps) {
+function FluidBackgroundComponent({ className = "", defer = false }: FluidBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
+  const cleanupRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
-    // Skip WebGL setup if user prefers reduced motion
-    if (reducedMotion) return
+    // Skip WebGL setup if user prefers reduced motion or deferred
+    if (reducedMotion || defer) return
 
     const container = containerRef.current
     if (!container) return
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    container.appendChild(renderer.domElement)
-    renderer.domElement.style.position = "absolute"
-    renderer.domElement.style.inset = "0"
-    renderer.domElement.style.width = "100%"
-    renderer.domElement.style.height = "100%"
-    renderer.setPixelRatio(getAdaptivePixelRatio())
+    // Delay WebGL init to let loading animation complete smoothly
+    let cancelled = false
 
-    let contextLost = false
-    let isVisible = true
-    const canvas = renderer.domElement
+    // Use requestIdleCallback for optimal scheduling, fallback to setTimeout
+    const scheduleInit = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 150))
+    const cancelInit = window.cancelIdleCallback || clearTimeout
 
-    function handleContextLost(event: Event) {
-      event.preventDefault()
-      contextLost = true
-    }
-
-    function handleContextRestored() {
-      contextLost = false
-      if (isVisible) animate()
-    }
-
-    function handleVisibilityChange() {
-      isVisible = document.visibilityState === "visible"
-      if (isVisible && !contextLost) animate()
-    }
-
-    canvas.addEventListener("webglcontextlost", handleContextLost, false)
-    canvas.addEventListener("webglcontextrestored", handleContextRestored, false)
-    document.addEventListener("visibilitychange", handleVisibilityChange)
-
-    const scene = new THREE.Scene()
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
-    const geometry = new THREE.PlaneGeometry(2, 2)
-
-    const uniforms = {
-      uTime: { value: 0 },
-      uResolution: { value: new THREE.Vector2(1, 1) },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      uMouseInfluence: { value: 0.03 },
-      uVelocity: { value: new THREE.Vector2(0, 0) },
-      uTrailPoints: { value: new Array(24).fill(null).map(() => new THREE.Vector4(-1, -1, 0, 0)) },
-      uTrailVelocities: { value: new Array(24).fill(null).map(() => new THREE.Vector2(0, 0)) },
-      uTrailAges: { value: new Float32Array(24) },
-      uTrailCount: { value: 0 },
-      uHoleIntensity: { value: 0 },
-      uDarkMode: { value: 0 },
-    }
-
-    const targetMouse = new THREE.Vector2(0.5, 0.5)
-    const currentMouse = new THREE.Vector2(0.5, 0.5)
-
-    // Trail point structure
-    interface TrailPoint {
-      x: number
-      y: number
-      vx: number
-      vy: number
-      time: number
-      fadeStart: number | null  // when direction changed, start fading
-    }
-
-    const trailBuffer: TrailPoint[] = []
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-    const MAX_TRAIL_POINTS = isMobile ? 8 : 12  // Fewer, larger blobs
-
-    // Velocity tracking
-    const currentVelocity = { x: 0, y: 0 }
-    let lastPointerPos = { x: 0.5, y: 0.5 }
-    let lastPointerTime = 0
-    let lastPointTime = 0
-    let lastDirection = { x: 0, y: 0 }
-
-    // Constants
-    const POINT_FRICTION = 0.98
-    const NORMAL_DECAY = 0.5        // 500ms lifetime
-    const DIRECTION_FADE = 0.3      // 300ms fade when direction changes
-    const MIN_POINT_INTERVAL = 0.03
-    const DIRECTION_THRESHOLD = Math.cos(60 * Math.PI / 180)
-
-    // Hole intensity tracking
-    let holeIntensity = 0
-
-    // Dark mode detection
-    function checkDarkMode() {
-      const isDark = document.documentElement.classList.contains("dark")
-      uniforms.uDarkMode.value = isDark ? 1 : 0
-    }
-    checkDarkMode()
-
-    const darkModeObserver = new MutationObserver(checkDarkMode)
-    darkModeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
+    const initId = scheduleInit(() => {
+      if (cancelled) return
+      cleanupRef.current = initWebGL(container)
     })
-
-    const material = new THREE.ShaderMaterial({
-      uniforms,
-      vertexShader,
-      fragmentShader,
-    })
-
-    const mesh = new THREE.Mesh(geometry, material)
-    scene.add(mesh)
-
-    function resize() {
-      if (!container) return
-      const { width, height } = container.getBoundingClientRect()
-      if (width === 0 || height === 0) return
-      renderer.setSize(width, height, false)
-      uniforms.uResolution.value.set(width, height)
-    }
-
-    resize()
-    window.addEventListener("resize", resize)
-
-    let animationId: number
-    const startTime = performance.now()
-
-    function handlePointerMove(event: PointerEvent) {
-      const x = event.clientX / window.innerWidth
-      const y = 1.0 - event.clientY / window.innerHeight
-      const currentTime = (performance.now() - startTime) * 0.001
-
-      // Calculate velocity from pointer movement
-      const dt = currentTime - lastPointerTime
-      if (dt > 0 && dt < 0.1) {
-        const rawVelX = (x - lastPointerPos.x) / dt
-        const rawVelY = (y - lastPointerPos.y) / dt
-        currentVelocity.x = currentVelocity.x * 0.6 + rawVelX * 0.4
-        currentVelocity.y = currentVelocity.y * 0.6 + rawVelY * 0.4
-      }
-
-      lastPointerPos = { x, y }
-      lastPointerTime = currentTime
-
-      // Throttle point creation
-      if (currentTime - lastPointTime < MIN_POINT_INTERVAL) {
-        targetMouse.set(x, y)
-        return
-      }
-
-      const speed = Math.sqrt(currentVelocity.x ** 2 + currentVelocity.y ** 2)
-      if (speed < 0.05) {
-        targetMouse.set(x, y)
-        return
-      }
-
-      lastPointTime = currentTime
-
-      // Normalize current direction
-      const dirX = currentVelocity.x / speed
-      const dirY = currentVelocity.y / speed
-
-      // Check for direction change
-      const lastSpeed = Math.sqrt(lastDirection.x ** 2 + lastDirection.y ** 2)
-      if (lastSpeed > 0.001) {
-        const dotProduct = dirX * lastDirection.x + dirY * lastDirection.y
-        if (dotProduct < DIRECTION_THRESHOLD) {
-          // Direction changed significantly - mark all existing points to fade in 500ms
-          for (const point of trailBuffer) {
-            if (point.fadeStart === null) {
-              point.fadeStart = currentTime
-            }
-          }
-        }
-      }
-
-      lastDirection = { x: dirX, y: dirY }
-
-      // Add new point with velocity for fluid movement
-      const velScale = Math.min(speed * 0.004, 0.012)
-      trailBuffer.push({
-        x,
-        y,
-        vx: dirX * velScale,
-        vy: dirY * velScale,
-        time: currentTime,
-        fadeStart: null,
-      })
-
-      if (trailBuffer.length > MAX_TRAIL_POINTS) {
-        trailBuffer.shift()
-      }
-
-      targetMouse.set(x, y)
-    }
-
-    document.addEventListener("pointermove", handlePointerMove, { passive: true })
-
-    function animate() {
-      if (contextLost || !isVisible) return
-      const currentTime = (performance.now() - startTime) * 0.001
-      uniforms.uTime.value = currentTime
-
-      // Update trail points: move with inertia, remove expired
-      let i = 0
-      while (i < trailBuffer.length) {
-        const point = trailBuffer[i]
-
-        // Calculate effective lifetime based on fadeStart
-        let shouldRemove = false
-        if (point.fadeStart !== null) {
-          // Direction changed - fast fade (500ms)
-          const fadeAge = currentTime - point.fadeStart
-          if (fadeAge > DIRECTION_FADE) {
-            shouldRemove = true
-          }
-        } else {
-          // Normal decay
-          const age = currentTime - point.time
-          if (age > NORMAL_DECAY) {
-            shouldRemove = true
-          }
-        }
-
-        if (shouldRemove) {
-          trailBuffer.splice(i, 1)
-          continue
-        }
-
-        // Move point with its velocity (fluid inertia)
-        point.x += point.vx
-        point.y += point.vy
-        point.vx *= POINT_FRICTION
-        point.vy *= POINT_FRICTION
-
-        i++
-      }
-
-      // Sync trail to uniforms
-      for (let j = 0; j < 24; j++) {
-        if (j < trailBuffer.length) {
-          const point = trailBuffer[j]
-          let fade: number
-          if (point.fadeStart !== null) {
-            fade = 1.0 - (currentTime - point.fadeStart) / DIRECTION_FADE
-          } else {
-            fade = 1.0 - (currentTime - point.time) / NORMAL_DECAY
-          }
-          fade = Math.max(0, Math.min(1, fade))
-
-          uniforms.uTrailPoints.value[j].set(point.x, point.y, point.vx, point.vy)
-          uniforms.uTrailVelocities.value[j].set(point.vx * 100, point.vy * 100)
-          uniforms.uTrailAges.value[j] = 1.0 - fade  // 0 = new, 1 = old
-        } else {
-          uniforms.uTrailPoints.value[j].set(-1, -1, 0, 0)
-          uniforms.uTrailVelocities.value[j].set(0, 0)
-          uniforms.uTrailAges.value[j] = 1.0
-        }
-      }
-      uniforms.uTrailCount.value = trailBuffer.length
-
-      // Smoothly decay velocity when mouse stops
-      currentVelocity.x *= 0.92
-      currentVelocity.y *= 0.92
-
-      // Track hole intensity - dissipates in ~300ms
-      const velX = currentVelocity.x * 0.01
-      const hasTrail = trailBuffer.length > 0
-      if (velX > 0.001 && hasTrail) {
-        // Moving right with trail - increase intensity quickly
-        holeIntensity = Math.min(1, holeIntensity + 0.15)
-      } else {
-        // Not moving right - decay in ~300ms (0.055/frame at 60fps)
-        holeIntensity = Math.max(0, holeIntensity - 0.055)
-      }
-      uniforms.uHoleIntensity.value = holeIntensity
-
-      uniforms.uVelocity.value.set(currentVelocity.x * 0.01, currentVelocity.y * 0.01)
-      currentMouse.lerp(targetMouse, 0.15)
-      uniforms.uMouse.value.copy(currentMouse)
-
-      renderer.render(scene, camera)
-      animationId = requestAnimationFrame(animate)
-    }
-
-    animate()
 
     return () => {
-      cancelAnimationFrame(animationId)
-      darkModeObserver.disconnect()
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
-      window.removeEventListener("resize", resize)
-      document.removeEventListener("pointermove", handlePointerMove)
-      canvas.removeEventListener("webglcontextlost", handleContextLost)
-      canvas.removeEventListener("webglcontextrestored", handleContextRestored)
-      renderer.dispose()
-      geometry.dispose()
-      material.dispose()
-      if (container.contains(renderer.domElement)) {
-        container.removeChild(renderer.domElement)
-      }
+      cancelled = true
+      cancelInit(initId)
+      cleanupRef.current?.()
+      cleanupRef.current = null
     }
-  }, [reducedMotion])
-
-  // Static fallback for users who prefer reduced motion
-  if (reducedMotion) {
-    return (
-      <div
-        className={`overflow-hidden bg-stone-100 dark:bg-stone-950 pointer-events-none ${className}`}
-        style={{
-          isolation: "isolate",
-          contain: "layout style paint",
-        }}
-      />
-    )
-  }
+  }, [reducedMotion, defer])
 
   return (
     <div
       ref={containerRef}
-      className={`overflow-hidden pointer-events-none ${className}`}
+      className={`overflow-hidden pointer-events-none bg-stone-100 dark:bg-stone-950 ${className}`}
       style={{
         isolation: "isolate",
         contain: "layout style paint",
@@ -691,3 +404,280 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     />
   )
 }
+
+function initWebGL(container: HTMLDivElement): () => void {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  container.appendChild(renderer.domElement)
+  renderer.domElement.style.position = "absolute"
+  renderer.domElement.style.inset = "0"
+  renderer.domElement.style.width = "100%"
+  renderer.domElement.style.height = "100%"
+  renderer.setPixelRatio(getAdaptivePixelRatio())
+
+  let contextLost = false
+  let isVisible = true
+  const canvas = renderer.domElement
+
+  function handleContextLost(event: Event) {
+    event.preventDefault()
+    contextLost = true
+  }
+
+  function handleContextRestored() {
+    contextLost = false
+    if (isVisible) animate()
+  }
+
+  function handleVisibilityChange() {
+    isVisible = document.visibilityState === "visible"
+    if (isVisible && !contextLost) animate()
+  }
+
+  canvas.addEventListener("webglcontextlost", handleContextLost, false)
+  canvas.addEventListener("webglcontextrestored", handleContextRestored, false)
+  document.addEventListener("visibilitychange", handleVisibilityChange)
+
+  const scene = new THREE.Scene()
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
+  const geometry = new THREE.PlaneGeometry(2, 2)
+
+  const uniforms = {
+    uTime: { value: 0 },
+    uResolution: { value: new THREE.Vector2(1, 1) },
+    uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+    uMouseInfluence: { value: 0.03 },
+    uVelocity: { value: new THREE.Vector2(0, 0) },
+    uTrailPoints: { value: new Array(24).fill(null).map(() => new THREE.Vector4(-1, -1, 0, 0)) },
+    uTrailVelocities: { value: new Array(24).fill(null).map(() => new THREE.Vector2(0, 0)) },
+    uTrailAges: { value: new Float32Array(24) },
+    uTrailCount: { value: 0 },
+    uHoleIntensity: { value: 0 },
+    uDarkMode: { value: 0 },
+  }
+
+  const targetMouse = new THREE.Vector2(0.5, 0.5)
+  const currentMouse = new THREE.Vector2(0.5, 0.5)
+
+  interface TrailPoint {
+    x: number
+    y: number
+    vx: number
+    vy: number
+    time: number
+    fadeStart: number | null
+  }
+
+  const trailBuffer: TrailPoint[] = []
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+  const MAX_TRAIL_POINTS = isMobile ? 8 : 12
+
+  const currentVelocity = { x: 0, y: 0 }
+  let lastPointerPos = { x: 0.5, y: 0.5 }
+  let lastPointerTime = 0
+  let lastPointTime = 0
+  let lastDirection = { x: 0, y: 0 }
+
+  const POINT_FRICTION = 0.98
+  const NORMAL_DECAY = 0.5
+  const DIRECTION_FADE = 0.3
+  const MIN_POINT_INTERVAL = 0.03
+  const DIRECTION_THRESHOLD = Math.cos(60 * Math.PI / 180)
+
+  let holeIntensity = 0
+
+  function checkDarkMode() {
+    const isDark = document.documentElement.classList.contains("dark")
+    uniforms.uDarkMode.value = isDark ? 1 : 0
+  }
+  checkDarkMode()
+
+  const darkModeObserver = new MutationObserver(checkDarkMode)
+  darkModeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  })
+
+  const material = new THREE.ShaderMaterial({
+    uniforms,
+    vertexShader,
+    fragmentShader,
+  })
+
+  const mesh = new THREE.Mesh(geometry, material)
+  scene.add(mesh)
+
+  function resize() {
+    const { width, height } = container.getBoundingClientRect()
+    if (width === 0 || height === 0) return
+    renderer.setSize(width, height, false)
+    uniforms.uResolution.value.set(width, height)
+  }
+
+  resize()
+  window.addEventListener("resize", resize)
+
+  let animationId: number
+  const startTime = performance.now()
+
+  function handlePointerMove(event: PointerEvent) {
+    const x = event.clientX / window.innerWidth
+    const y = 1.0 - event.clientY / window.innerHeight
+    const currentTime = (performance.now() - startTime) * 0.001
+
+    const dt = currentTime - lastPointerTime
+    if (dt > 0 && dt < 0.1) {
+      const rawVelX = (x - lastPointerPos.x) / dt
+      const rawVelY = (y - lastPointerPos.y) / dt
+      currentVelocity.x = currentVelocity.x * 0.6 + rawVelX * 0.4
+      currentVelocity.y = currentVelocity.y * 0.6 + rawVelY * 0.4
+    }
+
+    lastPointerPos = { x, y }
+    lastPointerTime = currentTime
+
+    if (currentTime - lastPointTime < MIN_POINT_INTERVAL) {
+      targetMouse.set(x, y)
+      return
+    }
+
+    const speed = Math.sqrt(currentVelocity.x ** 2 + currentVelocity.y ** 2)
+    if (speed < 0.05) {
+      targetMouse.set(x, y)
+      return
+    }
+
+    lastPointTime = currentTime
+
+    const dirX = currentVelocity.x / speed
+    const dirY = currentVelocity.y / speed
+
+    const lastSpeed = Math.sqrt(lastDirection.x ** 2 + lastDirection.y ** 2)
+    if (lastSpeed > 0.001) {
+      const dotProduct = dirX * lastDirection.x + dirY * lastDirection.y
+      if (dotProduct < DIRECTION_THRESHOLD) {
+        for (const point of trailBuffer) {
+          if (point.fadeStart === null) {
+            point.fadeStart = currentTime
+          }
+        }
+      }
+    }
+
+    lastDirection = { x: dirX, y: dirY }
+
+    const velScale = Math.min(speed * 0.004, 0.012)
+    trailBuffer.push({
+      x,
+      y,
+      vx: dirX * velScale,
+      vy: dirY * velScale,
+      time: currentTime,
+      fadeStart: null,
+    })
+
+    if (trailBuffer.length > MAX_TRAIL_POINTS) {
+      trailBuffer.shift()
+    }
+
+    targetMouse.set(x, y)
+  }
+
+  document.addEventListener("pointermove", handlePointerMove, { passive: true })
+
+  function animate() {
+    if (contextLost || !isVisible) return
+    const currentTime = (performance.now() - startTime) * 0.001
+    uniforms.uTime.value = currentTime
+
+    let i = 0
+    while (i < trailBuffer.length) {
+      const point = trailBuffer[i]
+
+      let shouldRemove = false
+      if (point.fadeStart !== null) {
+        const fadeAge = currentTime - point.fadeStart
+        if (fadeAge > DIRECTION_FADE) {
+          shouldRemove = true
+        }
+      } else {
+        const age = currentTime - point.time
+        if (age > NORMAL_DECAY) {
+          shouldRemove = true
+        }
+      }
+
+      if (shouldRemove) {
+        trailBuffer.splice(i, 1)
+        continue
+      }
+
+      point.x += point.vx
+      point.y += point.vy
+      point.vx *= POINT_FRICTION
+      point.vy *= POINT_FRICTION
+
+      i++
+    }
+
+    for (let j = 0; j < 24; j++) {
+      if (j < trailBuffer.length) {
+        const point = trailBuffer[j]
+        let fade: number
+        if (point.fadeStart !== null) {
+          fade = 1.0 - (currentTime - point.fadeStart) / DIRECTION_FADE
+        } else {
+          fade = 1.0 - (currentTime - point.time) / NORMAL_DECAY
+        }
+        fade = Math.max(0, Math.min(1, fade))
+
+        uniforms.uTrailPoints.value[j].set(point.x, point.y, point.vx, point.vy)
+        uniforms.uTrailVelocities.value[j].set(point.vx * 100, point.vy * 100)
+        uniforms.uTrailAges.value[j] = 1.0 - fade
+      } else {
+        uniforms.uTrailPoints.value[j].set(-1, -1, 0, 0)
+        uniforms.uTrailVelocities.value[j].set(0, 0)
+        uniforms.uTrailAges.value[j] = 1.0
+      }
+    }
+    uniforms.uTrailCount.value = trailBuffer.length
+
+    currentVelocity.x *= 0.92
+    currentVelocity.y *= 0.92
+
+    const velX = currentVelocity.x * 0.01
+    const hasTrail = trailBuffer.length > 0
+    if (velX > 0.001 && hasTrail) {
+      holeIntensity = Math.min(1, holeIntensity + 0.15)
+    } else {
+      holeIntensity = Math.max(0, holeIntensity - 0.055)
+    }
+    uniforms.uHoleIntensity.value = holeIntensity
+
+    uniforms.uVelocity.value.set(currentVelocity.x * 0.01, currentVelocity.y * 0.01)
+    currentMouse.lerp(targetMouse, 0.15)
+    uniforms.uMouse.value.copy(currentMouse)
+
+    renderer.render(scene, camera)
+    animationId = requestAnimationFrame(animate)
+  }
+
+  animate()
+
+  return () => {
+    cancelAnimationFrame(animationId)
+    darkModeObserver.disconnect()
+    document.removeEventListener("visibilitychange", handleVisibilityChange)
+    window.removeEventListener("resize", resize)
+    document.removeEventListener("pointermove", handlePointerMove)
+    canvas.removeEventListener("webglcontextlost", handleContextLost)
+    canvas.removeEventListener("webglcontextrestored", handleContextRestored)
+    renderer.dispose()
+    geometry.dispose()
+    material.dispose()
+    if (container.contains(renderer.domElement)) {
+      container.removeChild(renderer.domElement)
+    }
+  }
+}
+
+export const FluidBackground = memo(FluidBackgroundComponent)

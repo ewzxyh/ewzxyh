@@ -265,9 +265,9 @@
   height: 100%;
   flex: none;
   display: grid;
-  gap: 1vh;
-  grid-template-columns: repeat(3, 32.5vw);
-  grid-template-rows: repeat(4, 23vh);
+  gap: 0.5vh;
+  grid-template-columns: repeat(3, calc(100vw / 3 - 0.34vh));
+  grid-template-rows: repeat(4, calc(25vh - 0.5vh));
   justify-content: center;
   align-content: center;
 }
@@ -297,29 +297,23 @@
 .bento-gallery .bento-item:nth-child(1) { grid-area: 1 / 1 / 3 / 2; }
 .bento-gallery .bento-item:nth-child(2) { grid-area: 1 / 2 / 2 / 3; }
 .bento-gallery .bento-item:nth-child(3) { grid-area: 2 / 2 / 4 / 3; }
-.bento-gallery .bento-item:nth-child(4) { grid-area: 1 / 3 / 3 / 3; }
-.bento-gallery .bento-item:nth-child(5) { grid-area: 3 / 1 / 3 / 2; }
+.bento-gallery .bento-item:nth-child(4) { grid-area: 1 / 3 / 3 / 4; }
+.bento-gallery .bento-item:nth-child(5) { grid-area: 3 / 1 / 4 / 2; }
 .bento-gallery .bento-item:nth-child(6) { grid-area: 3 / 3 / 5 / 4; }
 .bento-gallery .bento-item:nth-child(7) { grid-area: 4 / 1 / 5 / 2; }
 .bento-gallery .bento-item:nth-child(8) { grid-area: 4 / 2 / 5 / 3; }
 
 @media (max-width: 768px) {
   .bento-gallery {
-    grid-template-columns: repeat(2, 45vw);
-    grid-template-rows: repeat(4, 20vh);
+    grid-template-columns: repeat(3, calc(100vw / 3 - 0.34vh));
+    grid-template-rows: repeat(4, calc(25vh - 0.5vh));
   }
+}
 
-  .bento-final.bento-gallery {
-    grid-template-columns: repeat(2, 100vw);
-    grid-template-rows: repeat(4, 45vh);
+@media (max-width: 480px) {
+  .bento-gallery {
+    grid-template-columns: repeat(3, calc(100vw / 3 - 0.17vh));
+    grid-template-rows: repeat(4, calc(25vh - 0.25vh));
+    gap: 0.25vh;
   }
-
-  .bento-gallery .bento-item:nth-child(1) { grid-area: 1 / 1 / 2 / 2; }
-  .bento-gallery .bento-item:nth-child(2) { grid-area: 1 / 2 / 2 / 3; }
-  .bento-gallery .bento-item:nth-child(3) { grid-area: 2 / 1 / 3 / 2; }
-  .bento-gallery .bento-item:nth-child(4) { grid-area: 2 / 2 / 3 / 3; }
-  .bento-gallery .bento-item:nth-child(5) { grid-area: 3 / 1 / 4 / 2; }
-  .bento-gallery .bento-item:nth-child(6) { grid-area: 3 / 2 / 4 / 3; }
-  .bento-gallery .bento-item:nth-child(7) { grid-area: 4 / 1 / 5 / 2; }
-  .bento-gallery .bento-item:nth-child(8) { grid-area: 4 / 2 / 5 / 3; }
 }

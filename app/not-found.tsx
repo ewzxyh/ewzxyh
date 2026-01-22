@@ -2,21 +2,25 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import Lottie from "lottie-react"
+import dynamic from "next/dynamic"
 import { useTheme } from "next-themes"
 import { Home } from "lucide-react"
-import notFoundAnimation from "@/public/Not found.json"
 import { useI18n } from "@/lib/i18n"
-import { HeaderActions } from "@/components/portfolio"
+import { HeaderActions } from "@/components/portfolio/header-actions"
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
 
 export default function NotFound() {
   const { t } = useI18n()
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  // biome-ignore lint/suspicious/noExplicitAny: Lottie animation data type
+  const [animationData, setAnimationData] = useState<any>(null)
   const isDark = resolvedTheme === "dark"
 
   useEffect(() => {
     setMounted(true)
+    import("@/public/Not found.json").then((mod) => setAnimationData(mod.default))
   }, [])
 
   if (!mounted) return null
@@ -25,13 +29,15 @@ export default function NotFound() {
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <HeaderActions />
       <div className="max-w-md w-full text-center">
-        <Lottie
-          animationData={notFoundAnimation}
-          loop={true}
-          autoplay={true}
-          className="w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 mx-auto"
-          style={isDark ? { filter: "invert(1) brightness(0.85)" } : undefined}
-        />
+        {animationData && (
+          <Lottie
+            animationData={animationData}
+            loop={true}
+            autoplay={true}
+            className="w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 mx-auto"
+            style={isDark ? { filter: "invert(1) brightness(0.85)" } : undefined}
+          />
+        )}
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">404</h1>
 

@@ -5,8 +5,10 @@ import { Terminal, ChevronDown } from "lucide-react"
 import UseAnimations from "react-useanimations"
 import github from "react-useanimations/lib/github"
 import linkedin from "react-useanimations/lib/linkedin"
-import mail from "react-useanimations/lib/mail"
 import instagram from "react-useanimations/lib/instagram"
+import mail from "react-useanimations/lib/mail"
+import Lottie, { type LottieRefCurrentProps } from "lottie-react"
+import { SiWhatsapp } from "react-icons/si"
 import { Button } from "@/components/ui/button"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -17,31 +19,44 @@ import { useLoading } from "./loading-context"
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, ScrambleTextPlugin)
 
+function MailIcon({ size, className }: { size: number; className?: string }) {
+  const lottieRef = useRef<LottieRefCurrentProps>(null)
+
+  return (
+    <div
+      style={{ width: size, height: size }}
+      className={`${className} [&_path]:stroke-current`}
+      onMouseEnter={() => {
+        lottieRef.current?.goToAndPlay(0)
+      }}
+      onMouseLeave={() => {
+        lottieRef.current?.goToAndStop(0)
+      }}
+    >
+      <Lottie
+        lottieRef={lottieRef}
+        animationData={mail.animationData}
+        loop={false}
+        autoplay={false}
+        style={{ width: "100%", height: "100%" }}
+      />
+    </div>
+  )
+}
+
 export function Hero() {
   const { t, locale } = useI18n()
   const { isAlmostComplete } = useLoading()
 
-  const socialLinks = [
-    {
-      animation: github,
-      href: "https://github.com/ewzxyh",
-      label: "GitHub",
-    },
-    {
-      animation: linkedin,
-      href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh",
-      label: "LinkedIn",
-    },
-    {
-      animation: instagram,
-      href: "https://instagram.com/yoshidaenzoh",
-      label: "Instagram",
-    },
-    {
-      animation: mail,
-      href: "mailto:yoshidaenzo@hotmail.com",
-      label: "Email",
-    },
+  const animatedLinks = [
+    { animation: github, href: "https://github.com/ewzxyh", label: "GitHub" },
+    { animation: linkedin, href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh", label: "LinkedIn" },
+    { animation: instagram, href: "https://instagram.com/yoshidaenzoh", label: "Instagram" },
+    { animation: mail, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" },
+  ]
+
+  const staticLinks = [
+    { icon: SiWhatsapp, href: locale === "en-US" ? "https://wa.me/5562984268492?text=Hello%2C%20I%20came%20from%20your%20portfolio%21" : "https://wa.me/5562984268492?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21", label: "WhatsApp" },
   ]
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -199,7 +214,7 @@ export function Hero() {
         </div>
 
         <div ref={socialsRef} className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
-          {socialLinks.map((link) => (
+          {animatedLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
@@ -208,12 +223,28 @@ export function Hero() {
               className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
               aria-label={link.label}
             >
-              <UseAnimations
-                animation={link.animation}
-                size={20}
-                className="sm:w-[24px] sm:h-[24px]"
-                strokeColor="currentColor"
-              />
+              {link.label === "Email" ? (
+                <MailIcon size={20} className="sm:w-[24px] sm:h-[24px]" />
+              ) : (
+                <UseAnimations
+                  animation={link.animation}
+                  size={20}
+                  className="sm:w-[24px] sm:h-[24px]"
+                  strokeColor="currentColor"
+                />
+              )}
+            </a>
+          ))}
+          {staticLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
+              aria-label={link.label}
+            >
+              <link.icon className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px] group-hover:scale-110 transition-transform duration-200" />
             </a>
           ))}
         </div>

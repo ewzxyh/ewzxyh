@@ -1,11 +1,24 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, useState } from "react"
 import { gsap } from "gsap"
 
 const PARTICLE_IMAGES = Array.from({ length: 21 }, (_, i) =>
   `https://assets.codepen.io/16327/flair-${2 + i}.png`
 )
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
+  return isMobile
+}
 
 interface Particle {
   x: number
@@ -22,6 +35,7 @@ export function CanvasParticles() {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const animationRef = useRef<gsap.core.Timeline | null>(null)
   const sizeRef = useRef({ cw: 0, ch: 0, radius: 0 })
+  const isMobile = useIsMobile()
 
   const draw = useCallback(() => {
     const ctx = ctxRef.current
@@ -67,7 +81,7 @@ export function CanvasParticles() {
     const radius = Math.max(cw, ch)
     sizeRef.current = { cw, ch, radius }
 
-    const particleCount = 99
+    const particleCount = isMobile ? 33 : 99
 
     const particles: Particle[] = []
     for (let i = 0; i < particleCount; i++) {
@@ -111,7 +125,7 @@ export function CanvasParticles() {
       .seek(99)
 
     animationRef.current = tl
-  }, [draw])
+  }, [draw, isMobile])
 
   useEffect(() => {
     const timer = setTimeout(initAnimation, 100)
