@@ -202,10 +202,17 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
       uResolution: { value: new THREE.Vector2(1, 1) },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
       uMouseInfluence: { value: 0.03 },
+      uTrailBuffer: { value: new Array(16).fill(null).map(() => new THREE.Vector3(-1, -1, 0)) },
+      uTrailCount: { value: 0 },
+      uTrailDecay: { value: 2.5 },
     }
 
     const targetMouse = new THREE.Vector2(0.5, 0.5)
     const currentMouse = new THREE.Vector2(0.5, 0.5)
+
+    const trailBuffer: Array<{ x: number; y: number; time: number }> = []
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    const MAX_TRAIL_POINTS = isMobile ? 10 : 16
 
     const material = new THREE.ShaderMaterial({
       uniforms,
@@ -227,22 +234,54 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     resize()
     window.addEventListener("resize", resize)
 
+    let animationId: number
+    const startTime = performance.now()
+
     function handlePointerMove(event: PointerEvent) {
       if (!container) return
       const rect = container.getBoundingClientRect()
       const x = (event.clientX - rect.left) / rect.width
       const y = 1.0 - (event.clientY - rect.top) / rect.height
+      const currentTime = (performance.now() - startTime) * 0.001
+
+      trailBuffer.push({ x, y, time: currentTime })
+
+      if (trailBuffer.length > MAX_TRAIL_POINTS) {
+        trailBuffer.shift()
+      }
+
       targetMouse.set(x, y)
     }
 
     container.addEventListener("pointermove", handlePointerMove, { passive: true })
 
-    let animationId: number
-    const startTime = performance.now()
-
     function animate() {
       if (contextLost) return
-      uniforms.uTime.value = (performance.now() - startTime) * 0.001
+      const currentTime = (performance.now() - startTime) * 0.001
+      uniforms.uTime.value = currentTime
+
+      // Cull expired trail points
+      const decayTime = uniforms.uTrailDecay.value
+      let i = 0
+      while (i < trailBuffer.length) {
+        if (currentTime - trailBuffer[i].time > decayTime) {
+          trailBuffer.splice(i, 1)
+        } else {
+          i++
+        }
+      }
+
+      // Sync trail buffer to uniforms
+      for (let j = 0; j < 16; j++) {
+        if (j < trailBuffer.length) {
+          const point = trailBuffer[j]
+          uniforms.uTrailBuffer.value[j].set(point.x, point.y, point.time)
+        } else {
+          uniforms.uTrailBuffer.value[j].set(-1, -1, 0)
+        }
+      }
+      uniforms.uTrailCount.value = trailBuffer.length
+
       currentMouse.lerp(targetMouse, 0.1)
       uniforms.uMouse.value.copy(currentMouse)
       renderer.render(scene, camera)
