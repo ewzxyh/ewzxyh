@@ -1,16 +1,14 @@
-## Hi there 👋
+Copyright (c) 2026 Enzo Hideki Yoshida
 
-<!--
-**ewzxyh/ewzxyh** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+All rights reserved.
 
-Here are some ideas to get you started:
+This source code is provided for viewing and reference purposes only.
+No permission is granted to copy, modify, distribute, sublicense, 
+or use this code for any purpose without explicit written consent 
+from the copyright holder.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+[PT-BR]
+Todos os direitos reservados.
+Este código é disponibilizado apenas para visualização e referência.
+É proibido copiar, modificar, distribuir ou utilizar sem autorização 
+expressa por escrito do autor.
