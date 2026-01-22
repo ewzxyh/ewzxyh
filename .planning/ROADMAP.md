@@ -58,10 +58,11 @@ Plans:
   3. Movimento do mouse distorce sutilmente os blobs (2-5% de influencia)
   4. Mouse tracking e suave sem jitter (lerp/easing aplicado)
   5. Performance de mouse events nao degrada animacao (throttle 16ms)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md - Add mouse tracking infrastructure with lerped uniforms
+- [ ] 03-02-PLAN.md - Expand isolines to 8 and add mouse distortion
 
 ### Phase 4: Performance & Accessibility
 **Goal**: 60fps consistente em devices mid-range, reduced-motion respeitado, e fallback mobile funcional
@@ -85,9 +86,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Component Foundation | 2/2 | ✓ Complete | 2026-01-22 |
-| 2. Core Shader | 1/1 | ✓ Complete | 2026-01-22 |
-| 3. Isolines & Interactivity | 0/? | Not started | - |
+| 1. Component Foundation | 2/2 | Complete | 2026-01-22 |
+| 2. Core Shader | 1/1 | Complete | 2026-01-22 |
+| 3. Isolines & Interactivity | 0/2 | In Progress | - |
 | 4. Performance & Accessibility | 0/? | Not started | - |
 
 ---
