@@ -122,19 +122,13 @@ const fragmentShader = /* glsl */ `
     vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0
     vec3 lineColor = vec3(0.78, 0.78, 0.75);    // Subtle gray for outlines
 
-    // 8 isolines at evenly spaced thresholds (0.20 to 0.90)
-    float line1 = isoline(noise, 0.20, 1.5);
-    float line2 = isoline(noise, 0.30, 1.5);
-    float line3 = isoline(noise, 0.40, 1.5);
-    float line4 = isoline(noise, 0.50, 1.5);
-    float line5 = isoline(noise, 0.60, 1.5);
-    float line6 = isoline(noise, 0.70, 1.5);
-    float line7 = isoline(noise, 0.80, 1.5);
-    float line8 = isoline(noise, 0.90, 1.5);
+    // 3 isolines at key thresholds
+    float line1 = isoline(noise, 0.40, 1.5);
+    float line2 = isoline(noise, 0.55, 1.5);
+    float line3 = isoline(noise, 0.70, 1.5);
 
     // Combine all isolines
-    float allLines = max(max(max(max(max(max(max(
-      line1, line2), line3), line4), line5), line6), line7), line8);
+    float allLines = max(max(line1, line2), line3);
 
     // Start with solid background color
     vec3 color = bgColor;
