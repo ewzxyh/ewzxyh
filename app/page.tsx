@@ -1,4 +1,4 @@
-import { Hero, About, Projects, Contact, Footer, Header, LavaLamp } from "@/components/portfolio"
+import { Hero, About, Projects, Contact, Footer, Header, FluidBackground } from "@/components/portfolio"
 
 export default function Home() {
   return (
@@ -10,16 +10,16 @@ export default function Home() {
       <Contact />
       <Footer />
 
-      {/* Lava Lamp Demo Section */}
+      {/* Fluid Background Demo Section */}
       <section className="relative h-screen">
-        <LavaLamp className="absolute inset-0" />
+        <FluidBackground className="absolute inset-0" />
         <div className="relative z-10 flex items-center justify-center h-full pointer-events-none">
           <div className="text-center">
             <h2 className="text-4xl sm:text-6xl font-bold text-foreground mb-4">
-              Contour Effect
+              Fluid Background
             </h2>
             <p className="text-muted-foreground text-lg">
-              Passe o mouse para interagir
+              Background fluido animado
             </p>
           </div>
         </div>
