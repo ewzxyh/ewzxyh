@@ -74,10 +74,11 @@ Plans:
   3. Usuario com prefers-reduced-motion ativo ve versao estatica ou simplificada
   4. WebGL context loss e recuperado automaticamente (canvas nao fica preto)
   5. Displays high-DPI nao degradam performance (resolution scaling aplicado)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
+- [ ] 04-01-PLAN.md - Reduced-motion detection with static fallback
+- [ ] 04-02-PLAN.md - Context loss handling and adaptive resolution
 
 ## Progress
 
@@ -89,7 +90,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Component Foundation | 2/2 | Complete | 2026-01-22 |
 | 2. Core Shader | 1/1 | Complete | 2026-01-22 |
 | 3. Isolines & Interactivity | 2/2 | Complete | 2026-01-22 |
-| 4. Performance & Accessibility | 0/? | Not started | - |
+| 4. Performance & Accessibility | 0/2 | Planning complete | - |
 
 ---
 *Roadmap created: 2026-01-22*
