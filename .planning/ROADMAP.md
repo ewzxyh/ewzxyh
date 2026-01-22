@@ -43,10 +43,10 @@ Plans:
   3. Blobs pequenos se movem mais rapido na frente (layer 3)
   4. Cada layer exibe padrao unico (nao sao copias deslocadas)
   5. Blobs sao sutis com contraste <30% contra background
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md - Implement domain warping with 3 distinct blob layers
 
 ### Phase 3: Isolines & Interactivity
 **Goal**: Isolinhas topograficas com anti-aliasing sobrepostas aos blobs, e mouse tracking sutil que distorce levemente o campo
@@ -86,7 +86,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Component Foundation | 2/2 | ✓ Complete | 2026-01-22 |
-| 2. Core Shader | 0/? | Not started | - |
+| 2. Core Shader | 0/1 | Ready | - |
 | 3. Isolines & Interactivity | 0/? | Not started | - |
 | 4. Performance & Accessibility | 0/? | Not started | - |
 
