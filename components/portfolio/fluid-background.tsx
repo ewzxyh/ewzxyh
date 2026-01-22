@@ -92,7 +92,19 @@ const fragmentShader = /* glsl */ `
     vec2 warp = domainWarp(uv, scale * 0.5, time * 0.5, warpOffset) * warpStrength;
     vec2 warped = uv * scale + warp + noiseOffset;
     float n = snoise(vec3(warped, time));
-    return smoothstep(0.3, 0.7, n * 0.5 + 0.5);
+
+    // Remap noise to 0-1 range
+    float value = n * 0.5 + 0.5;
+
+    // Edge detection using fwidth for thin outline
+    float edgeWidth = fwidth(value) * 1.5;
+    float threshold = 0.5;
+
+    // Create thin line at threshold crossing
+    float line = smoothstep(threshold - edgeWidth, threshold, value)
+               - smoothstep(threshold, threshold + edgeWidth, value);
+
+    return line;
   }
 
   void main() {
