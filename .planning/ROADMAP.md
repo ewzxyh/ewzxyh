@@ -12,7 +12,7 @@ Este roadmap transforma os 31 requisitos v1 em 4 fases que entregam um backgroun
 
 - [x] **Phase 1: Component Foundation** - Componente SSR-safe com lifecycle correto, shader passthrough, e integracao na pagina
 - [x] **Phase 2: Core Shader** - Domain warping com isolinhas topograficas no estilo landonorris.com
-- [ ] **Phase 3: Isolines & Interactivity** - Isolinhas topograficas com antialiasing e mouse tracking sutil
+- [x] **Phase 3: Isolines & Interactivity** - Isolinhas topograficas com antialiasing e mouse tracking sutil
 - [ ] **Phase 4: Performance & Accessibility** - 60fps em devices mid-range, reduced-motion, mobile fallback
 
 ## Phase Details
@@ -61,8 +61,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Add mouse tracking infrastructure with lerped uniforms
-- [ ] 03-02-PLAN.md - Expand isolines to 8 and add mouse distortion
+- [x] 03-01-PLAN.md - Add mouse tracking infrastructure with lerped uniforms
+- [x] 03-02-PLAN.md - Expand isolines to 8 and add mouse distortion
 
 ### Phase 4: Performance & Accessibility
 **Goal**: 60fps consistente em devices mid-range, reduced-motion respeitado, e fallback mobile funcional
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Component Foundation | 2/2 | Complete | 2026-01-22 |
 | 2. Core Shader | 1/1 | Complete | 2026-01-22 |
-| 3. Isolines & Interactivity | 0/2 | In Progress | - |
+| 3. Isolines & Interactivity | 2/2 | Complete | 2026-01-22 |
 | 4. Performance & Accessibility | 0/? | Not started | - |
 
 ---
