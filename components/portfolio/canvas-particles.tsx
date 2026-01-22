@@ -101,6 +101,9 @@ export function CanvasParticles() {
       animationRef.current.kill()
     }
 
+    const animDuration = isMobile ? 5 : 5
+    const staggerEach = isMobile ? -0.15 : -0.05
+
     const tl = gsap.timeline({ onUpdate: draw })
       .fromTo(particles, {
         x: (i: number) => {
@@ -114,13 +117,13 @@ export function CanvasParticles() {
         scale: 0.6,
         rotate: 0,
       }, {
-        duration: 5,
+        duration: animDuration,
         ease: "sine",
         x: 0,
         y: 0,
         scale: 0,
         rotate: -3,
-        stagger: { each: -0.05, repeat: -1 }
+        stagger: { each: staggerEach, repeat: -1 }
       }, 0)
       .seek(99)
 

@@ -134,19 +134,19 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
         ref={(el) => {
           if (el) pathsRef.current[0] = el
         }}
-        fill="#525252"
+        fill="#57534e"
       />
       <path
         ref={(el) => {
           if (el) pathsRef.current[1] = el
         }}
-        fill="#6b6b6b"
+        fill="#78716c"
       />
       <path
         ref={(el) => {
           if (el) pathsRef.current[2] = el
         }}
-        fill="#858585"
+        fill="#a8a29e"
       />
     </svg>
   )
