@@ -80,17 +80,44 @@ const fragmentShader = /* glsl */ `
     return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
   }
 
+  vec2 domainWarp(vec2 p, float scale, float time, vec2 offset) {
+    return vec2(
+      snoise(vec3(p * scale + offset.x, time)),
+      snoise(vec3(p * scale + offset.y, time))
+    );
+  }
+
+  float blobLayer(vec2 uv, float scale, float speed, vec2 warpOffset, vec2 noiseOffset, float warpStrength) {
+    float time = uTime * speed;
+    vec2 warp = domainWarp(uv, scale * 0.5, time * 0.5, warpOffset) * warpStrength;
+    vec2 warped = uv * scale + warp + noiseOffset;
+    float n = snoise(vec3(warped, time));
+    return smoothstep(0.3, 0.7, n * 0.5 + 0.5);
+  }
+
   void main() {
     vec2 uv = gl_FragCoord.xy / uResolution;
     float aspect = uResolution.x / uResolution.y;
     vec2 uvAspect = vec2(uv.x * aspect, uv.y);
 
-    float noise = snoise(vec3(uvAspect * 2.0, uTime * 0.1));
+    // Layer 1: Large, slow, background
+    float layer1 = blobLayer(uvAspect, 1.5, 0.05, vec2(0.0, 0.0), vec2(0.0, 0.0), 0.3);
 
-    vec3 bgColor = vec3(0.96, 0.96, 0.94);
-    vec3 blobColor = vec3(0.90, 0.90, 0.86);
+    // Layer 2: Medium, medium speed
+    float layer2 = blobLayer(uvAspect, 2.5, 0.08, vec2(5.2, 1.3), vec2(10.0, 20.0), 0.4);
 
-    vec3 color = mix(bgColor, blobColor, smoothstep(0.4, 0.6, noise));
+    // Layer 3: Small, faster, foreground
+    float layer3 = blobLayer(uvAspect, 4.0, 0.12, vec2(1.7, 9.2), vec2(30.0, 40.0), 0.5);
+
+    // Colors for subtle effect
+    vec3 bgColor = vec3(0.96, 0.96, 0.94);   // #F5F5F0
+    vec3 blobColor = vec3(0.90, 0.90, 0.86); // #E5E5DC
+
+    // Composite back-to-front with opacity
+    vec3 color = bgColor;
+    color = mix(color, blobColor, layer1 * 0.4);  // Large, slow, back
+    color = mix(color, blobColor, layer2 * 0.5);  // Medium, middle
+    color = mix(color, blobColor, layer3 * 0.6);  // Small, fast, front
 
     gl_FragColor = vec4(color, 1.0);
   }
