@@ -87,24 +87,19 @@ const fragmentShader = /* glsl */ `
     );
   }
 
-  float blobLayer(vec2 uv, float scale, float speed, vec2 warpOffset, vec2 noiseOffset, float warpStrength) {
-    float time = uTime * speed;
-    vec2 warp = domainWarp(uv, scale * 0.5, time * 0.5, warpOffset) * warpStrength;
-    vec2 warped = uv * scale + warp + noiseOffset;
-    float n = snoise(vec3(warped, time));
+  // Single noise field with domain warping
+  float getNoiseField(vec2 uv) {
+    float time = uTime * 0.08;
+    vec2 warp = domainWarp(uv, 0.8, time * 0.5, vec2(0.0, 0.0)) * 0.4;
+    vec2 warped = uv * 1.5 + warp;
+    return snoise(vec3(warped, time)) * 0.5 + 0.5;
+  }
 
-    // Remap noise to 0-1 range
-    float value = n * 0.5 + 0.5;
-
-    // Edge detection using fwidth for outline
-    float edgeWidth = fwidth(value) * 3.0;
-    float threshold = 0.5;
-
-    // Create thin line at threshold crossing
-    float line = smoothstep(threshold - edgeWidth, threshold, value)
-               - smoothstep(threshold, threshold + edgeWidth, value);
-
-    return line;
+  // Draw isoline at threshold - returns 1.0 for outline, 0.0 otherwise
+  float isoline(float value, float threshold, float lineWidth) {
+    float edge = fwidth(value) * lineWidth;
+    return smoothstep(threshold - edge, threshold, value)
+         - smoothstep(threshold, threshold + edge, value);
   }
 
   void main() {
@@ -112,24 +107,35 @@ const fragmentShader = /* glsl */ `
     float aspect = uResolution.x / uResolution.y;
     vec2 uvAspect = vec2(uv.x * aspect, uv.y);
 
-    // Layer 1: Large, slow, background
-    float layer1 = blobLayer(uvAspect, 1.5, 0.05, vec2(0.0, 0.0), vec2(0.0, 0.0), 0.3);
+    // Single noise field
+    float noise = getNoiseField(uvAspect);
 
-    // Layer 2: Medium, medium speed
-    float layer2 = blobLayer(uvAspect, 2.5, 0.08, vec2(5.2, 1.3), vec2(10.0, 20.0), 0.4);
+    // Colors
+    vec3 bgColor = vec3(0.96, 0.96, 0.94);    // #F5F5F0
+    vec3 blobColor = vec3(0.88, 0.88, 0.84);  // Slightly darker for blob fill
 
-    // Layer 3: Small, faster, foreground
-    float layer3 = blobLayer(uvAspect, 4.0, 0.12, vec2(1.7, 9.2), vec2(30.0, 40.0), 0.5);
+    // Multiple isolines at different thresholds (like topographic contours)
+    // Lower thresholds = outer blobs, higher thresholds = inner blobs
+    float outline1 = isoline(noise, 0.35, 2.5);  // Outer contour
+    float outline2 = isoline(noise, 0.50, 2.5);  // Middle contour
+    float outline3 = isoline(noise, 0.65, 2.5);  // Inner contour (appears inside, grows, shrinks, disappears)
 
-    // Colors for subtle effect
-    vec3 bgColor = vec3(0.96, 0.96, 0.94);   // #F5F5F0
-    vec3 blobColor = vec3(0.90, 0.90, 0.86); // #E5E5DC
+    // Fill areas above each threshold with background color (creating "holes")
+    float fill1 = smoothstep(0.34, 0.36, noise);  // Fill for outer blob
+    float fill2 = smoothstep(0.49, 0.51, noise);  // Fill for middle blob
+    float fill3 = smoothstep(0.64, 0.66, noise);  // Fill for inner blob
 
-    // Composite back-to-front with opacity
-    vec3 color = bgColor;
-    color = mix(color, blobColor, layer1 * 0.4);  // Large, slow, back
-    color = mix(color, blobColor, layer2 * 0.5);  // Medium, middle
-    color = mix(color, blobColor, layer3 * 0.6);  // Small, fast, front
+    // Start with blob color as base
+    vec3 color = blobColor;
+
+    // Layer fills - each higher threshold creates a "hole" filled with bg color
+    color = mix(color, bgColor, fill1 * 0.6);
+    color = mix(color, bgColor, fill2 * 0.7);
+    color = mix(color, bgColor, fill3 * 0.8);
+
+    // Draw outlines on top
+    float allOutlines = max(max(outline1, outline2), outline3);
+    color = mix(color, blobColor * 0.7, allOutlines);
 
     gl_FragColor = vec4(color, 1.0);
   }
