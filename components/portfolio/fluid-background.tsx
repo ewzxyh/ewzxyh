@@ -109,24 +109,38 @@ const fragmentShader = /* glsl */ `
     float aspect = uResolution.x / uResolution.y;
     vec2 uvAspect = vec2(uv.x * aspect, uv.y);
 
-    // Single noise field
-    float noise = getNoiseField(uvAspect);
+    // Mouse distortion
+    vec2 mouseAspect = vec2(uMouse.x * aspect, uMouse.y);
+    float mouseDist = distance(uvAspect, mouseAspect);
+    float influence = smoothstep(0.3, 0.0, mouseDist);
+    vec2 mouseOffset = (uvAspect - mouseAspect) * influence * uMouseInfluence;
+
+    // Single noise field with mouse distortion
+    float noise = getNoiseField(uvAspect + mouseOffset);
 
     // Colors - background and blobs are the SAME color
     vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0
     vec3 lineColor = vec3(0.78, 0.78, 0.75);    // Subtle gray for outlines
 
-    // Isolines at different thresholds - thinner lines (1.5 instead of 2.5)
-    float outline1 = isoline(noise, 0.40, 1.5);  // Outer contour
-    float outline2 = isoline(noise, 0.55, 1.5);  // Middle contour
-    float outline3 = isoline(noise, 0.70, 1.5);  // Inner contour
+    // 8 isolines at evenly spaced thresholds (0.20 to 0.90)
+    float line1 = isoline(noise, 0.20, 1.5);
+    float line2 = isoline(noise, 0.30, 1.5);
+    float line3 = isoline(noise, 0.40, 1.5);
+    float line4 = isoline(noise, 0.50, 1.5);
+    float line5 = isoline(noise, 0.60, 1.5);
+    float line6 = isoline(noise, 0.70, 1.5);
+    float line7 = isoline(noise, 0.80, 1.5);
+    float line8 = isoline(noise, 0.90, 1.5);
 
-    // Start with solid background color (no fill difference)
+    // Combine all isolines
+    float allLines = max(max(max(max(max(max(max(
+      line1, line2), line3), line4), line5), line6), line7), line8);
+
+    // Start with solid background color
     vec3 color = bgColor;
 
-    // Draw outlines only
-    float allOutlines = max(max(outline1, outline2), outline3);
-    color = mix(color, lineColor, allOutlines);
+    // Draw isolines
+    color = mix(color, lineColor, allLines);
 
     gl_FragColor = vec4(color, 1.0);
   }
