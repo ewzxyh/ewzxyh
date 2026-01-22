@@ -30,11 +30,19 @@ const fragmentShader = /* glsl */ `
   uniform vec2 uResolution;
   uniform vec2 uMouse;
   uniform float uMouseInfluence;
+  uniform vec3 uTrailBuffer[16];
+  uniform int uTrailCount;
+  uniform float uTrailDecay;
 
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
   vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+
+  float smin(float a, float b, float k) {
+    float h = max(k - abs(a - b), 0.0) / k;
+    return min(a, b) - h * h * k * 0.25;
+  }
 
   float snoise(vec3 v) {
     const vec2 C = vec2(1.0/6.0, 1.0/3.0);
@@ -118,6 +126,36 @@ const fragmentShader = /* glsl */ `
          - smoothstep(threshold, threshold + edge, value);
   }
 
+  float getTrailIntensity(vec2 uv) {
+    if (uTrailCount == 0) return 0.0;
+
+    float intensity = 0.0;
+    float aspect = uResolution.x / uResolution.y;
+    vec2 uvAspect = vec2(uv.x * aspect, uv.y);
+
+    for (int i = 0; i < 16; i++) {
+      if (i >= uTrailCount) break;
+
+      vec3 tp = uTrailBuffer[i];
+      if (tp.x < 0.0) continue;
+
+      vec2 trailPos = vec2(tp.x * aspect, tp.y);
+      float dist = distance(uvAspect, trailPos);
+
+      if (dist > 0.2) continue;
+
+      float age = uTime - tp.z;
+      float fade = exp(-age / uTrailDecay * 2.0);
+
+      if (fade < 0.01) continue;
+
+      float blob = smoothstep(0.12, 0.0, dist) * fade;
+      intensity = max(intensity, blob);
+    }
+
+    return clamp(intensity, 0.0, 1.0);
+  }
+
   void main() {
     vec2 uv = gl_FragCoord.xy / uResolution;
     float aspect = uResolution.x / uResolution.y;
@@ -146,6 +184,13 @@ const fragmentShader = /* glsl */ `
 
     // Start with solid background color
     vec3 color = bgColor;
+
+    // Apply trail blob (darker overlay)
+    float trailIntensity = getTrailIntensity(uv);
+    if (trailIntensity > 0.01) {
+      vec3 darkColor = bgColor * 0.75;
+      color = mix(color, darkColor, trailIntensity * 0.6);
+    }
 
     // Draw isolines
     color = mix(color, lineColor, allLines);
