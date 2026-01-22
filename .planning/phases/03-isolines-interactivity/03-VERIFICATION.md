@@ -12,23 +12,18 @@ Isolinhas topograficas com anti-aliasing sobrepostas aos blobs, e mouse tracking
 
 ## Must-Have Verification
 
-### 1. Linhas de contorno topografico visiveis sobre os blobs (8 linhas)
+### 1. Linhas de contorno topografico visiveis sobre os blobs (3 linhas)
 **Status:** ✅ VERIFIED
 
 **Evidence:**
 ```glsl
-// fluid-background.tsx:125-133
-float line1 = isoline(noise, 0.20, 1.5);
-float line2 = isoline(noise, 0.30, 1.5);
-float line3 = isoline(noise, 0.40, 1.5);
-float line4 = isoline(noise, 0.50, 1.5);
-float line5 = isoline(noise, 0.60, 1.5);
-float line6 = isoline(noise, 0.70, 1.5);
-float line7 = isoline(noise, 0.80, 1.5);
-float line8 = isoline(noise, 0.90, 1.5);
+// fluid-background.tsx:125-127
+float line1 = isoline(noise, 0.40, 1.5);
+float line2 = isoline(noise, 0.55, 1.5);
+float line3 = isoline(noise, 0.70, 1.5);
 ```
 
-8 isolines at thresholds 0.20-0.90 in 0.10 intervals.
+3 isolines at thresholds 0.40, 0.55, 0.70 (reverted from 8 per user feedback - too many contours).
 
 ### 2. Linhas tem bordas suaves sem aliasing visivel (smoothstep + fwidth)
 **Status:** ✅ VERIFIED

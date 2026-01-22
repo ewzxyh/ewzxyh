@@ -51,7 +51,7 @@ Recent decisions affecting current work:
 - [02-01]: Single noise field with topographic isolines (not 3 separate layers) - matches landonorris.com
 - [02-01]: Outline-only contours, same color for blobs and background
 - [03-01]: Mouse tracking via pointermove with passive: true for performance
-- [03-02]: 8 isolines (0.20-0.90) with mouse distortion (3% influence)
+- [03-02]: Keep 3 isolines (user feedback: 8 was too many), add mouse distortion (3% influence)
 
 ### Pending Todos
 

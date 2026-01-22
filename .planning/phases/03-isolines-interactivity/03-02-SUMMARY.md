@@ -1,12 +1,12 @@
-# Summary: 03-02 Expand Isolines + Mouse Distortion
+# Summary: 03-02 Mouse Distortion
 
 ## What Was Built
 
-Complete topographic visual effect with 8 anti-aliased isolines and subtle mouse-based interactivity.
+Mouse-based interactivity for the topographic visual effect. Originally expanded to 8 isolines but reverted to 3 per user feedback.
 
 ## Key Deliverables
 
-- 8 isolines at evenly spaced thresholds (0.20 to 0.90 in 0.10 intervals)
+- 3 isolines at thresholds 0.40, 0.55, 0.70 (kept original count)
 - Mouse distortion with radial smoothstep falloff (radius 0.3)
 - Subtle "push away" effect where blobs appear displaced from cursor
 - All lines maintain anti-aliasing via fwidth + smoothstep
@@ -41,7 +41,7 @@ The offset creates radial displacement from cursor position. `smoothstep(0.3, 0.
 
 ## Verification
 
-- [x] 8 isolines visible at thresholds 0.20-0.90
+- [x] 3 isolines visible at thresholds 0.40, 0.55, 0.70 (reverted from 8 per user feedback)
 - [x] Lines have smooth anti-aliased edges (fwidth + smoothstep)
 - [x] Mouse movement distorts blobs subtly (uMouseInfluence = 0.03 = 3%)
 - [x] Build passes: `bun run build`
