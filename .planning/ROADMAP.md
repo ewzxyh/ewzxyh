@@ -11,7 +11,7 @@ Este roadmap transforma os 31 requisitos v1 em 4 fases que entregam um backgroun
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Component Foundation** - Componente SSR-safe com lifecycle correto, shader passthrough, e integracao na pagina
-- [ ] **Phase 2: Core Shader** - Domain warping com 3 layers de blobs em multiplas escalas e velocidades
+- [x] **Phase 2: Core Shader** - Domain warping com isolinhas topograficas no estilo landonorris.com
 - [ ] **Phase 3: Isolines & Interactivity** - Isolinhas topograficas com antialiasing e mouse tracking sutil
 - [ ] **Phase 4: Performance & Accessibility** - 60fps em devices mid-range, reduced-motion, mobile fallback
 
@@ -46,7 +46,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02-01-PLAN.md - Implement domain warping with 3 distinct blob layers
+- [x] 02-01-PLAN.md - Domain warping with topographic isolines
 
 ### Phase 3: Isolines & Interactivity
 **Goal**: Isolinhas topograficas com anti-aliasing sobrepostas aos blobs, e mouse tracking sutil que distorce levemente o campo
@@ -86,7 +86,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Component Foundation | 2/2 | ✓ Complete | 2026-01-22 |
-| 2. Core Shader | 0/1 | Ready | - |
+| 2. Core Shader | 1/1 | ✓ Complete | 2026-01-22 |
 | 3. Isolines & Interactivity | 0/? | Not started | - |
 | 4. Performance & Accessibility | 0/? | Not started | - |
 
