@@ -110,23 +110,19 @@ const fragmentShader = /* glsl */ `
     // Single noise field
     float noise = getNoiseField(uvAspect);
 
-    // Colors
-    vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0 - light background
-    vec3 blobColor = vec3(0.91, 0.91, 0.88);    // #E8E8E0 - slightly darker blob fill
-    vec3 lineColor = vec3(0.75, 0.75, 0.72);    // Darker line for outlines
+    // Colors - background and blobs are the SAME color
+    vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0
+    vec3 lineColor = vec3(0.78, 0.78, 0.75);    // Subtle gray for outlines
 
-    // Isolines at different thresholds
-    float outline1 = isoline(noise, 0.40, 2.5);  // Outer contour
-    float outline2 = isoline(noise, 0.55, 2.5);  // Middle contour
-    float outline3 = isoline(noise, 0.70, 2.5);  // Inner contour
+    // Isolines at different thresholds - thinner lines (1.5 instead of 2.5)
+    float outline1 = isoline(noise, 0.40, 1.5);  // Outer contour
+    float outline2 = isoline(noise, 0.55, 1.5);  // Middle contour
+    float outline3 = isoline(noise, 0.70, 1.5);  // Inner contour
 
-    // Single fill - areas above threshold are "inside" the blob
-    float insideBlob = smoothstep(0.39, 0.41, noise);
+    // Start with solid background color (no fill difference)
+    vec3 color = bgColor;
 
-    // Outside blob = bgColor (light), inside blob = blobColor (darker)
-    vec3 color = mix(bgColor, blobColor, insideBlob);
-
-    // Draw all outlines on top with same line color
+    // Draw outlines only
     float allOutlines = max(max(outline1, outline2), outline3);
     color = mix(color, lineColor, allOutlines);
 
