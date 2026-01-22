@@ -30,9 +30,13 @@ const fragmentShader = /* glsl */ `
   uniform vec2 uResolution;
   uniform vec2 uMouse;
   uniform float uMouseInfluence;
-  uniform vec3 uTrailBuffer[16];
+  uniform vec2 uVelocity;
+  uniform vec4 uTrailPoints[24];   // xy = position, zw = velocity
+  uniform vec2 uTrailVelocities[24];
+  uniform float uTrailAges[24];    // 0 = new, 1 = old
   uniform int uTrailCount;
-  uniform float uTrailDecay;
+  uniform float uHoleIntensity;    // Persisted hole visibility
+  uniform float uDarkMode;         // 0.0 = light, 1.0 = dark
 
   vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
   vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -111,6 +115,25 @@ const fragmentShader = /* glsl */ `
     );
   }
 
+  // Curl noise for fluid-like rotation
+  vec2 curlNoise(vec2 p, float time) {
+    float eps = 0.01;
+    float n1 = snoise(vec3(p.x, p.y + eps, time));
+    float n2 = snoise(vec3(p.x, p.y - eps, time));
+    float n3 = snoise(vec3(p.x + eps, p.y, time));
+    float n4 = snoise(vec3(p.x - eps, p.y, time));
+    float dx = (n1 - n2) / (2.0 * eps);
+    float dy = (n3 - n4) / (2.0 * eps);
+    return vec2(dx, -dy);
+  }
+
+  // Fluid distortion field - subtle for liquid feel
+  vec2 fluidDistort(vec2 uv, float time, float strength) {
+    vec2 curl1 = curlNoise(uv * 1.5, time * 0.2) * 0.06;
+    vec2 curl2 = curlNoise(uv * 3.0 + curl1, time * 0.3) * 0.03;
+    return (curl1 + curl2) * strength;
+  }
+
   // Single noise field with domain warping
   float getNoiseField(vec2 uv) {
     float time = uTime * 0.08;
@@ -126,34 +149,136 @@ const fragmentShader = /* glsl */ `
          - smoothstep(threshold, threshold + edge, value);
   }
 
-  float getTrailIntensity(vec2 uv) {
-    if (uTrailCount == 0) return 0.0;
+  // Metaball field contribution - smooth falloff for blending
+  float metaballField(float dist, float radius) {
+    if (dist >= radius) return 0.0;
+    float t = dist / radius;
+    // Smooth cubic falloff - creates nice metaball blending
+    float t2 = t * t;
+    return 1.0 - t2 * t2 * (3.0 - 2.0 * t2);
+  }
 
-    float intensity = 0.0;
-    float aspect = uResolution.x / uResolution.y;
-    vec2 uvAspect = vec2(uv.x * aspect, uv.y);
+  // Calculate meteor/mushroom shape - bulbous front, tapered tail
+  float getOrganicDist(vec2 uv, vec2 center, vec2 velocity, float size, float time, float seed) {
+    vec2 toCenter = uv - center;
 
-    for (int i = 0; i < 16; i++) {
-      if (i >= uTrailCount) break;
+    float speed = length(velocity);
+    vec2 dir = speed > 0.0003 ? normalize(velocity) : vec2(1.0, 0.0);
+    vec2 perpDir = vec2(-dir.y, dir.x);
 
-      vec3 tp = uTrailBuffer[i];
-      if (tp.x < 0.0) continue;
+    // Gentle domain warping for smooth organic curves
+    float warpTime = time * 0.3 + seed;
+    vec2 warp1 = domainWarp(uv * 1.0, 0.4, warpTime, vec2(seed * 5.0, seed * 11.0)) * 0.05;
+    vec2 warpedToCenter = toCenter + warp1;
 
-      vec2 trailPos = vec2(tp.x * aspect, tp.y);
-      float dist = distance(uvAspect, trailPos);
+    // Position along movement direction (negative = behind, positive = ahead)
+    float alongDir = dot(warpedToCenter, dir);
+    float perpToDir = dot(warpedToCenter, perpDir);
 
-      if (dist > 0.2) continue;
+    // Asymmetric scaling for meteor shape
+    float frontScale = 1.05;  // Front (mushroom head) - subtle
+    float backScale = 1.3 + speed * 1.5;  // Back (tail)
+    backScale = min(backScale, 2.0);
 
-      float age = uTime - tp.z;
-      float fade = exp(-age / uTrailDecay * 2.0);
-
-      if (fade < 0.01) continue;
-
-      float blob = smoothstep(0.12, 0.0, dist) * fade;
-      intensity = max(intensity, blob);
+    // Apply asymmetric scaling based on position
+    float scaleAlong;
+    if (alongDir > 0.0) {
+      // Front - less elongation (bulbous)
+      scaleAlong = alongDir / frontScale;
+    } else {
+      // Back - more elongation (tapered tail)
+      scaleAlong = alongDir / backScale;
     }
 
-    return clamp(intensity, 0.0, 1.0);
+    // Taper the width towards the tail
+    float taperFactor = 1.2;
+    if (alongDir < 0.0 && speed > 0.1) {
+      float tailPos = -alongDir / size;
+      taperFactor = 1.2 + tailPos * speed * 1.5;
+      taperFactor = min(taperFactor, 2.0);
+    }
+
+    return length(vec2(scaleAlong, perpToDir * taperFactor)) / size;
+  }
+
+  // Fluid trail blob - smooth liquid appearance
+  float getTrailBlob(vec2 uv, float aspect, out float holeBlob) {
+    holeBlob = 0.0;
+    if (uTrailCount == 0) return 0.0;
+
+    float time = uTime;
+    vec2 uvAspect = vec2(uv.x * aspect, uv.y);
+
+    // Subtle fluid distortion
+    vec2 fluidUV = uvAspect + fluidDistort(uvAspect, time * 0.06, 0.15);
+
+    float totalField = 0.0;
+
+    // Accumulate all trail points as metaballs
+    for (int i = 0; i < 24; i++) {
+      if (i >= uTrailCount) break;
+
+      vec4 tp = uTrailPoints[i];
+      if (tp.x < 0.0) continue;
+
+      vec2 pos = vec2(tp.x * aspect, tp.y);
+      vec2 vel = uTrailVelocities[i];
+      float age = uTrailAges[i];
+
+      float fade = 1.0 - age;
+      fade = fade * fade;
+      if (fade < 0.02) continue;
+
+      float speed = length(vel);
+      float seed = float(i) * 1.7 + 0.3;
+
+      // Size varies - head (new) is larger, tail (old) is smaller
+      float baseSize = 0.16;
+      float sizeBoost = min(speed * 0.25, 0.08);
+      // fade: 1.0 = new (head), 0.0 = old (tail)
+      float headTailRatio = 0.4 + fade * 0.6;  // Head: 1.0, Tail: 0.4
+      float size = (baseSize + sizeBoost) * headTailRatio;
+
+      // Get smooth organic distance
+      float dist = getOrganicDist(fluidUV, pos, vel, size, time * 0.04, seed);
+      float fieldContrib = metaballField(dist, 1.0) * fade;
+
+      // Strong metaball blending for cohesive shape
+      totalField = totalField + fieldContrib - totalField * fieldContrib * 0.6;
+    }
+
+    float mainBlob = smoothstep(0.25, 0.45, totalField);
+
+    // Single hole blob - elongated ellipse, not influenced by meteor effect
+    if (uHoleIntensity > 0.02 && mainBlob > 0.1) {
+      vec2 vel = uVelocity * 100.0;
+      vec2 mouseAspect = vec2(uMouse.x * aspect, uMouse.y);
+      float speed = length(vel);
+      vec2 dir = speed > 0.01 ? normalize(vel) : vec2(1.0, 0.0);
+      vec2 perpDir = vec2(-dir.y, dir.x);
+
+      // Hole at mouse center - grows with movement
+      float holeSize = 0.05 + min(speed * 0.08, 0.05);
+
+      // Elongated ellipse along movement direction
+      vec2 toHole = fluidUV - mouseAspect;
+      vec2 warp = domainWarp(fluidUV * 1.0, 0.4, time * 0.012 + 50.0, vec2(250.0, 550.0)) * 0.04;
+      vec2 warpedHole = toHole + warp;
+
+      // Elongate: longer in direction, narrower perpendicular
+      float elongation = 1.3 + speed * 1.0;
+      elongation = min(elongation, 2.0);
+      float alongHole = dot(warpedHole, dir) / elongation;
+      float perpHole = dot(warpedHole, perpDir) * 1.25;  // Slightly narrower
+
+      float holeDist = length(vec2(alongHole, perpHole)) / holeSize;
+      float holeField = metaballField(holeDist, 1.0);
+
+      // Hole uses its own intensity (fades faster than outer)
+      holeBlob = smoothstep(0.2, 0.4, holeField) * uHoleIntensity;
+    }
+
+    return mainBlob;
   }
 
   void main() {
@@ -170,30 +295,61 @@ const fragmentShader = /* glsl */ `
     // Single noise field with mouse distortion
     float noise = getNoiseField(uvAspect + mouseOffset);
 
-    // Colors - background and blobs are the SAME color
-    vec3 bgColor = vec3(0.96, 0.96, 0.94);      // #F5F5F0
-    vec3 lineColor = vec3(0.78, 0.78, 0.75);    // Subtle gray for outlines
+    // Colors - Tailwind stone palette (light mode)
+    vec3 bgColorLight = vec3(0.961, 0.961, 0.957);     // stone-100 #f5f5f4
+    vec3 lineColorLight = vec3(0.839, 0.827, 0.820);   // stone-300 #d6d3d1
+    vec3 blobColorLight = vec3(0.906, 0.898, 0.894);   // stone-200 #e7e5e4
+    vec3 fillColorLight = vec3(0.839, 0.827, 0.820);   // stone-300 #d6d3d1
+
+    // Colors - Tailwind stone palette (dark mode)
+    vec3 bgColorDark = vec3(0.047, 0.039, 0.035);      // stone-950 #0c0a09
+    vec3 lineColorDark = vec3(0.267, 0.251, 0.235);    // stone-700 #44403c
+    vec3 blobColorDark = vec3(0.090, 0.078, 0.071);    // darker than stone-900
+    vec3 fillColorDark = vec3(0.267, 0.251, 0.235);    // stone-700 #44403c
+
+    // Mix between light and dark based on mode
+    vec3 bgColor = mix(bgColorLight, bgColorDark, uDarkMode);
+    vec3 lineColor = mix(lineColorLight, lineColorDark, uDarkMode);
+    vec3 blobColor = mix(blobColorLight, blobColorDark, uDarkMode);
+    vec3 fillColor = mix(fillColorLight, fillColorDark, uDarkMode);
 
     // 3 isolines at key thresholds
     float line1 = isoline(noise, 0.40, 1.5);
     float line2 = isoline(noise, 0.55, 1.5);
     float line3 = isoline(noise, 0.70, 1.5);
 
-    // Combine all isolines
-    float allLines = max(max(line1, line2), line3);
+    // Define middle filled region (between line1 0.40 and line2 0.55)
+    float bandLow = smoothstep(0.38, 0.42, noise);    // Above line1
+    float bandHigh = 1.0 - smoothstep(0.53, 0.57, noise);  // Below line2
+    float filledRegion = bandLow * bandHigh;  // Middle band area
 
     // Start with solid background color
     vec3 color = bgColor;
 
-    // Apply trail blob (darker overlay)
-    float trailIntensity = getTrailIntensity(uv);
-    if (trailIntensity > 0.01) {
-      vec3 darkColor = bgColor * 0.75;
-      color = mix(color, darkColor, trailIntensity * 0.6);
+    // Get trail blob and hole
+    float holeBlob;
+    float mainBlob = getTrailBlob(uv, aspect, holeBlob);
+
+    // Draw outer blob (stone-200)
+    if (mainBlob > 0.1) {
+      color = mix(color, blobColor, mainBlob);
     }
 
-    // Draw isolines
-    color = mix(color, lineColor, allLines);
+    // Fill middle region with stone-400 where trail passes
+    if (mainBlob > 0.1 && filledRegion > 0.1) {
+      float regionIntensity = filledRegion * mainBlob * 0.85;
+      color = mix(color, fillColor, regionIntensity);
+    }
+
+    // Cut hole through blob - reveal background
+    if (holeBlob > 0.1) {
+      color = mix(color, bgColor, holeBlob);
+    }
+
+    // Draw all isolines ON TOP with normal color
+    color = mix(color, lineColor, line1);
+    color = mix(color, lineColor, line2);
+    color = mix(color, lineColor, line3);
 
     gl_FragColor = vec4(color, 1.0);
   }
@@ -223,6 +379,7 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     renderer.setPixelRatio(getAdaptivePixelRatio())
 
     let contextLost = false
+    let isVisible = true
     const canvas = renderer.domElement
 
     function handleContextLost(event: Event) {
@@ -232,11 +389,17 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
 
     function handleContextRestored() {
       contextLost = false
-      animate()
+      if (isVisible) animate()
+    }
+
+    function handleVisibilityChange() {
+      isVisible = document.visibilityState === "visible"
+      if (isVisible && !contextLost) animate()
     }
 
     canvas.addEventListener("webglcontextlost", handleContextLost, false)
     canvas.addEventListener("webglcontextrestored", handleContextRestored, false)
+    document.addEventListener("visibilitychange", handleVisibilityChange)
 
     const scene = new THREE.Scene()
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1)
@@ -247,17 +410,61 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
       uResolution: { value: new THREE.Vector2(1, 1) },
       uMouse: { value: new THREE.Vector2(0.5, 0.5) },
       uMouseInfluence: { value: 0.03 },
-      uTrailBuffer: { value: new Array(16).fill(null).map(() => new THREE.Vector3(-1, -1, 0)) },
+      uVelocity: { value: new THREE.Vector2(0, 0) },
+      uTrailPoints: { value: new Array(24).fill(null).map(() => new THREE.Vector4(-1, -1, 0, 0)) },
+      uTrailVelocities: { value: new Array(24).fill(null).map(() => new THREE.Vector2(0, 0)) },
+      uTrailAges: { value: new Float32Array(24) },
       uTrailCount: { value: 0 },
-      uTrailDecay: { value: 2.5 },
+      uHoleIntensity: { value: 0 },
+      uDarkMode: { value: 0 },
     }
 
     const targetMouse = new THREE.Vector2(0.5, 0.5)
     const currentMouse = new THREE.Vector2(0.5, 0.5)
 
-    const trailBuffer: Array<{ x: number; y: number; time: number }> = []
+    // Trail point structure
+    interface TrailPoint {
+      x: number
+      y: number
+      vx: number
+      vy: number
+      time: number
+      fadeStart: number | null  // when direction changed, start fading
+    }
+
+    const trailBuffer: TrailPoint[] = []
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-    const MAX_TRAIL_POINTS = isMobile ? 10 : 16
+    const MAX_TRAIL_POINTS = isMobile ? 8 : 12  // Fewer, larger blobs
+
+    // Velocity tracking
+    const currentVelocity = { x: 0, y: 0 }
+    let lastPointerPos = { x: 0.5, y: 0.5 }
+    let lastPointerTime = 0
+    let lastPointTime = 0
+    let lastDirection = { x: 0, y: 0 }
+
+    // Constants
+    const POINT_FRICTION = 0.98
+    const NORMAL_DECAY = 0.5        // 500ms lifetime
+    const DIRECTION_FADE = 0.3      // 300ms fade when direction changes
+    const MIN_POINT_INTERVAL = 0.03
+    const DIRECTION_THRESHOLD = Math.cos(60 * Math.PI / 180)
+
+    // Hole intensity tracking
+    let holeIntensity = 0
+
+    // Dark mode detection
+    function checkDarkMode() {
+      const isDark = document.documentElement.classList.contains("dark")
+      uniforms.uDarkMode.value = isDark ? 1 : 0
+    }
+    checkDarkMode()
+
+    const darkModeObserver = new MutationObserver(checkDarkMode)
+    darkModeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    })
 
     const material = new THREE.ShaderMaterial({
       uniforms,
@@ -283,13 +490,66 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
     const startTime = performance.now()
 
     function handlePointerMove(event: PointerEvent) {
-      if (!container) return
-      const rect = container.getBoundingClientRect()
-      const x = (event.clientX - rect.left) / rect.width
-      const y = 1.0 - (event.clientY - rect.top) / rect.height
+      const x = event.clientX / window.innerWidth
+      const y = 1.0 - event.clientY / window.innerHeight
       const currentTime = (performance.now() - startTime) * 0.001
 
-      trailBuffer.push({ x, y, time: currentTime })
+      // Calculate velocity from pointer movement
+      const dt = currentTime - lastPointerTime
+      if (dt > 0 && dt < 0.1) {
+        const rawVelX = (x - lastPointerPos.x) / dt
+        const rawVelY = (y - lastPointerPos.y) / dt
+        currentVelocity.x = currentVelocity.x * 0.6 + rawVelX * 0.4
+        currentVelocity.y = currentVelocity.y * 0.6 + rawVelY * 0.4
+      }
+
+      lastPointerPos = { x, y }
+      lastPointerTime = currentTime
+
+      // Throttle point creation
+      if (currentTime - lastPointTime < MIN_POINT_INTERVAL) {
+        targetMouse.set(x, y)
+        return
+      }
+
+      const speed = Math.sqrt(currentVelocity.x ** 2 + currentVelocity.y ** 2)
+      if (speed < 0.05) {
+        targetMouse.set(x, y)
+        return
+      }
+
+      lastPointTime = currentTime
+
+      // Normalize current direction
+      const dirX = currentVelocity.x / speed
+      const dirY = currentVelocity.y / speed
+
+      // Check for direction change
+      const lastSpeed = Math.sqrt(lastDirection.x ** 2 + lastDirection.y ** 2)
+      if (lastSpeed > 0.001) {
+        const dotProduct = dirX * lastDirection.x + dirY * lastDirection.y
+        if (dotProduct < DIRECTION_THRESHOLD) {
+          // Direction changed significantly - mark all existing points to fade in 500ms
+          for (const point of trailBuffer) {
+            if (point.fadeStart === null) {
+              point.fadeStart = currentTime
+            }
+          }
+        }
+      }
+
+      lastDirection = { x: dirX, y: dirY }
+
+      // Add new point with velocity for fluid movement
+      const velScale = Math.min(speed * 0.004, 0.012)
+      trailBuffer.push({
+        x,
+        y,
+        vx: dirX * velScale,
+        vy: dirY * velScale,
+        time: currentTime,
+        fadeStart: null,
+      })
 
       if (trailBuffer.length > MAX_TRAIL_POINTS) {
         trailBuffer.shift()
@@ -298,37 +558,91 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
       targetMouse.set(x, y)
     }
 
-    container.addEventListener("pointermove", handlePointerMove, { passive: true })
+    document.addEventListener("pointermove", handlePointerMove, { passive: true })
 
     function animate() {
-      if (contextLost) return
+      if (contextLost || !isVisible) return
       const currentTime = (performance.now() - startTime) * 0.001
       uniforms.uTime.value = currentTime
 
-      // Cull expired trail points
-      const decayTime = uniforms.uTrailDecay.value
+      // Update trail points: move with inertia, remove expired
       let i = 0
       while (i < trailBuffer.length) {
-        if (currentTime - trailBuffer[i].time > decayTime) {
-          trailBuffer.splice(i, 1)
+        const point = trailBuffer[i]
+
+        // Calculate effective lifetime based on fadeStart
+        let shouldRemove = false
+        if (point.fadeStart !== null) {
+          // Direction changed - fast fade (500ms)
+          const fadeAge = currentTime - point.fadeStart
+          if (fadeAge > DIRECTION_FADE) {
+            shouldRemove = true
+          }
         } else {
-          i++
+          // Normal decay
+          const age = currentTime - point.time
+          if (age > NORMAL_DECAY) {
+            shouldRemove = true
+          }
         }
+
+        if (shouldRemove) {
+          trailBuffer.splice(i, 1)
+          continue
+        }
+
+        // Move point with its velocity (fluid inertia)
+        point.x += point.vx
+        point.y += point.vy
+        point.vx *= POINT_FRICTION
+        point.vy *= POINT_FRICTION
+
+        i++
       }
 
-      // Sync trail buffer to uniforms
-      for (let j = 0; j < 16; j++) {
+      // Sync trail to uniforms
+      for (let j = 0; j < 24; j++) {
         if (j < trailBuffer.length) {
           const point = trailBuffer[j]
-          uniforms.uTrailBuffer.value[j].set(point.x, point.y, point.time)
+          let fade: number
+          if (point.fadeStart !== null) {
+            fade = 1.0 - (currentTime - point.fadeStart) / DIRECTION_FADE
+          } else {
+            fade = 1.0 - (currentTime - point.time) / NORMAL_DECAY
+          }
+          fade = Math.max(0, Math.min(1, fade))
+
+          uniforms.uTrailPoints.value[j].set(point.x, point.y, point.vx, point.vy)
+          uniforms.uTrailVelocities.value[j].set(point.vx * 100, point.vy * 100)
+          uniforms.uTrailAges.value[j] = 1.0 - fade  // 0 = new, 1 = old
         } else {
-          uniforms.uTrailBuffer.value[j].set(-1, -1, 0)
+          uniforms.uTrailPoints.value[j].set(-1, -1, 0, 0)
+          uniforms.uTrailVelocities.value[j].set(0, 0)
+          uniforms.uTrailAges.value[j] = 1.0
         }
       }
       uniforms.uTrailCount.value = trailBuffer.length
 
-      currentMouse.lerp(targetMouse, 0.1)
+      // Smoothly decay velocity when mouse stops
+      currentVelocity.x *= 0.92
+      currentVelocity.y *= 0.92
+
+      // Track hole intensity - dissipates in ~300ms
+      const velX = currentVelocity.x * 0.01
+      const hasTrail = trailBuffer.length > 0
+      if (velX > 0.001 && hasTrail) {
+        // Moving right with trail - increase intensity quickly
+        holeIntensity = Math.min(1, holeIntensity + 0.15)
+      } else {
+        // Not moving right - decay in ~300ms (0.055/frame at 60fps)
+        holeIntensity = Math.max(0, holeIntensity - 0.055)
+      }
+      uniforms.uHoleIntensity.value = holeIntensity
+
+      uniforms.uVelocity.value.set(currentVelocity.x * 0.01, currentVelocity.y * 0.01)
+      currentMouse.lerp(targetMouse, 0.15)
       uniforms.uMouse.value.copy(currentMouse)
+
       renderer.render(scene, camera)
       animationId = requestAnimationFrame(animate)
     }
@@ -337,8 +651,10 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
 
     return () => {
       cancelAnimationFrame(animationId)
+      darkModeObserver.disconnect()
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
       window.removeEventListener("resize", resize)
-      container.removeEventListener("pointermove", handlePointerMove)
+      document.removeEventListener("pointermove", handlePointerMove)
       canvas.removeEventListener("webglcontextlost", handleContextLost)
       canvas.removeEventListener("webglcontextrestored", handleContextRestored)
       renderer.dispose()
@@ -354,11 +670,10 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
   if (reducedMotion) {
     return (
       <div
-        className={`overflow-hidden ${className}`}
+        className={`overflow-hidden bg-stone-100 dark:bg-stone-950 pointer-events-none ${className}`}
         style={{
           isolation: "isolate",
           contain: "layout style paint",
-          backgroundColor: "#F5F5F0",
         }}
       />
     )
@@ -367,10 +682,11 @@ export function FluidBackground({ className = "" }: FluidBackgroundProps) {
   return (
     <div
       ref={containerRef}
-      className={`overflow-hidden ${className}`}
+      className={`overflow-hidden pointer-events-none ${className}`}
       style={{
         isolation: "isolate",
         contain: "layout style paint",
+        willChange: "transform",
       }}
     />
   )

@@ -16,7 +16,7 @@ export function Contact() {
     : "Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21"
 
   return (
-    <section id="contact" className="relative py-16 sm:py-24 md:py-32 border-t border-border bg-background z-10">
+    <section id="contact" className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
         {/* Section Header */}
         <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">

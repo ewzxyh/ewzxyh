@@ -16,7 +16,7 @@ export function Footer() {
   ]
 
   return (
-    <footer className="border-t border-border py-6 sm:py-8 bg-background z-10 relative">
+    <footer className="border-t border-border py-6 sm:py-8 z-10 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
           {/* Logo/Name */}

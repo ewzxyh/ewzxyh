@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { JetBrains_Mono } from "next/font/google"
 import { Providers } from "./providers"
+import { FluidBackground } from "@/components/portfolio/fluid-background"
 import "./globals.css"
 
 const jetbrainsMono = JetBrains_Mono({
@@ -36,6 +37,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={jetbrainsMono.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
+        <FluidBackground className="fixed inset-0 -z-10" />
         <Providers>{children}</Providers>
       </body>
     </html>

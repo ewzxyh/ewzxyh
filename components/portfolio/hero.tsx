@@ -146,13 +146,6 @@ export function Hero() {
       ref={sectionRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 cyber-grid opacity-20" />
-
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute left-0 right-0 h-[2px] bg-foreground/5 animate-scan-line" />
-      </div>
-
-      <div className="absolute inset-0 cyber-noise pointer-events-none" />
 
       <div ref={contentRef} className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <div className="hero-terminal opacity-0 inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8 border border-border bg-card/50 backdrop-blur-sm">
@@ -212,13 +205,13 @@ export function Hero() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="opacity-0 group p-2 sm:p-2.5 border border-border bg-background hover:bg-foreground hover:border-foreground transition-all duration-300"
+              className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
               aria-label={link.label}
             >
               <UseAnimations
                 animation={link.animation}
                 size={20}
-                className="sm:w-[24px] sm:h-[24px] group-hover:stroke-background"
+                className="sm:w-[24px] sm:h-[24px]"
                 strokeColor="currentColor"
               />
             </a>

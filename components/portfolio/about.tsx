@@ -116,12 +116,12 @@ export function About() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="about" className="relative bg-background z-10">
+    <section ref={sectionRef} id="about" className="relative z-10">
       {/* Bento Gallery */}
       <BentoGallery />
 
       {/* About Content - rolls over the gallery */}
-      <div className="relative z-10 bg-background py-16 sm:py-24 md:py-32">
+      <div className="relative z-10 py-16 sm:py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef} className="mb-10 sm:mb-16">
@@ -166,7 +166,7 @@ export function About() {
           {/* Skills */}
           <div ref={skillsRef} className="space-y-4 sm:space-y-8">
             {skillsData.map((skillGroup) => (
-              <div key={skillGroup.categoryKey} className="border border-border p-4 sm:p-6">
+              <div key={skillGroup.categoryKey} className="border border-border p-4 sm:p-6 bg-card/50">
                 <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                   <skillGroup.icon className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                   <h3 className="font-medium tracking-wider text-xs sm:text-sm">

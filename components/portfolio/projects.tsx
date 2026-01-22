@@ -185,7 +185,7 @@ export function Projects() {
     <section
       ref={sectionRef}
       id="projects"
-      className="relative py-16 sm:py-24 md:py-32 border-t border-border bg-background z-10"
+      className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10"
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
