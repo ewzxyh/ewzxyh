@@ -132,6 +132,105 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Interactive elements - cursor pointer */
+  button,
+  [role="button"],
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  a,
+  a[href],
+  label[for],
+  select,
+  summary,
+  [data-state],
+  [data-radix-collection-item],
+  [role="checkbox"],
+  [role="radio"],
+  [role="switch"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="link"],
+  [role="treeitem"],
+  [role="listbox"],
+  [role="combobox"],
+  [tabindex]:not([tabindex="-1"]),
+  .cursor-pointer,
+  .clickable {
+    cursor: pointer;
+  }
+
+  /* Icon hover animation */
+  svg,
+  .icon {
+    transition: transform 0.2s ease;
+  }
+
+  button:hover svg,
+  button:hover .icon,
+  a:hover svg,
+  a:hover .icon,
+  [role="button"]:hover svg,
+  [role="button"]:hover .icon,
+  [data-state]:hover svg,
+  label:hover svg,
+  .group:hover svg,
+  .group:hover .icon {
+    transform: scale(1.1);
+  }
+
+  button:active svg,
+  button:active .icon,
+  a:active svg,
+  a:active .icon,
+  [role="button"]:active svg,
+  [role="button"]:active .icon,
+  [data-state]:active svg,
+  label:active svg,
+  .group:active svg,
+  .group:active .icon {
+    transform: scale(0.95);
+  }
+}
+
+/* Hide Scrollbar - All Browsers */
+html,
+body,
+* {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* Lenis Smooth Scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 /* Cyberpunk Effects */

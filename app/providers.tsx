@@ -6,6 +6,7 @@ import { I18nProvider } from "@/lib/i18n"
 import { PageLoader } from "@/components/portfolio/page-loader"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { FluidBackground } from "@/components/portfolio/fluid-background"
+import { SmoothScroll } from "@/components/smooth-scroll"
 
 function DeferredBackground() {
   const { isAlmostComplete } = useLoading()
@@ -19,7 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
         <LoadingProvider>
           <DeferredBackground />
           <PageLoader />
-          {children}
+          <SmoothScroll>{children}</SmoothScroll>
         </LoadingProvider>
       </I18nProvider>
     </ThemeProvider>

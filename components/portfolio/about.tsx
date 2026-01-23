@@ -121,7 +121,7 @@ export function About() {
       <BentoGallery />
 
       {/* About Content - rolls over the gallery */}
-      <div className="relative z-10 py-16 sm:py-24 md:py-32">
+      <div id="about-content" className="relative z-10 py-16 sm:py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef} className="mb-10 sm:mb-16">

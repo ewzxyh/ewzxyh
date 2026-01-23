@@ -6,11 +6,18 @@ type Locale = "pt-BR" | "en-US"
 
 const translations = {
   "pt-BR": {
+    // Navigation
+    "nav.about": "Sobre",
+    "nav.experience": "Experiência",
+    "nav.projects": "Projetos",
+    "nav.contact": "Contato",
+    "nav.openToWork": "Open to Work",
+
     // Hero
     "hero.role": "PRODUCT ENGINEER",
-    "hero.subtitle": "Transformando ideias em produtos de alta performance com",
+    "hero.subtitle": "Construo produtos web rápidos e escaláveis com",
     "hero.and": "e",
-    "hero.experience": "4+ anos entregando valor real para usuários.",
+    "hero.experience": "4+ anos transformando ideias em MVPs, dashboards e automações que geram resultado.",
     "hero.years": "ANOS EXP.",
     "hero.projects": "PROJETOS",
     "hero.specialist": "SPECIALIST",
@@ -37,6 +44,53 @@ const translations = {
     "about.backend": "Backend",
     "about.devops": "DevOps",
     "about.ai": "AI & Automação",
+
+    // Experience Section Headers
+    "experience.work": "Experiência",
+    "experience.education": "Educação",
+    "experience.certificates": "Certificados",
+
+    // Work Experience - Roles
+    "experience.casepay.role": "Co-Founder & Lead Engineer",
+    "experience.casepay.desc": "Co-fundador de gateway de pagamento focado em lotéricas, pequenos negócios, desenvolvedores, vibecoders e SaaS. Desenvolvi a plataforma completa em Laravel, incluindo integração com APIs de pagamento, dashboard para gestão de transações, controle financeiro, sistema de repasses e segurança da aplicação. Landing page em Next.js. Integrado ao ecossistema Case e parceiros (LotoHub, CaseZap, ChatCase, ConectaLot, sites de lotéricas).",
+
+    "experience.case.role": "Lead Product Engineer",
+    "experience.case.desc": "Lidero o desenvolvimento do ecossistema técnico da Case, coordenando equipe de desenvolvedores. Criei CaseZap (SaaS para gestão de instâncias WhatsApp com dashboard, analytics, financeiro e automações), Case Dashboard (hub centralizado integrando todas as plataformas da Case e parceiros) e dezenas de sites, aplicações e landing pages para clientes diversos. Desenvolvo também plataformas e soluções sob medida. Gerencio Google Ads e obtive certificação de jogos de azar.",
+
+    "experience.seloesgo.role": "Product Engineer",
+    "experience.seloesgo.desc": "Inicialmente contratado como Designer, identifiquei oportunidade de automação e desenvolvi sistema completo integrado à API da ConectaLot que gera e distribui artes automaticamente para +630 lotéricos em Goiás. Reduzi tempo de criação de horas para segundos.",
+
+    "experience.loteria.role": "Product Engineer",
+    "experience.loteria.desc": "Responsável técnico pelo e-commerce loteriaamazonas.com.br. Desenvolvi o site em Next.js com CMS próprio, implementei automação de atendimento via WhatsApp e gerenciei Google Ads — incluindo a obtenção da certificação de jogos de azar.",
+
+    "experience.loteria.intern.role": "Estagiário de TI",
+    "experience.loteria.intern.desc": "Início da parceria com a Loteria Amazonas. Desenvolvi a primeira versão do site (landing page), mantive os portais WordPress e configurei automações no ChatCase. Também atuei com design gráfico e suporte.",
+
+    "experience.lotohub.role": "Fundador",
+    "experience.lotohub.desc": "Fundador de plataforma SaaS para geração e gestão automatizada de sites para lotéricas. O sistema permite criar, configurar e gerenciar múltiplos sites de forma centralizada, com e-commerce, integração de pagamentos e automação de atendimento. Utilizado pela Case Agência e parceiros.",
+
+    "experience.lovtok.role": "Fundador",
+    "experience.lovtok.desc": "A Lovtok é um e-commerce dedicado a promover o bem-estar sexual e o autocuidado.",
+
+    "experience.ewzxyh.role": "Fundador",
+    "experience.ewzxyh.desc": "Consultoria e desenvolvimento de aplicações sob medida. Atendo startups, empresas e empreendedores que precisam de soluções full-stack personalizadas — desde MVPs e dashboards até automações e integrações complexas.",
+
+    // Education
+    "experience.edu.nbcc": "Pós-graduação em Cibersegurança",
+    "experience.edu.puc": "Análise e Desenvolvimento de Sistemas",
+    "experience.edu.colegio": "Ensino Médio Completo",
+    "experience.edu.escola": "Ensino Fundamental",
+    "experience.location.canada": "Canadá",
+    "experience.location.brazil": "Brasil",
+
+    // Certificates
+    "experience.cert.nextjs": "React 19 & Next.js 16 with App Router, Server Actions, Server Components, Tailwind CSS, TypeScript & REST API",
+    "experience.cert.english.believer": "English Immersion Course - 1 Year Program",
+    "experience.cert.java": "Complete Java Object-Oriented Programming + Projects",
+    "experience.cert.postgres": "Complete PostgreSQL Course - From Beginner to Advanced",
+    "experience.cert.vue": "Vue JS 2 - The Complete Guide (incl. Vue Router & Vuex)",
+    "experience.cert.english.cultura": "English Course - Cultura Inglesa",
+    "experience.cert.english.duolingo": "Certified English proficiency",
 
     // Projects
     "projects.section": "02 // TRABALHOS",
@@ -65,11 +119,18 @@ const translations = {
     "notFound.goBack": "VOLTAR",
   },
   "en-US": {
+    // Navigation
+    "nav.about": "About",
+    "nav.experience": "Experience",
+    "nav.projects": "Projects",
+    "nav.contact": "Contact",
+    "nav.openToWork": "Open to Work",
+
     // Hero
     "hero.role": "PRODUCT ENGINEER",
-    "hero.subtitle": "Turning ideas into high-performance products with",
+    "hero.subtitle": "I build fast and scalable web products with",
     "hero.and": "and",
-    "hero.experience": "4+ years delivering real value to users.",
+    "hero.experience": "4+ years turning ideas into MVPs, dashboards, and automations that deliver results.",
     "hero.years": "YEARS EXP.",
     "hero.projects": "PROJECTS",
     "hero.specialist": "SPECIALIST",
@@ -96,6 +157,53 @@ const translations = {
     "about.backend": "Backend",
     "about.devops": "DevOps",
     "about.ai": "AI & Automation",
+
+    // Experience Section Headers
+    "experience.work": "Work Experience",
+    "experience.education": "Education",
+    "experience.certificates": "Certificates",
+
+    // Work Experience - Roles
+    "experience.casepay.role": "Co-Founder & Lead Engineer",
+    "experience.casepay.desc": "Co-founded a payment gateway focused on lottery retailers, small businesses, developers, vibecoders and SaaS. Built the entire platform in Laravel, including payment API integrations, transaction management dashboard, financial control, transfer system and application security. Landing page in Next.js. Integrated with Case and partners ecosystem (LotoHub, CaseZap, ChatCase, ConectaLot, lottery retailer sites).",
+
+    "experience.case.role": "Lead Product Engineer",
+    "experience.case.desc": "Lead Case's technical ecosystem development, coordinating a team of developers. Built CaseZap (SaaS for WhatsApp instance management with dashboard, analytics, billing and automations), Case Dashboard (centralized hub integrating all Case and partner platforms) and dozens of sites, applications and landing pages for various clients. Also develop custom platforms and solutions. Manage Google Ads and obtained gambling certification.",
+
+    "experience.seloesgo.role": "Product Engineer",
+    "experience.seloesgo.desc": "Initially hired as Designer, identified automation opportunity and built a complete system integrated with ConectaLot API that auto-generates and distributes graphics to 630+ lottery operators in Goiás. Reduced creation time from hours to seconds.",
+
+    "experience.loteria.role": "Product Engineer",
+    "experience.loteria.desc": "Technical lead for loteriaamazonas.com.br e-commerce. Built the site in Next.js with custom CMS, implemented WhatsApp automation for customer service and managed Google Ads — including obtaining gambling certification.",
+
+    "experience.loteria.intern.role": "IT Intern",
+    "experience.loteria.intern.desc": "Started partnership with Loteria Amazonas. Developed the first version of the site (landing page), maintained WordPress portals and configured automations in ChatCase. Also worked with graphic design and support.",
+
+    "experience.lotohub.role": "Founder",
+    "experience.lotohub.desc": "Founded a SaaS platform for automated lottery retailer site generation and management. The system allows creating, configuring and managing multiple sites from a centralized dashboard, with e-commerce, payment integration and automated customer service. Used by Case Agência and partners.",
+
+    "experience.lovtok.role": "Founder",
+    "experience.lovtok.desc": "Lovtok is an e-commerce dedicated to promoting sexual wellness and self-care.",
+
+    "experience.ewzxyh.role": "Founder",
+    "experience.ewzxyh.desc": "Consulting and custom application development. I work with startups, companies and entrepreneurs who need tailored full-stack solutions — from MVPs and dashboards to automations and complex integrations.",
+
+    // Education
+    "experience.edu.nbcc": "Postgraduate in Cybersecurity",
+    "experience.edu.puc": "Systems Analysis and Development",
+    "experience.edu.colegio": "High School Diploma",
+    "experience.edu.escola": "Elementary School",
+    "experience.location.canada": "Canada",
+    "experience.location.brazil": "Brazil",
+
+    // Certificates
+    "experience.cert.nextjs": "React 19 & Next.js 16 with App Router, Server Actions, Server Components, Tailwind CSS, TypeScript & REST API",
+    "experience.cert.english.believer": "English Immersion Course - 1 Year Program",
+    "experience.cert.java": "Complete Java Object-Oriented Programming + Projects",
+    "experience.cert.postgres": "Complete PostgreSQL Course - From Beginner to Advanced",
+    "experience.cert.vue": "Vue JS 2 - The Complete Guide (incl. Vue Router & Vuex)",
+    "experience.cert.english.cultura": "English Course - Cultura Inglesa",
+    "experience.cert.english.duolingo": "Certified English proficiency",
 
     // Projects
     "projects.section": "02 // WORK",

@@ -298,8 +298,8 @@ const fragmentShader = /* glsl */ `
     // Colors - Tailwind stone palette (light mode)
     vec3 bgColorLight = vec3(0.961, 0.961, 0.957);     // stone-100 #f5f5f4
     vec3 lineColorLight = vec3(0.839, 0.827, 0.820);   // stone-300 #d6d3d1
-    vec3 blobColorLight = vec3(0.906, 0.898, 0.894);   // stone-200 #e7e5e4
-    vec3 fillColorLight = vec3(0.839, 0.827, 0.820);   // stone-300 #d6d3d1
+    vec3 blobColorLight = vec3(0.873, 0.863, 0.857);   // between stone-200 and stone-300
+    vec3 fillColorLight = vec3(0.749, 0.731, 0.720);   // between stone-300 and stone-400
 
     // Colors - Tailwind stone palette (dark mode)
     vec3 bgColorDark = vec3(0.047, 0.039, 0.035);      // stone-950 #0c0a09

@@ -1,7 +1,9 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { ExternalLink, Github, ArrowUpRight } from "lucide-react"
+import { ExternalLink, ArrowUpRight } from "lucide-react"
+import UseAnimations from "react-useanimations"
+import github from "react-useanimations/lib/github"
 import { Button } from "@/components/ui/button"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -137,7 +139,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              <Github className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <UseAnimations
+                animation={github}
+                size={16}
+                strokeColor="currentColor"
+              />
               {t("projects.code")}
             </a>
           )}
