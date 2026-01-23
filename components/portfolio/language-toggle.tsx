@@ -34,15 +34,15 @@ export function LanguageToggle() {
       {/* Language Toggle Button */}
       <button
         onClick={toggleLocale}
-        className="px-3 py-2 text-xs font-medium tracking-wider border border-border bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300"
+        className="px-2 py-1.5 text-[10px] sm:text-xs font-medium tracking-wide border border-border bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300 flex-shrink-0"
         aria-label="Alternar idioma"
       >
         {locale === "pt-BR" ? "EN-US" : "PT-BR"}
       </button>
 
-      {/* Bat Animation Overlay */}
+      {/* Bat Animation Overlay - Hidden on mobile */}
       {isTransitioning && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+        <div className="hidden sm:flex fixed inset-0 z-[100] items-center justify-center pointer-events-none">
           <Lottie
             lottieRef={lottieRef}
             animationData={batAnimation}

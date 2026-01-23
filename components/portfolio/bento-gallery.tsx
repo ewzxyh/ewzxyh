@@ -5,6 +5,7 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Flip } from "gsap/dist/Flip"
 import { CanvasParticles } from "./canvas-particles"
+import { ScrollFillLogo } from "./scroll-fill-logo"
 import { ShaderImage } from "./shader-image"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
@@ -113,7 +114,12 @@ export function BentoGallery() {
         {galleryImages.map((image, index) => (
           <div key={index} className="bento-item">
             {index === 2 ? (
-              <CanvasParticles />
+              <div className="relative w-full h-full">
+                <CanvasParticles />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <ScrollFillLogo />
+                </div>
+              </div>
             ) : (
               <ShaderImage
                 src={image.src}

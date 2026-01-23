@@ -9,11 +9,11 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Enzo Yoshida | Senior Software Engineer",
+  title: "Enzo Yoshida | Product Engineer",
   description:
-    "Senior Software Engineer especializado em Next.js e React. 4+ anos de experiência construindo aplicações web de alta performance.",
+    "Product Engineer especializado em Next.js e React. 4+ anos de experiência construindo produtos web rápidos e escaláveis.",
   keywords: [
-    "Software Engineer",
+    "Product Engineer",
     "Next.js",
     "React",
     "TypeScript",
@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Enzo Hideki Yoshida" }],
   openGraph: {
-    title: "Enzo Yoshida | Senior Software Engineer",
+    title: "Enzo Yoshida | Product Engineer",
     description:
-      "Senior Software Engineer especializado em Next.js e React.",
+      "Product Engineer especializado em Next.js e React.",
     type: "website",
   },
 }
@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={jetbrainsMono.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased overflow-x-hidden">
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -35,22 +35,21 @@ export function ThemeToggle() {
   }, [isDark, mounted])
 
   const toggleTheme = useCallback(async () => {
-    if (!buttonRef.current || !lottieRef.current || isAnimatingRef.current) return
+    if (!buttonRef.current || isAnimatingRef.current) return
 
     const newTheme = isDark ? "light" : "dark"
     isAnimatingRef.current = true
 
-    // Configura a animação usando playSegments para controle preciso
-    // frame 24 = modo claro (sol), frame 122 = modo escuro (lua)
-    const lottie = lottieRef.current
-    lottie.setSpeed(3.5)
+    // Configura a animação usando playSegments para controle preciso (desktop only)
+    if (lottieRef.current) {
+      const lottie = lottieRef.current
+      lottie.setSpeed(3.5)
 
-    if (isDark) {
-      // Dark -> Light: anima de 79 para 24
-      lottie.playSegments([79, 24], true)
-    } else {
-      // Light -> Dark: anima de 24 para 122
-      lottie.playSegments([24, 122], true)
+      if (isDark) {
+        lottie.playSegments([79, 24], true)
+      } else {
+        lottie.playSegments([24, 122], true)
+      }
     }
 
     setTimeout(() => {
@@ -100,7 +99,7 @@ export function ThemeToggle() {
     <button
       ref={buttonRef}
       onClick={toggleTheme}
-      className="w-20 h-20 flex items-center justify-center"
+      className="flex items-center justify-center flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 overflow-hidden"
       aria-label="Alternar tema"
     >
       <Lottie
@@ -108,7 +107,7 @@ export function ThemeToggle() {
         animationData={toggleAnimation}
         autoplay={false}
         loop={false}
-        style={{ width: "120%", height: "120%", pointerEvents: "none" }}
+        className="w-[180%] h-[180%] sm:w-[200%] sm:h-[200%] pointer-events-none"
       />
     </button>
   )
