@@ -5,17 +5,21 @@ import { Projects } from "@/components/portfolio/projects"
 import { Contact } from "@/components/portfolio/contact"
 import { Footer } from "@/components/portfolio/footer"
 import { Header } from "@/components/portfolio/header"
+import { FluidBackground } from "@/components/portfolio/fluid-background"
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden">
-      <Header />
-      <Hero />
-      <About />
-      <Experience />
-      <Projects />
-      <Contact />
-      <Footer />
-    </main>
+    <>
+      <FluidBackground className="fixed inset-0 z-0" />
+      <main className="relative z-10 min-h-screen overflow-x-hidden">
+        <Header />
+        <Hero />
+        <About />
+        <Experience />
+        <Projects />
+        <Contact />
+        <Footer />
+      </main>
+    </>
   )
 }

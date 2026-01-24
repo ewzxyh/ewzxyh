@@ -40,15 +40,15 @@ export function LanguageToggle() {
         {locale === "pt-BR" ? "EN-US" : "PT-BR"}
       </button>
 
-      {/* Bat Animation Overlay - Hidden on mobile */}
+      {/* Bat Animation Overlay */}
       {isTransitioning && (
-        <div className="hidden sm:flex fixed inset-0 z-[100] items-center justify-center pointer-events-none">
+        <div className="flex fixed inset-0 z-[100] items-center justify-center pointer-events-none">
           <Lottie
             lottieRef={lottieRef}
             animationData={batAnimation}
             loop={false}
             autoplay={true}
-            className="w-40 h-40"
+            className="w-16 h-16 min-[320px]:w-20 min-[320px]:h-20 sm:w-24 sm:h-24"
             style={isDark ? { filter: "invert(1) brightness(0.8)" } : undefined}
           />
         </div>

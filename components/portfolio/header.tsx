@@ -29,7 +29,7 @@ const navItems: NavItemConfig[] = [
 ]
 
 export function Header() {
-  const { t } = useI18n()
+  const { t, isTransitioning } = useI18n()
   const headerRef = useRef<HTMLElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const navItemsRef = useRef<(HTMLButtonElement | null)[]>([])
@@ -134,7 +134,9 @@ export function Header() {
     }
 
     const hideHeader = () => {
-      if (isHiddenRef.current || isMenuOpen) return
+      if (isHiddenRef.current) return
+      if (isMenuOpen) return // Keep header visible when menu is open
+
       isHiddenRef.current = true
       gsap.to(header, {
         yPercent: -100,
@@ -170,7 +172,12 @@ export function Header() {
       ref={headerRef}
       className="fixed top-0 left-0 right-0 z-40 px-2 sm:px-4 md:px-6 pt-2 sm:pt-3 md:pt-4 opacity-0 -translate-y-4"
     >
-      <div className="max-w-[calc(100%-16px)] sm:max-w-4xl mx-auto bg-background/80 backdrop-blur-md border border-border/50 overflow-hidden">
+      <div className="max-w-[calc(100%-16px)] sm:max-w-4xl mx-auto bg-background/80 backdrop-blur-md border border-border/50 overflow-hidden relative">
+        {/* Overlay during language transition */}
+        {isTransitioning && (
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-md z-10 pointer-events-none" />
+        )}
+
         {/* Main header bar */}
         <div className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2">
           <a href="#" className="block flex-shrink-0">
