@@ -1,8 +1,24 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
 
 type Locale = "pt-BR" | "en-US"
+
+const LOCALE_COOKIE = "preferred-locale"
+
+function getCookie(name: string): string | undefined {
+  if (typeof document === "undefined") return undefined
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop()?.split(";").shift()
+  return undefined
+}
+
+function setCookie(name: string, value: string, days: number) {
+  if (typeof document === "undefined") return
+  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString()
+  document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`
+}
 
 const translations = {
   "pt-BR": {
@@ -340,14 +356,29 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | null>(null)
 
+function getInitialLocale(): Locale {
+  if (typeof document === "undefined") return "en-US"
+  const cookieLocale = getCookie(LOCALE_COOKIE)
+  if (cookieLocale === "pt-BR" || cookieLocale === "en-US") {
+    return cookieLocale
+  }
+  return "en-US"
+}
+
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("pt-BR")
+  const [locale, setLocaleState] = useState<Locale>("en-US")
   const [isTransitioning, setIsTransitioning] = useState(false)
+
+  useEffect(() => {
+    const initialLocale = getInitialLocale()
+    setLocaleState(initialLocale)
+  }, [])
 
   const setLocale = useCallback((newLocale: Locale) => {
     if (newLocale === locale) return
 
     setIsTransitioning(true)
+    setCookie(LOCALE_COOKIE, newLocale, 365)
 
     setTimeout(() => {
       setLocaleState(newLocale)
