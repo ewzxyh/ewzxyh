@@ -24,6 +24,7 @@ const skillCategories: SkillCategory[] = [
     titleKey: "skills.frontend",
     skills: [
       { name: "React", icon: "react", descriptionKey: "skills.react.desc" },
+      { name: "Expo", icon: "expo", descriptionKey: "skills.expo.desc" },
       { name: "Next.js", icon: "nextjs", descriptionKey: "skills.nextjs.desc" },
       { name: "TypeScript", icon: "typescript", descriptionKey: "skills.typescript.desc" },
       { name: "JavaScript", icon: "javascript", descriptionKey: "skills.javascript.desc" },
@@ -89,6 +90,7 @@ function getIconUrl(iconName: string): string {
 
   const deviconMap: Record<string, string> = {
     react: "react/react-original.svg",
+    expo: "expo/expo-original.svg",
     nextjs: "nextjs/nextjs-original.svg",
     typescript: "typescript/typescript-original.svg",
     javascript: "javascript/javascript-original.svg",

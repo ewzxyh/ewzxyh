@@ -109,7 +109,7 @@ export function BentoGallery() {
   }, [createFlipAnimation])
 
   return (
-    <div ref={wrapRef} className="bento-wrap">
+    <div ref={wrapRef} className="bento-wrap bg-background">
       <div ref={galleryRef} className="bento-gallery">
         {galleryImages.map((image, index) => (
           <div key={index} className="bento-item">
