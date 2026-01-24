@@ -3,6 +3,7 @@
 import { Mail, ArrowRight } from "lucide-react"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
+import { PWAInstallButton } from "@/components/pwa-install-button"
 
 export function Contact() {
   const { t, locale } = useI18n()
@@ -50,6 +51,11 @@ export function Contact() {
           WhatsApp
           <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
         </a>
+
+        {/* PWA Install */}
+        <div className="mt-4">
+          <PWAInstallButton variant="button" />
+        </div>
 
         {/* Alternative */}
         <p className="mt-5 sm:mt-6 text-xs sm:text-sm text-muted-foreground">

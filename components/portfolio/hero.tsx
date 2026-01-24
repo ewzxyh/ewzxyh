@@ -10,6 +10,7 @@ import mail from "react-useanimations/lib/mail"
 import Lottie, { type LottieRefCurrentProps } from "lottie-react"
 import { SiWhatsapp } from "react-icons/si"
 import { Button } from "@/components/ui/button"
+import { PWAInstallButton } from "@/components/pwa-install-button"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { TextPlugin } from "gsap/TextPlugin"
@@ -247,6 +248,7 @@ export function Hero() {
               <link.icon className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px] group-hover:scale-110 transition-transform duration-200" />
             </a>
           ))}
+          <PWAInstallButton variant="icon" className="opacity-0" />
         </div>
 
         <Button

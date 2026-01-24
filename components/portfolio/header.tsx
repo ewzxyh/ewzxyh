@@ -12,6 +12,7 @@ import { ThemeToggle } from "./theme-toggle"
 import { LanguageToggle } from "./language-toggle"
 import { useLoading } from "./loading-context"
 import { useI18n } from "@/lib/i18n"
+import { PWAInstallButton } from "@/components/pwa-install-button"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -259,8 +260,11 @@ export function Header() {
               </button>
             ))}
 
+            {/* PWA Install Button */}
+            <PWAInstallButton variant="menu" />
+
             {/* Mobile Open to Work Badge */}
-            <div className="lg:hidden flex items-center gap-2 pt-3 border-t border-border/30">
+            <div className="lg:hidden flex items-center gap-2 pt-3">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />

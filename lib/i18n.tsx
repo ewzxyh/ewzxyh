@@ -154,6 +154,11 @@ const translations = {
     "footer.rights": "Todos os direitos reservados.",
     "footer.built": "Construído com",
 
+    // PWA
+    "pwa.install": "Instalar App",
+    "pwa.installed": "App instalado",
+    "pwa.iosHint": "Para instalar: toque em Compartilhar e 'Adicionar à Tela Inicial'",
+
     // 404
     "notFound.title": "Página não encontrada",
     "notFound.description": "Ops! A página que você está procurando não existe ou foi movida.",
@@ -308,6 +313,11 @@ const translations = {
     // Footer
     "footer.rights": "All rights reserved.",
     "footer.built": "Built with",
+
+    // PWA
+    "pwa.install": "Install App",
+    "pwa.installed": "App installed",
+    "pwa.iosHint": "To install: tap Share and 'Add to Home Screen'",
 
     // 404
     "notFound.title": "Page not found",

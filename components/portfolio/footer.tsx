@@ -3,6 +3,7 @@
 import { Github, Linkedin, Mail } from "lucide-react"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
+import { PWAInstallButton } from "@/components/pwa-install-button"
 
 export function Footer() {
   const { t, locale } = useI18n()
@@ -43,6 +44,7 @@ export function Footer() {
                 <link.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
             ))}
+            <PWAInstallButton variant="icon" className="!p-1 !border-0 !bg-transparent text-muted-foreground hover:text-foreground" />
           </div>
         </div>
       </div>

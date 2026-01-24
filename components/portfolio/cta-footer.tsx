@@ -11,6 +11,7 @@ import mail from "react-useanimations/lib/mail"
 import Lottie, { type LottieRefCurrentProps } from "lottie-react"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
+import { PWAInstallButton } from "@/components/pwa-install-button"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -175,6 +176,8 @@ export function CTAFooter() {
                 WhatsApp
                 <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
               </a>
+
+              <PWAInstallButton variant="button" />
             </div>
 
             {/* Alternative */}
@@ -236,6 +239,7 @@ export function CTAFooter() {
                     strokeColor="currentColor"
                   />
                 </a>
+                <PWAInstallButton variant="icon" className="!p-1.5 !border-0 !bg-transparent text-muted-foreground hover:text-foreground" />
               </div>
             </div>
           </div>

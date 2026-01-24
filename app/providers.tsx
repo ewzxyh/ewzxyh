@@ -7,6 +7,7 @@ import { PageLoader } from "@/components/portfolio/page-loader"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { FluidBackground } from "@/components/portfolio/fluid-background"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { PWAInstallProvider } from "@/hooks/use-pwa-install"
 
 function DeferredBackground() {
   const { isAlmostComplete } = useLoading()
@@ -17,11 +18,13 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
       <I18nProvider>
-        <LoadingProvider>
-          <DeferredBackground />
-          <PageLoader />
-          <SmoothScroll>{children}</SmoothScroll>
-        </LoadingProvider>
+        <PWAInstallProvider>
+          <LoadingProvider>
+            <DeferredBackground />
+            <PageLoader />
+            <SmoothScroll>{children}</SmoothScroll>
+          </LoadingProvider>
+        </PWAInstallProvider>
       </I18nProvider>
     </ThemeProvider>
   )
