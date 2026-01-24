@@ -172,10 +172,10 @@ export function Header() {
       ref={headerRef}
       className="fixed top-0 left-0 right-0 z-40 px-2 sm:px-4 md:px-6 pt-2 sm:pt-3 md:pt-4 opacity-0 -translate-y-4"
     >
-      <div className="max-w-[calc(100%-16px)] sm:max-w-4xl mx-auto bg-background/80 backdrop-blur-md border border-border/50 overflow-hidden relative">
+      <div className="max-w-[calc(100%-16px)] sm:max-w-[calc(72rem-48px)] mx-auto bg-card/50 backdrop-blur-md border border-border overflow-hidden relative">
         {/* Overlay during language transition */}
         {isTransitioning && (
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-md z-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-card/50 backdrop-blur-md z-10 pointer-events-none" />
         )}
 
         {/* Main header bar */}

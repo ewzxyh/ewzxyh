@@ -418,46 +418,48 @@ function ExpandableItem({
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center gap-3 sm:gap-4 p-3 sm:p-4 transition-all duration-300 text-left hover:bg-foreground/[0.02] hover:pl-5 sm:hover:pl-6"
+        className="w-full flex flex-col min-[400px]:flex-row min-[400px]:items-center gap-2 min-[400px]:gap-3 sm:gap-4 p-2.5 min-[320px]:p-3 sm:p-4 transition-all duration-300 text-left hover:bg-foreground/[0.02]"
       >
-        <div className="relative flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 border border-border bg-background flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-foreground/30 group-hover:scale-105">
-          {logo ? (
-            <Image
-              src={logo}
-              alt={title}
-              width={24}
-              height={24}
-              className="w-5 h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110"
-            />
-          ) : (
-            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
-          )}
-        </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h4 className="font-medium text-xs sm:text-sm transition-colors duration-300 group-hover:text-foreground">
-              {title}
-            </h4>
-            {location && (
-              <span className="text-[9px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
-                {location}
-              </span>
+        <div className="flex items-center gap-2 min-[400px]:gap-3 sm:gap-4 flex-1 min-w-0">
+          <div className="relative flex-shrink-0 w-7 h-7 min-[320px]:w-8 min-[320px]:h-8 sm:w-10 sm:h-10 border border-border bg-card flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-foreground/30 group-hover:scale-105">
+            {logo ? (
+              <Image
+                src={logo}
+                alt={title}
+                width={24}
+                height={24}
+                className="w-4 h-4 min-[320px]:w-5 min-[320px]:h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110"
+              />
+            ) : (
+              <Icon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
             )}
           </div>
-          <p className="text-[10px] sm:text-xs text-muted-foreground truncate transition-colors duration-300">
-            {subtitle}
-            {type && <span className="ml-1 opacity-70">· {type}</span>}
-          </p>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5 min-[320px]:gap-2 flex-wrap">
+              <h4 className="font-medium text-[11px] min-[320px]:text-xs sm:text-sm transition-colors duration-300 group-hover:text-foreground">
+                {title}
+              </h4>
+              {location && (
+                <span className="text-[8px] min-[320px]:text-[9px] sm:text-[10px] px-1 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
+                  {location}
+                </span>
+              )}
+            </div>
+            <p className="text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground truncate transition-colors duration-300">
+              {subtitle}
+              {type && <span className="ml-1 opacity-70">· {type}</span>}
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap font-mono transition-colors duration-300 group-hover:text-foreground/70">
+        <div className="flex items-center justify-between min-[400px]:justify-end gap-2 pl-9 min-[320px]:pl-10 min-[400px]:pl-0">
+          <span className="text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground font-mono transition-colors duration-300 group-hover:text-foreground/70">
             {period}
           </span>
           {(description || skills) && (
             <ChevronDown
-              className={`w-4 h-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground ${isExpanded ? 'rotate-180' : ''}`}
+              className={`w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
             />
           )}
         </div>
@@ -471,21 +473,21 @@ function ExpandableItem({
           }`}
         >
           <div className="overflow-hidden">
-            <div className="px-3 sm:px-4 pb-4 sm:pb-5 pl-14 sm:pl-[4.5rem]">
+            <div className="px-2.5 min-[320px]:px-3 sm:px-4 pb-3 min-[320px]:pb-4 sm:pb-5 pl-9 min-[320px]:pl-10 min-[400px]:pl-14 sm:pl-[4.5rem]">
               {description && (
-                <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed mb-4">
+                <p className="text-[10px] min-[320px]:text-[11px] sm:text-xs text-muted-foreground leading-relaxed mb-3 min-[320px]:mb-4">
                   {description}
                 </p>
               )}
 
               {skills && skills.length > 0 && (
-                <div ref={skillsRef} className="flex flex-wrap gap-1.5">
+                <div ref={skillsRef} className="flex flex-wrap gap-1 min-[320px]:gap-1.5">
                   {skills.map((skill) => {
                     const skillData = skillDescriptions[skill]
                     const description = skillData?.[locale]
                     return (
                       <Tooltip key={skill}>
-                        <TooltipTrigger className="skill-tag text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
+                        <TooltipTrigger className="skill-tag text-[8px] min-[320px]:text-[9px] sm:text-[10px] px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
                           {skill}
                         </TooltipTrigger>
                         {description && (
@@ -506,7 +508,7 @@ function ExpandableItem({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1 mt-4 text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
+                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
                     <ExternalLink className="w-3 h-3 transition-transform duration-300 group-hover/link:rotate-12" />
                     Ver credencial
@@ -518,7 +520,7 @@ function ExpandableItem({
                       e.stopPropagation()
                       onOpenCertificate?.(credentialUrl)
                     }}
-                    className="inline-flex items-center gap-1 mt-4 text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
+                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
                     <ExternalLink className="w-3 h-3 transition-transform duration-300 group-hover/link:rotate-12" />
                     Ver credencial
@@ -587,22 +589,22 @@ export function Experience() {
   return (
     <>
       <section ref={sectionRef} id="experience" className="relative z-10">
-        <div className="max-w-6xl mx-auto px-3 xs:px-4 sm:px-6 py-12 sm:py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16">
+        <div className="max-w-6xl mx-auto px-2 min-[320px]:px-3 xs:px-4 sm:px-6 py-8 min-[320px]:py-10 sm:py-16 md:py-24">
+          <div className="grid lg:grid-cols-2 gap-6 min-[320px]:gap-8 sm:gap-12 lg:gap-16">
             {/* Work Experience */}
             <div ref={workRef} className="lg:col-span-2">
               <div
                 ref={(el) => { headersRef.current[0] = el }}
-                className="flex items-center gap-2 mb-4 sm:mb-6 group cursor-default"
+                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
-                <h3 className="text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <Briefcase className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.work")}
                 </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-4 transition-all duration-500 group-hover:from-foreground/30" />
+                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
               </div>
 
-              <div className="border border-border">
+              <div className="border border-border bg-card/50">
                 {workExperience.map((item, index) => (
                   <ExpandableItem
                     key={index}
@@ -624,16 +626,16 @@ export function Experience() {
             <div ref={eduRef}>
               <div
                 ref={(el) => { headersRef.current[1] = el }}
-                className="flex items-center gap-2 mb-4 sm:mb-6 group cursor-default"
+                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
-                <h3 className="text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <GraduationCap className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.education")}
                 </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-4 transition-all duration-500 group-hover:from-foreground/30" />
+                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
               </div>
 
-              <div className="border border-border">
+              <div className="border border-border bg-card/50">
                 {education.map((item, index) => (
                   <ExpandableItem
                     key={index}
@@ -652,16 +654,16 @@ export function Experience() {
             <div ref={certRef}>
               <div
                 ref={(el) => { headersRef.current[2] = el }}
-                className="flex items-center gap-2 mb-4 sm:mb-6 group cursor-default"
+                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
-                <h3 className="text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <Award className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.certificates")}
                 </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-4 transition-all duration-500 group-hover:from-foreground/30" />
+                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
               </div>
 
-              <div className="border border-border">
+              <div className="border border-border bg-card/50">
                 {certificates.map((item, index) => (
                   <ExpandableItem
                     key={index}
