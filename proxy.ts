@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server"
 
 const LOCALE_COOKIE = "preferred-locale"
 
-export function handleLocaleProxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next()
 
   const existingLocale = request.cookies.get(LOCALE_COOKIE)?.value
@@ -23,3 +23,8 @@ export function handleLocaleProxy(request: NextRequest) {
   return response
 }
 
+export const config = {
+  matcher: [
+    "/((?!_next/static|_next/image|favicon|api|.*\\..*).*)",
+  ],
+}
