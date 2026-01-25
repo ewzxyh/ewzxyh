@@ -113,6 +113,7 @@ interface EducationItem {
   period: string
   locationKey?: string
   logo?: string
+  highlighted?: boolean
 }
 
 interface CertificateItem {
@@ -204,6 +205,7 @@ const education: EducationItem[] = [
     period: "set 2026 - mai 2028",
     locationKey: "experience.location.canada",
     logo: "/estudo/nbcc.jpg",
+    highlighted: true,
   },
   {
     institution: "PUC-GO",
@@ -380,6 +382,7 @@ function ExpandableItem({
   icon: Icon,
   credentialUrl,
   onOpenCertificate,
+  highlighted,
 }: {
   title: string
   subtitle: string
@@ -392,6 +395,7 @@ function ExpandableItem({
   icon: typeof Briefcase
   credentialUrl?: string
   onOpenCertificate?: (url: string) => void
+  highlighted?: boolean
 }) {
   const { locale } = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
@@ -413,7 +417,9 @@ function ExpandableItem({
   return (
     <div
       ref={itemRef}
-      className="experience-item border-b border-border last:border-b-0 group"
+      className={`experience-item border-b border-border last:border-b-0 group relative ${
+        highlighted ? 'bg-foreground/[0.025] dark:bg-foreground/[0.04] border-l-2 border-l-foreground/20' : ''
+      }`}
     >
       <button
         type="button"
@@ -440,6 +446,11 @@ function ExpandableItem({
               <h4 className="font-medium text-[11px] min-[320px]:text-xs sm:text-sm transition-colors duration-300 group-hover:text-foreground">
                 {title}
               </h4>
+              {highlighted && (
+                <span className="text-[7px] min-[320px]:text-[8px] sm:text-[9px] px-1 min-[320px]:px-1.5 py-0.5 bg-foreground/10 dark:bg-foreground/15 text-foreground/70 uppercase tracking-wider font-medium">
+                  Upcoming
+                </span>
+              )}
               {location && (
                 <span className="text-[8px] min-[320px]:text-[9px] sm:text-[10px] px-1 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
                   {location}
@@ -645,6 +656,7 @@ export function Experience() {
                     location={item.locationKey ? t(item.locationKey as any) : undefined}
                     logo={item.logo}
                     icon={GraduationCap}
+                    highlighted={item.highlighted}
                   />
                 ))}
               </div>

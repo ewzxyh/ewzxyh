@@ -32,6 +32,7 @@ const skillCategories: SkillCategory[] = [
       { name: "Figma", icon: "figma", descriptionKey: "skills.figma.desc" },
       { name: "Three.js", icon: "threejs", descriptionKey: "skills.threejs.desc" },
       { name: "GSAP", icon: "gsap", descriptionKey: "skills.gsap.desc" },
+      { name: "Vite", icon: "vite", descriptionKey: "skills.vite.desc" },
       { name: "WebGL", icon: "webgl", descriptionKey: "skills.webgl.desc" },
       { name: "PHP", icon: "php", descriptionKey: "skills.php.desc" },
     ],
@@ -116,6 +117,7 @@ function getIconUrl(iconName: string): string {
     cloudflare: "cloudflare/cloudflare-original.svg",
     nginx: "nginx/nginx-original.svg",
     bash: "bash/bash-original.svg",
+    vite: "vitejs/vitejs-original.svg",
   }
 
   return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${deviconMap[iconName] || `${iconName}/${iconName}-original.svg`}`
