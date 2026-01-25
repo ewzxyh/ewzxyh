@@ -582,7 +582,9 @@ function initWebGL(container: HTMLDivElement): () => void {
     targetMouse.set(x, y)
   }
 
-  document.addEventListener("pointermove", handlePointerMove, { passive: true })
+  if (!isMobile) {
+    document.addEventListener("pointermove", handlePointerMove, { passive: true })
+  }
 
   function animate() {
     if (contextLost || !isVisible) return
@@ -668,7 +670,9 @@ function initWebGL(container: HTMLDivElement): () => void {
     darkModeObserver.disconnect()
     document.removeEventListener("visibilitychange", handleVisibilityChange)
     window.removeEventListener("resize", resize)
-    document.removeEventListener("pointermove", handlePointerMove)
+    if (!isMobile) {
+      document.removeEventListener("pointermove", handlePointerMove)
+    }
     canvas.removeEventListener("webglcontextlost", handleContextLost)
     canvas.removeEventListener("webglcontextrestored", handleContextRestored)
     renderer.dispose()
