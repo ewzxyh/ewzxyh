@@ -19,6 +19,17 @@ const sections: Section[] = [
   { id: "projects", labelKey: "nav.projects", number: "03" },
 ]
 
+function scrollToSection(sectionId: string) {
+  const element = document.getElementById(sectionId)
+  if (!element) return
+
+  gsap.to(window, {
+    duration: 1,
+    scrollTo: { y: element, offsetY: 100 },
+    ease: "power3.inOut",
+  })
+}
+
 export function LateralPinIndicator() {
   const { t } = useI18n()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -27,22 +38,39 @@ export function LateralPinIndicator() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Main visibility trigger - from about-content to end of projects
-      ScrollTrigger.create({
-        trigger: "#about-content",
-        endTrigger: "#projects",
-        start: "top 60%",
-        end: "bottom 40%",
-        onEnter: () => setIsVisible(true),
-        onLeave: () => setIsVisible(false),
-        onEnterBack: () => setIsVisible(true),
-        onLeaveBack: () => setIsVisible(false),
-        onUpdate: (self) => {
-          setProgress(self.progress)
-        },
-      })
+    let frame = 0
 
+    function updateVisibility() {
+      frame = 0
+
+      const aboutTitle = document.querySelector("#about-content h2")
+      const aboutContent = document.getElementById("about-content")
+      const projects = document.getElementById("projects")
+      if (!aboutTitle || !aboutContent || !projects) return
+
+      const titleRect = aboutTitle.getBoundingClientRect()
+      const contentRect = aboutContent.getBoundingClientRect()
+      const projectsRect = projects.getBoundingClientRect()
+      const startLine = window.innerHeight * 0.5
+      const endLine = window.innerHeight * 0.4
+
+      setIsVisible(titleRect.top <= startLine && projectsRect.bottom >= endLine)
+
+      const total = projectsRect.bottom - contentRect.top
+      const current = window.innerHeight - contentRect.top
+      setProgress(total > 0 ? gsap.utils.clamp(0, 1, current / total) : 0)
+    }
+
+    function requestUpdate() {
+      if (frame) return
+      frame = window.requestAnimationFrame(updateVisibility)
+    }
+
+    updateVisibility()
+    window.addEventListener("scroll", requestUpdate, { passive: true })
+    window.addEventListener("resize", requestUpdate)
+
+    const ctx = gsap.context(() => {
       // Individual section triggers
       sections.forEach((section, index) => {
         ScrollTrigger.create({
@@ -55,19 +83,13 @@ export function LateralPinIndicator() {
       })
     })
 
-    return () => ctx.revert()
-  }, [])
-
-  const handleClick = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      gsap.to(window, {
-        duration: 1,
-        scrollTo: { y: element, offsetY: 100 },
-        ease: "power3.inOut",
-      })
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", requestUpdate)
+      window.removeEventListener("resize", requestUpdate)
+      ctx.revert()
     }
-  }
+  }, [])
 
   return (
     <div
@@ -92,7 +114,7 @@ export function LateralPinIndicator() {
             <button
               key={section.id}
               type="button"
-              onClick={() => handleClick(section.id)}
+              onClick={() => scrollToSection(section.id)}
               className="flex items-center gap-3 group text-left"
             >
               {/* Number */}

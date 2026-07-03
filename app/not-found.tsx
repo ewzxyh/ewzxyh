@@ -1,27 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useTheme } from "next-themes"
 import { Home } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { HeaderActions } from "@/components/portfolio/header-actions"
+import { useMounted } from "@/hooks/use-mounted"
+import animationData from "@/public/Not found.json"
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
 
 export default function NotFound() {
   const { t } = useI18n()
   const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  // biome-ignore lint/suspicious/noExplicitAny: Lottie animation data type
-  const [animationData, setAnimationData] = useState<any>(null)
+  const mounted = useMounted()
   const isDark = resolvedTheme === "dark"
-
-  useEffect(() => {
-    setMounted(true)
-    import("@/public/Not found.json").then((mod) => setAnimationData(mod.default))
-  }, [])
 
   if (!mounted) return null
 

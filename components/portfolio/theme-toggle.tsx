@@ -1,23 +1,19 @@
 "use client"
 
-import { useCallback, useEffect, useState, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { useTheme } from "next-themes"
-import { flushSync } from "react-dom"
 import Lottie, { type LottieRefCurrentProps } from "lottie-react"
+import { useMounted } from "@/hooks/use-mounted"
 import toggleAnimation from "@/public/Toggle.json"
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const buttonRef = useRef<HTMLButtonElement>(null)
   const lottieRef = useRef<LottieRefCurrentProps>(null)
   const isAnimatingRef = useRef(false)
 
   const isDark = resolvedTheme === "dark"
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   // Define o frame inicial baseado no tema atual (apenas quando não está animando)
   useEffect(() => {
@@ -34,7 +30,7 @@ export function ThemeToggle() {
     return () => clearTimeout(timer)
   }, [isDark, mounted])
 
-  const toggleTheme = useCallback(async () => {
+  const toggleTheme = async () => {
     if (!buttonRef.current || isAnimatingRef.current) return
 
     const newTheme = isDark ? "light" : "dark"
@@ -60,9 +56,7 @@ export function ThemeToggle() {
 
     if (supportsViewTransitions) {
       const transition = (document as unknown as { startViewTransition: (cb: () => void) => { ready: Promise<void> } }).startViewTransition(() => {
-        flushSync(() => {
-          setTheme(newTheme)
-        })
+        setTheme(newTheme)
       })
 
       await transition.ready
@@ -91,13 +85,14 @@ export function ThemeToggle() {
     } else {
       setTheme(newTheme)
     }
-  }, [isDark, setTheme])
+  }
 
   if (!mounted) return null
 
   return (
     <button
       ref={buttonRef}
+      type="button"
       onClick={toggleTheme}
       className="flex items-center justify-center flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 overflow-hidden"
       aria-label="Alternar tema"

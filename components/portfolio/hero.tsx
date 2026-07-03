@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { Terminal, ChevronDown } from "lucide-react"
-import UseAnimations from "react-useanimations"
+import dynamic from "next/dynamic"
 import github from "react-useanimations/lib/github"
 import linkedin from "react-useanimations/lib/linkedin"
 import instagram from "react-useanimations/lib/instagram"
@@ -10,6 +10,7 @@ import mail from "react-useanimations/lib/mail"
 import Lottie, { type LottieRefCurrentProps } from "lottie-react"
 import { SiWhatsapp } from "react-icons/si"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -19,6 +20,8 @@ import { useI18n } from "@/lib/i18n"
 import { useLoading } from "./loading-context"
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, ScrambleTextPlugin)
+
+const UseAnimations = dynamic(() => import("react-useanimations"), { ssr: false })
 
 function MailIcon({ size, className }: { size: number; className?: string }) {
   const lottieRef = useRef<LottieRefCurrentProps>(null)
@@ -43,6 +46,10 @@ function MailIcon({ size, className }: { size: number; className?: string }) {
       />
     </div>
   )
+}
+
+function scrollToProjects() {
+  document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
 }
 
 export function Hero() {
@@ -84,34 +91,34 @@ export function Hero() {
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
 
-      tl.to(".hero-terminal", { opacity: 1, y: 0, duration: 0.5 })
+      tl.to(".hero-terminal", { opacity: 1, y: 0, duration: 0.22 })
         .to(terminalTextRef.current, {
-          duration: 1.0,
+          duration: 0.35,
           text: terminalText,
           ease: "none",
-        }, "-=0.2")
-        .to(titleRef.current, { opacity: 1, y: 0, duration: 0.6 }, "-=0.5")
+        }, "-=0.1")
+        .to(titleRef.current, { opacity: 1, y: 0, duration: 0.25 }, "-=0.2")
         .to(nameRef.current, {
-          duration: 1.4,
+          duration: 0.55,
           scrambleText: {
             text: "ENZO YOSHIDA",
             chars: "upperCase",
-            speed: 0.4,
+            speed: 0.8,
           },
-        }, "-=0.3")
-        .to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=1.0")
+        }, "-=0.15")
+        .to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.22 }, "-=0.35")
         .to(
           statsRef.current?.children || [],
-          { opacity: 1, y: 0, duration: 0.4, stagger: 0.08 },
-          "-=0.3"
+          { opacity: 1, y: 0, duration: 0.22, stagger: 0.04 },
+          "-=0.12"
         )
         .to(
           socialsRef.current?.children || [],
-          { opacity: 1, scale: 1, duration: 0.3, stagger: 0.08 },
-          "-=0.2"
+          { opacity: 1, scale: 1, duration: 0.18, stagger: 0.04 },
+          "-=0.1"
         )
-        .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.4 }, "-=0.2")
-        .to(".corner-decoration", { opacity: 0.5, duration: 0.3, stagger: 0.04 }, "-=0.3")
+        .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.2 }, "-=0.1")
+        .to(".corner-decoration", { opacity: 0.5, duration: 0.18, stagger: 0.02 }, "-=0.2")
 
       // Pin the hero section - About will scroll over it
       ScrollTrigger.create({
@@ -153,10 +160,6 @@ export function Hero() {
     return () => ctx.revert()
   }, [isAlmostComplete, t])
 
-  const scrollToProjects = () => {
-    document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
-  }
-
   return (
     <section
       ref={sectionRef}
@@ -169,7 +172,9 @@ export function Hero() {
           <span
             ref={terminalTextRef}
             className="text-xs sm:text-sm text-muted-foreground tracking-wider"
-          />
+          >
+            {t("hero.terminal")}
+          </span>
           <span className="w-1.5 sm:w-2 h-3 sm:h-4 bg-foreground animate-pulse" />
         </div>
 
@@ -180,7 +185,9 @@ export function Hero() {
           <span className="block text-muted-foreground text-sm sm:text-xl mb-1.5 sm:mb-2 font-normal tracking-[0.2em] sm:tracking-[0.3em]">
             {t("hero.role")}
           </span>
-          <span ref={nameRef} className="animate-flicker" />
+          <span ref={nameRef} className="animate-flicker">
+            ENZO YOSHIDA
+          </span>
         </h1>
 
         <p
@@ -216,37 +223,53 @@ export function Hero() {
 
         <div ref={socialsRef} className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
           {animatedLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
-              aria-label={link.label}
-            >
-              {link.label === "Email" ? (
-                <MailIcon size={20} className="sm:w-[24px] sm:h-[24px]" />
-              ) : (
-                <UseAnimations
-                  animation={link.animation}
-                  size={20}
-                  className="sm:w-[24px] sm:h-[24px]"
-                  strokeColor="currentColor"
-                />
-              )}
-            </a>
+            <Tooltip key={link.label}>
+              <TooltipTrigger
+                render={(
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
+                    aria-label={link.label}
+                  />
+                )}
+              >
+                {link.label === "Email" ? (
+                  <MailIcon size={24} className="transition-transform duration-200 group-hover:scale-125" />
+                ) : (
+                  <UseAnimations
+                    animation={link.animation}
+                    size={24}
+                    className="transition-transform duration-200 group-hover:scale-125"
+                    strokeColor="currentColor"
+                  />
+                )}
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">{link.label}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
           {staticLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
-              aria-label={link.label}
-            >
-              <link.icon className="w-3.5 h-3.5 sm:w-[18px] sm:h-[18px] group-hover:scale-110 transition-transform duration-200" />
-            </a>
+            <Tooltip key={link.label}>
+              <TooltipTrigger
+                render={(
+                  <a
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
+                    aria-label={link.label}
+                  />
+                )}
+              >
+                <link.icon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:scale-125 transition-transform duration-200" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">{link.label}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
           <PWAInstallButton variant="icon" className="opacity-0" />
         </div>

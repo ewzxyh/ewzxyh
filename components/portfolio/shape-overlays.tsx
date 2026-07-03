@@ -1,15 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
 
 interface ShapeOverlaysProps {
   isActive?: boolean
-  onComplete?: () => void
-  onAlmostComplete?: () => void
 }
 
-export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeOverlaysProps) {
+export function ShapeOverlays({ isActive }: ShapeOverlaysProps) {
   const pathsRef = useRef<SVGPathElement[]>([])
   const isAnimatingRef = useRef(false)
   const initializedRef = useRef(false)
@@ -24,7 +22,7 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
   const pointsDelayRef = useRef<number[]>([])
   const isOpenedRef = useRef(true)
 
-  const renderAll = useCallback(() => {
+  const renderAll = () => {
     const isOpened = isOpenedRef.current
 
     for (let i = 0; i < numPaths; i++) {
@@ -44,9 +42,9 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
       d += isOpened ? ` V 100 H 0` : ` V 0 H 0`
       path.setAttribute("d", d)
     }
-  }, [])
+  }
 
-  const toggle = useCallback(() => {
+  const toggle = () => {
     if (isAnimatingRef.current) return
     isAnimatingRef.current = true
 
@@ -59,18 +57,10 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
 
     isOpenedRef.current = !isOpenedRef.current
 
-    const totalDuration = duration + delayPointsMax + delayPerPath * (numPaths - 1)
-    const almostCompleteDelay = Math.max(0, totalDuration - 0.5)
-
-    gsap.delayedCall(almostCompleteDelay, () => {
-      onAlmostComplete?.()
-    })
-
     const masterTl = gsap.timeline({
       onUpdate: renderAll,
       onComplete: () => {
         isAnimatingRef.current = false
-        onComplete?.()
       },
     })
 
@@ -93,7 +83,7 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
         )
       }
     }
-  }, [renderAll, onComplete, onAlmostComplete])
+  }
 
   useEffect(() => {
     if (initializedRef.current) return
@@ -114,7 +104,7 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
 
     isOpenedRef.current = true
     renderAll()
-  }, [renderAll])
+  }, [])
 
   useEffect(() => {
     if (!initializedRef.current) return
@@ -122,7 +112,7 @@ export function ShapeOverlays({ isActive, onComplete, onAlmostComplete }: ShapeO
     if (isActive === false && !isAnimatingRef.current) {
       toggle()
     }
-  }, [isActive, toggle])
+  }, [isActive])
 
   return (
     <svg

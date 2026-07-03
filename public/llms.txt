@@ -1,0 +1,12 @@
+# Enzo Yoshida
+> Product Engineer building Next.js, React, Laravel, payment, SaaS and automation products.
+
+## Key pages
+- [Portfolio](https://ewzxyh.dev/): Work, experience, projects and contact.
+- [GitHub](https://github.com/ewzxyh): Public code and engineering profile.
+- [LinkedIn](https://linkedin.com/in/ewzxyh): Professional profile.
+
+## Key facts
+- Enzo Hideki Yoshida is a Product Engineer and founder of Ewzxyh Lab.
+- He built automation for SELOESGO that serves 630+ lottery operators in Goias.
+- He works with Next.js, React, TypeScript, Laravel, PostgreSQL and automation.

@@ -1,10 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { ExternalLink, ArrowUpRight } from "lucide-react"
-import UseAnimations from "react-useanimations"
-import github from "react-useanimations/lib/github"
-import { Button } from "@/components/ui/button"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
@@ -16,44 +12,65 @@ interface Project {
   title: string
   description: string
   tags: string[]
-  github?: string
-  demo?: string
   featured?: boolean
 }
 
-const projects: Project[] = [
-  {
-    id: "1",
-    title: "Projeto 1",
-    description:
-      "Descrição do projeto. Explique o problema resolvido, tecnologias usadas e impacto.",
-    tags: ["Next.js", "TypeScript", "Tailwind", "Prisma"],
-    github: "https://github.com/ewzxyh/projeto-1",
-    demo: "https://projeto-1.vercel.app",
-    featured: true,
-  },
-  {
-    id: "2",
-    title: "Projeto 2",
-    description:
-      "Descrição do projeto. Explique o problema resolvido, tecnologias usadas e impacto.",
-    tags: ["React", "Node.js", "PostgreSQL"],
-    github: "https://github.com/ewzxyh/projeto-2",
-    featured: true,
-  },
-  {
-    id: "3",
-    title: "Projeto 3",
-    description:
-      "Descrição do projeto. Explique o problema resolvido, tecnologias usadas e impacto.",
-    tags: ["Next.js", "Supabase", "Stripe"],
-    demo: "https://projeto-3.vercel.app",
-    featured: true,
-  },
-]
+const projectsByLocale: Record<"pt-BR" | "en-US", Project[]> = {
+  "pt-BR": [
+    {
+      id: "1",
+      title: "CasePay",
+      description:
+        "Gateway de pagamentos para lotéricas e pequenos negócios, com checkout, dashboard financeiro, gestão de transações, repasses e integrações com o ecossistema Case.",
+      tags: ["Laravel", "Next.js", "Pagamentos", "Dashboard"],
+      featured: true,
+    },
+    {
+      id: "2",
+      title: "LotoHub",
+      description:
+        "SaaS para criação e gestão centralizada de sites de lotéricas, com e-commerce, painel administrativo, automação de atendimento e integração de pagamentos.",
+      tags: ["Next.js", "Supabase", "Stripe", "SaaS"],
+      featured: true,
+    },
+    {
+      id: "3",
+      title: "SELOESGO Automação",
+      description:
+        "Sistema integrado à ConectaLot que gera e distribui artes automaticamente para mais de 630 lotéricos em Goiás, reduzindo uma rotina manual de horas para segundos.",
+      tags: ["Automação", "ConectaLot", "Design Ops", "API"],
+      featured: true,
+    },
+  ],
+  "en-US": [
+    {
+      id: "1",
+      title: "CasePay",
+      description:
+        "Payment gateway for lottery retailers and small businesses, with checkout, financial dashboard, transaction management, payouts, and integrations with the Case ecosystem.",
+      tags: ["Laravel", "Next.js", "Payments", "Dashboard"],
+      featured: true,
+    },
+    {
+      id: "2",
+      title: "LotoHub",
+      description:
+        "SaaS for creating and centrally managing lottery retailer websites, with e-commerce, admin panel, support automation, and payment integration.",
+      tags: ["Next.js", "Supabase", "Stripe", "SaaS"],
+      featured: true,
+    },
+    {
+      id: "3",
+      title: "SELOESGO Automation",
+      description:
+        "System integrated with ConectaLot that automatically generates and distributes creative assets for more than 630 lottery retailers in Goiás, reducing a manual routine from hours to seconds.",
+      tags: ["Automation", "ConectaLot", "Design Ops", "API"],
+      featured: true,
+    },
+  ],
+}
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
-  const { t } = useI18n()
   const cardRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -129,43 +146,13 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             </span>
           ))}
         </div>
-
-        {/* Links */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          {project.github && (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <UseAnimations
-                animation={github}
-                size={16}
-                strokeColor="currentColor"
-              />
-              {t("projects.code")}
-            </a>
-          )}
-          {project.demo && (
-            <a
-              href={project.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              {t("projects.demo")}
-            </a>
-          )}
-        </div>
       </div>
     </article>
   )
 }
 
 export function Projects() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
 
@@ -195,7 +182,7 @@ export function Projects() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div ref={headerRef} className="flex items-end justify-between mb-10 sm:mb-16">
+        <div ref={headerRef} className="mb-10 sm:mb-16">
           <div>
             <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">
               {t("projects.section")}
@@ -204,29 +191,15 @@ export function Projects() {
               {t("projects.title")}
             </h2>
           </div>
-          <Button
-            variant="ghost"
-            className="hidden sm:flex items-center gap-2 text-muted-foreground hover:text-foreground"
-          >
-            {t("projects.viewAll")}
-            <ArrowUpRight className="w-4 h-4" />
-          </Button>
         </div>
 
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {projects.map((project, index) => (
+          {projectsByLocale[locale].map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
 
-        {/* Mobile CTA */}
-        <div className="mt-6 sm:hidden">
-          <Button variant="outline" className="w-full text-sm py-3">
-            {t("projects.viewAllMobile")}
-            <ArrowUpRight className="w-4 h-4 ml-2" />
-          </Button>
-        </div>
       </div>
     </section>
   )

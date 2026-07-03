@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useCallback, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 
 const PARTICLE_IMAGES = Array.from({ length: 21 }, (_, i) =>
@@ -8,11 +8,12 @@ const PARTICLE_IMAGES = Array.from({ length: 21 }, (_, i) =>
 )
 
 function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false
+  )
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth <= 768)
-    checkMobile()
     window.addEventListener("resize", checkMobile)
     return () => window.removeEventListener("resize", checkMobile)
   }, [])
@@ -33,113 +34,107 @@ export function CanvasParticles() {
   const containerRef = useRef<HTMLDivElement>(null)
   const particlesRef = useRef<Particle[]>([])
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
-  const animationRef = useRef<gsap.core.Timeline | null>(null)
   const sizeRef = useRef({ cw: 0, ch: 0, radius: 0 })
   const isMobile = useIsMobile()
 
-  const draw = useCallback(() => {
-    const ctx = ctxRef.current
-    const { cw, ch } = sizeRef.current
-    if (!ctx || cw === 0 || ch === 0) return
+  useEffect(() => {
+    let timeline: gsap.core.Timeline | null = null
 
-    particlesRef.current.sort((a, b) => a.scale - b.scale)
-    ctx.clearRect(0, 0, cw, ch)
+    function draw() {
+      const ctx = ctxRef.current
+      const { cw, ch } = sizeRef.current
+      if (!ctx || cw === 0 || ch === 0) return
 
-    for (const p of particlesRef.current) {
-      if (p.img.complete && p.img.naturalWidth > 0) {
-        ctx.translate(cw / 2, ch / 2)
-        ctx.rotate(p.rotate)
-        ctx.drawImage(
-          p.img,
-          p.x,
-          p.y,
-          p.img.width * p.scale,
-          p.img.height * p.scale
-        )
-        ctx.resetTransform()
+      particlesRef.current.sort((a, b) => a.scale - b.scale)
+      ctx.clearRect(0, 0, cw, ch)
+
+      for (const p of particlesRef.current) {
+        if (p.img.complete && p.img.naturalWidth > 0) {
+          ctx.translate(cw / 2, ch / 2)
+          ctx.rotate(p.rotate)
+          ctx.drawImage(
+            p.img,
+            p.x,
+            p.y,
+            p.img.width * p.scale,
+            p.img.height * p.scale
+          )
+          ctx.resetTransform()
+        }
       }
     }
-  }, [])
 
-  const initAnimation = useCallback(() => {
-    const canvas = canvasRef.current
-    const container = containerRef.current
-    if (!canvas || !container) return
+    function initAnimation() {
+      const canvas = canvasRef.current
+      const container = containerRef.current
+      if (!canvas || !container) return
 
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-    ctxRef.current = ctx
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+      ctxRef.current = ctx
 
-    const cw = container.offsetWidth
-    const ch = container.offsetHeight
+      const cw = container.offsetWidth
+      const ch = container.offsetHeight
 
-    if (cw === 0 || ch === 0) return
+      if (cw === 0 || ch === 0) return
 
-    canvas.width = cw
-    canvas.height = ch
+      canvas.width = cw
+      canvas.height = ch
 
-    const radius = Math.max(cw, ch)
-    sizeRef.current = { cw, ch, radius }
+      const radius = Math.max(cw, ch)
+      sizeRef.current = { cw, ch, radius }
 
-    const particleCount = isMobile ? 33 : 99
+      const particleCount = isMobile ? 33 : 99
 
-    const particles: Particle[] = []
-    for (let i = 0; i < particleCount; i++) {
-      const img = new Image()
-      img.src = PARTICLE_IMAGES[i % PARTICLE_IMAGES.length]
-      particles.push({
-        x: 0,
-        y: 0,
-        scale: 0,
-        rotate: 0,
-        img,
-      })
+      const particles: Particle[] = []
+      for (let i = 0; i < particleCount; i++) {
+        const img = new Image()
+        img.src = PARTICLE_IMAGES[i % PARTICLE_IMAGES.length]
+        particles.push({
+          x: 0,
+          y: 0,
+          scale: 0,
+          rotate: 0,
+          img,
+        })
+      }
+      particlesRef.current = particles
+
+      timeline?.kill()
+
+      const staggerEach = isMobile ? -0.15 : -0.05
+
+      timeline = gsap.timeline({ onUpdate: draw })
+        .fromTo(particles, {
+          x: (i: number) => {
+            const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
+            return Math.cos(angle * 10) * radius
+          },
+          y: (i: number) => {
+            const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
+            return Math.sin(angle * 10) * radius
+          },
+          scale: 0.6,
+          rotate: 0,
+        }, {
+          duration: 5,
+          ease: "sine",
+          x: 0,
+          y: 0,
+          scale: 0,
+          rotate: -3,
+          stagger: { each: staggerEach, repeat: -1 }
+        }, 0)
+        .seek(99)
     }
-    particlesRef.current = particles
 
-    if (animationRef.current) {
-      animationRef.current.kill()
-    }
-
-    const animDuration = isMobile ? 5 : 5
-    const staggerEach = isMobile ? -0.15 : -0.05
-
-    const tl = gsap.timeline({ onUpdate: draw })
-      .fromTo(particles, {
-        x: (i: number) => {
-          const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
-          return Math.cos(angle * 10) * radius
-        },
-        y: (i: number) => {
-          const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
-          return Math.sin(angle * 10) * radius
-        },
-        scale: 0.6,
-        rotate: 0,
-      }, {
-        duration: animDuration,
-        ease: "sine",
-        x: 0,
-        y: 0,
-        scale: 0,
-        rotate: -3,
-        stagger: { each: staggerEach, repeat: -1 }
-      }, 0)
-      .seek(99)
-
-    animationRef.current = tl
-  }, [draw, isMobile])
-
-  useEffect(() => {
     const timer = setTimeout(initAnimation, 100)
 
     return () => {
       clearTimeout(timer)
-      if (animationRef.current) {
-        animationRef.current.kill()
-      }
+      timeline?.kill()
     }
-  }, [initAnimation])
+  }, [isMobile])
 
   return (
     <div

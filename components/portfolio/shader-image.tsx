@@ -259,7 +259,6 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
       style={{
         isolation: "isolate",
         contain: "layout style paint",
-        willChange: "transform",
         transform: "translateZ(0)",
         backfaceVisibility: "hidden",
       }}

@@ -4,10 +4,12 @@ import { Github, Linkedin, Mail } from "lucide-react"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
+import { useMounted } from "@/hooks/use-mounted"
 
 export function Footer() {
   const { t, locale } = useI18n()
-  const currentYear = new Date().getFullYear()
+  const mounted = useMounted()
+  const currentYear = mounted ? new Date().getFullYear() : 2026
 
   const socialLinks = [
     { icon: Github, href: "https://github.com/ewzxyh", label: "GitHub" },

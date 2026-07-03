@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { JetBrains_Mono } from "next/font/google"
+import { siteDescription, siteName, siteUrl } from "@/lib/site"
 import { Providers } from "./providers"
 import "./globals.css"
 
@@ -9,9 +10,12 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Enzo Yoshida | Product Engineer",
-  description:
-    "Product Engineer especializado em Next.js e React. 4+ anos de experiência construindo produtos web rápidos e escaláveis.",
+  metadataBase: new URL(siteUrl),
+  title: siteName,
+  description: siteDescription,
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "Product Engineer",
     "Next.js",
@@ -21,10 +25,26 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Enzo Hideki Yoshida" }],
   openGraph: {
-    title: "Enzo Yoshida | Product Engineer",
-    description:
-      "Product Engineer especializado em Next.js e React.",
+    title: siteName,
+    description: siteDescription,
+    url: "/",
+    siteName,
+    locale: "pt_BR",
     type: "website",
+    images: [
+      {
+        url: "/og/enzo-yoshida-product-engineer.webp",
+        width: 1200,
+        height: 630,
+        alt: siteName,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteName,
+    description: siteDescription,
+    images: ["/og/enzo-yoshida-product-engineer.webp"],
   },
 }
 

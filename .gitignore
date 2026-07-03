@@ -3,6 +3,7 @@ node_modules/
 .env
 .env.local
 *.log
+.seo-cache/
 
 # serwist
 public/sw.js

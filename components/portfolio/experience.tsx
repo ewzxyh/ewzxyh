@@ -336,11 +336,16 @@ function CertificateModal({
     <div
       ref={overlayRef}
       className="fixed inset-0 z-[200] flex items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm"
-      onClick={handleClose}
     >
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default"
+        onClick={handleClose}
+        aria-label="Close certificate preview"
+      />
       <div
         ref={modalRef}
-        className="relative w-full h-full sm:w-[70vw] sm:h-[90vh] border-0 sm:border border-border bg-background"
+        className="relative z-10 w-full h-full sm:w-[70vw] sm:h-[90vh] border-0 sm:border border-border bg-background"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 border-b border-border bg-background z-10">
@@ -360,6 +365,7 @@ function CertificateModal({
           className="w-full h-full pt-12"
           title="Certificate"
           allow="fullscreen"
+          sandbox="allow-scripts allow-popups"
         />
       </div>
     </div>
@@ -616,9 +622,9 @@ export function Experience() {
               </div>
 
               <div className="border border-border bg-card/50">
-                {workExperience.map((item, index) => (
+                {workExperience.map((item) => (
                   <ExpandableItem
-                    key={index}
+                    key={`${item.company}-${item.period}`}
                     title={item.company}
                     subtitle={t(item.roleKey as any)}
                     period={item.period}
@@ -647,9 +653,9 @@ export function Experience() {
               </div>
 
               <div className="border border-border bg-card/50">
-                {education.map((item, index) => (
+                {education.map((item) => (
                   <ExpandableItem
-                    key={index}
+                    key={`${item.institution}-${item.period}`}
                     title={item.institution}
                     subtitle={t(item.degreeKey as any)}
                     period={item.period}
@@ -676,9 +682,9 @@ export function Experience() {
               </div>
 
               <div className="border border-border bg-card/50">
-                {certificates.map((item, index) => (
+                {certificates.map((item) => (
                   <ExpandableItem
-                    key={index}
+                    key={item.credentialUrl ?? item.nameKey}
                     title={t(item.nameKey as any)}
                     subtitle={item.issuer}
                     period={item.date}

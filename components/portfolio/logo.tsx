@@ -1,8 +1,9 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useTheme } from "next-themes"
 import { gsap } from "gsap"
+import { useMounted } from "@/hooks/use-mounted"
 import { useLoading } from "./loading-context"
 
 interface LogoProps {
@@ -18,12 +19,8 @@ export function Logo({ className = "", animate = true }: LogoProps) {
   const hasAnimatedRef = useRef(false)
   const hoverTimelineRef = useRef<gsap.core.Timeline | null>(null)
   const isHoveringRef = useRef(false)
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const [animationComplete, setAnimationComplete] = useState(!animate)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const isDark = mounted && resolvedTheme === "dark"
 
@@ -57,7 +54,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     "M476.295 157.955C476.295 171.221 487.051 181.976 500.316 181.976C513.584 181.976 524.339 171.221 524.339 157.955C524.339 144.688 513.584 133.933 500.316 133.933C487.051 133.933 476.295 144.688 476.295 157.955Z",
   ]
 
-  const playHoverAnimation = useCallback(() => {
+  function playHoverAnimation() {
     const pathElements = pathsRef.current.filter(Boolean)
     if (pathElements.length === 0 || !isHoveringRef.current) return
 
@@ -67,11 +64,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
 
     const tl = gsap.timeline({
       defaults: { ease: "power2.inOut" },
-      onComplete: () => {
-        if (isHoveringRef.current) {
-          playHoverAnimation()
-        }
-      },
+      repeat: -1,
     })
 
     pathElements.forEach((path) => {
@@ -109,15 +102,15 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     })
 
     hoverTimelineRef.current = tl
-  }, [])
+  }
 
-  const handleMouseEnter = useCallback(() => {
+  function handleMouseEnter() {
     if (!animationComplete) return
     isHoveringRef.current = true
     playHoverAnimation()
-  }, [animationComplete, playHoverAnimation])
+  }
 
-  const handleMouseLeave = useCallback(() => {
+  function handleMouseLeave() {
     isHoveringRef.current = false
     if (hoverTimelineRef.current) {
       hoverTimelineRef.current.kill()
@@ -126,7 +119,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     pathElements.forEach((path) => {
       gsap.set(path, { clearProps: "all" })
     })
-  }, [])
+  }
 
   useEffect(() => {
     if (!mounted || !animate || !svgRef.current || hasAnimatedRef.current || !isLoadingComplete) return

@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react"
+import { createContext, use, useState, type ReactNode } from "react"
+import { useMounted } from "@/hooks/use-mounted"
 
 type Locale = "pt-BR" | "en-US"
 
@@ -36,7 +37,7 @@ const translations = {
     "hero.experience": "4+ anos transformando ideias em MVPs, dashboards e automações que geram resultado.",
     "hero.years": "ANOS EXP.",
     "hero.projects": "PROJETOS",
-    "hero.specialist": "SPECIALIST",
+    "hero.specialist": "ESPECIALISTA",
     "hero.cta": "VER PROJETOS",
     "hero.terminal": "EWZXYH_LAB://PORTFOLIO",
 
@@ -44,14 +45,14 @@ const translations = {
     "about.section": "01 // SOBRE",
     "about.title": "Quem sou eu",
     "about.intro": "Sou",
-    "about.description1": "Product Engineer — combino visão de produto com execução técnica para entregar soluções que geram impacto.",
-    "about.description2": "Com mais de 4 anos de experiência, não apenas codifico — proponho, itero e entrego features end-to-end focando em outcomes para o usuário. Minha especialidade é construir produtos com",
+    "about.description1": "Product Engineer — combino visão de produto com execução técnica para entregar soluções com impacto real.",
+    "about.description2": "Com mais de 4 anos de experiência, não apenas codifico — proponho, itero e entrego recursos de ponta a ponta com foco em resultados para o usuário. Minha especialidade é construir produtos com",
     "about.description2.suffix": "que são rápidos, acessíveis e escaláveis.",
     "about.description3": "Atualmente trabalho com autonomia em decisões de produto e arquitetura. Fundei a",
     "about.description3.suffix": "como minha marca para projetos independentes e consultoria.",
     "about.status": "Disponível para novas oportunidades",
-    "about.product": "Product Thinking",
-    "about.product.desc": "Foco em outcomes, não apenas outputs.",
+    "about.product": "Pensamento de Produto",
+    "about.product.desc": "Foco em resultados, não apenas entregas.",
     "about.design": "Design UI/UX",
     "about.design.desc": "Interfaces intuitivas e experiências memoráveis.",
     "about.fullstack": "Full-Stack",
@@ -59,10 +60,10 @@ const translations = {
     "about.frontend": "Frontend",
     "about.backend": "Backend",
     "about.devops": "DevOps",
-    "about.ai": "AI & Automação",
+    "about.ai": "IA & Automação",
 
     // Skills
-    "skills.title": "Skills",
+    "skills.title": "Habilidades",
     "skills.frontend": "Front-end",
     "skills.backend": "Back-end",
     "skills.automation": "Automação & DevOps",
@@ -75,7 +76,7 @@ const translations = {
     "skills.figma.desc": "Design de interfaces e prototipagem",
     "skills.threejs.desc": "Biblioteca 3D para web com WebGL",
     "skills.gsap.desc": "Biblioteca de animações profissional",
-    "skills.vite.desc": "Build tool ultrarrápido para frontend",
+    "skills.vite.desc": "Ferramenta de build ultrarrápida para frontend",
     "skills.webgl.desc": "API gráfica 3D para navegadores",
     "skills.html5.desc": "Marcação semântica e acessível",
     "skills.css3.desc": "Estilização moderna e responsiva",
@@ -92,11 +93,11 @@ const translations = {
     "skills.git.desc": "Controle de versão distribuído",
     "skills.docker.desc": "Containerização de aplicações",
     "skills.linux.desc": "Sistema operacional para servidores",
-    "skills.vercel.desc": "Deploy e hosting para Next.js",
+    "skills.vercel.desc": "Deploy e hospedagem para Next.js",
     "skills.cloudflare.desc": "CDN, DNS e segurança web",
     "skills.nginx.desc": "Servidor web e proxy reverso",
     "skills.coolify.desc": "PaaS self-hosted para deploy",
-    "skills.n8n.desc": "Automação de workflows low-code",
+    "skills.n8n.desc": "Automação de fluxos de trabalho low-code",
     "skills.bash.desc": "Scripts e automação no terminal",
     "skills.python.desc": "Automação e scripts",
     "skills.githubactions.desc": "CI/CD e automação de workflows",
@@ -112,7 +113,7 @@ const translations = {
 
     // Work Experience - Roles
     "experience.casepay.role": "Co-Founder & Lead Engineer",
-    "experience.casepay.desc": "Co-fundador de gateway de pagamento focado em lotéricas, pequenos negócios, desenvolvedores, vibecoders e SaaS. Desenvolvi a plataforma completa em Laravel, incluindo integração com APIs de pagamento, dashboard para gestão de transações, controle financeiro, sistema de repasses e segurança da aplicação. Landing page em Next.js. Integrado ao ecossistema Case e parceiros (LotoHub, CaseZap, ChatCase, ConectaLot, sites de lotéricas).",
+    "experience.casepay.desc": "Co-fundador de gateway de pagamento focado em lotéricas, pequenos negócios, desenvolvedores, criadores independentes e SaaS. Desenvolvi a plataforma completa em Laravel, incluindo integração com APIs de pagamento, dashboard para gestão de transações, controle financeiro, sistema de repasses e segurança da aplicação. Landing page em Next.js. Integrado ao ecossistema Case e parceiros (LotoHub, CaseZap, ChatCase, ConectaLot, sites de lotéricas).",
 
     "experience.case.role": "Lead Product Engineer",
     "experience.case.desc": "Lidero o desenvolvimento do ecossistema técnico da Case, coordenando equipe de desenvolvedores. Criei CaseZap (SaaS para gestão de instâncias WhatsApp com dashboard, analytics, financeiro e automações), Case Dashboard (hub centralizado integrando todas as plataformas da Case e parceiros) e dezenas de sites, aplicações e landing pages para clientes diversos. Desenvolvo também plataformas e soluções sob medida. Gerencio Google Ads e obtive certificação de jogos de azar.",
@@ -155,12 +156,6 @@ const translations = {
     // Projects
     "projects.section": "02 // TRABALHOS",
     "projects.title": "Projetos em destaque",
-    "projects.viewAll": "Ver todos",
-    "projects.viewAllMobile": "Ver todos os projetos",
-    "projects.code": "Código",
-    "projects.demo": "Demo",
-    "projects.description": "Descrição do projeto. Explique o problema resolvido, tecnologias usadas e impacto.",
-
     // Contact
     "contact.section": "03 // CONTATO",
     "contact.title": "Vamos conversar?",
@@ -204,7 +199,7 @@ const translations = {
 
     // About
     "about.section": "01 // ABOUT",
-    "about.title": "Who am I",
+    "about.title": "About me",
     "about.intro": "I'm a",
     "about.description1": "Product Engineer — I combine product vision with technical execution to deliver solutions that drive impact.",
     "about.description2": "With over 4 years of experience, I don't just code — I propose, iterate, and ship features end-to-end focused on user outcomes. My specialty is building products with",
@@ -274,10 +269,10 @@ const translations = {
 
     // Work Experience - Roles
     "experience.casepay.role": "Co-Founder & Lead Engineer",
-    "experience.casepay.desc": "Co-founded a payment gateway focused on lottery retailers, small businesses, developers, vibecoders and SaaS. Built the entire platform in Laravel, including payment API integrations, transaction management dashboard, financial control, transfer system and application security. Landing page in Next.js. Integrated with Case and partners ecosystem (LotoHub, CaseZap, ChatCase, ConectaLot, lottery retailer sites).",
+    "experience.casepay.desc": "Co-founded a payment gateway focused on lottery retailers, small businesses, developers, independent builders and SaaS. Built the entire platform in Laravel, including payment API integrations, transaction management dashboard, financial control, transfer system and application security. Landing page in Next.js. Integrated with Case and partners ecosystem (LotoHub, CaseZap, ChatCase, ConectaLot, lottery retailer sites).",
 
     "experience.case.role": "Lead Product Engineer",
-    "experience.case.desc": "Lead Case's technical ecosystem development, coordinating a team of developers. Built CaseZap (SaaS for WhatsApp instance management with dashboard, analytics, billing and automations), Case Dashboard (centralized hub integrating all Case and partner platforms) and dozens of sites, applications and landing pages for various clients. Also develop custom platforms and solutions. Manage Google Ads and obtained gambling certification.",
+    "experience.case.desc": "I lead Case's technical ecosystem development, coordinating a team of developers. I built CaseZap (SaaS for WhatsApp instance management with dashboard, analytics, billing and automations), Case Dashboard (centralized hub integrating all Case and partner platforms), and dozens of sites, applications, and landing pages for various clients. I also build custom platforms and solutions. I manage Google Ads and obtained gambling certification.",
 
     "experience.seloesgo.role": "Product Engineer",
     "experience.seloesgo.desc": "Initially hired as Designer, identified automation opportunity and built a complete system integrated with ConectaLot API that auto-generates and distributes graphics to 630+ lottery operators in Goiás. Reduced creation time from hours to seconds.",
@@ -317,15 +312,9 @@ const translations = {
     // Projects
     "projects.section": "02 // WORK",
     "projects.title": "Featured Projects",
-    "projects.viewAll": "View all",
-    "projects.viewAllMobile": "View all projects",
-    "projects.code": "Code",
-    "projects.demo": "Demo",
-    "projects.description": "Project description. Explain the problem solved, technologies used, and impact.",
-
     // Contact
     "contact.section": "03 // CONTACT",
-    "contact.title": "Let's talk?",
+    "contact.title": "Let's talk",
     "contact.description": "I'm always open to discussing new projects, creative ideas, or job opportunities.",
     "contact.cta": "GET IN TOUCH",
     "contact.alternative": "Or find me on",
@@ -359,24 +348,21 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | null>(null)
 
 function getInitialLocale(): Locale {
-  if (typeof document === "undefined") return "en-US"
+  if (typeof document === "undefined") return "pt-BR"
   const cookieLocale = getCookie(LOCALE_COOKIE)
   if (cookieLocale === "pt-BR" || cookieLocale === "en-US") {
     return cookieLocale
   }
-  return "en-US"
+  return "pt-BR"
 }
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en-US")
+  const mounted = useMounted()
+  const [locale, setLocaleState] = useState<Locale>(getInitialLocale)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const activeLocale = mounted ? locale : "pt-BR"
 
-  useEffect(() => {
-    const initialLocale = getInitialLocale()
-    setLocaleState(initialLocale)
-  }, [])
-
-  const setLocale = useCallback((newLocale: Locale) => {
+  function setLocale(newLocale: Locale) {
     if (newLocale === locale) return
 
     setIsTransitioning(true)
@@ -388,21 +374,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         setIsTransitioning(false)
       }, 800)
     }, 400)
-  }, [locale])
+  }
 
-  const t = useCallback((key: TranslationKey): string => {
-    return translations[locale][key] || key
-  }, [locale])
+  function t(key: TranslationKey): string {
+    return translations[activeLocale][key] || key
+  }
 
   return (
-    <I18nContext.Provider value={{ locale, setLocale, t, isTransitioning }}>
+    <I18nContext.Provider value={{ locale: activeLocale, setLocale, t, isTransitioning }}>
       {children}
     </I18nContext.Provider>
   )
 }
 
 export function useI18n() {
-  const context = useContext(I18nContext)
+  const context = use(I18nContext)
   if (!context) {
     throw new Error("useI18n must be used within I18nProvider")
   }

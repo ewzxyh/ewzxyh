@@ -1,6 +1,6 @@
 "use client"
 
-import { memo, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import * as THREE from "three"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
@@ -363,7 +363,6 @@ interface FluidBackgroundProps {
 function FluidBackgroundComponent({ className = "", defer = false }: FluidBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const reducedMotion = useReducedMotion()
-  const cleanupRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     // Skip WebGL setup if user prefers reduced motion or deferred
@@ -374,6 +373,7 @@ function FluidBackgroundComponent({ className = "", defer = false }: FluidBackgr
 
     // Delay WebGL init to let loading animation complete smoothly
     let cancelled = false
+    let cleanup: (() => void) | null = null
 
     // Use requestIdleCallback for optimal scheduling, fallback to setTimeout
     const scheduleInit = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 150))
@@ -381,14 +381,13 @@ function FluidBackgroundComponent({ className = "", defer = false }: FluidBackgr
 
     const initId = scheduleInit(() => {
       if (cancelled) return
-      cleanupRef.current = initWebGL(container)
+      cleanup = initWebGL(container)
     })
 
     return () => {
       cancelled = true
       cancelInit(initId)
-      cleanupRef.current?.()
-      cleanupRef.current = null
+      cleanup?.()
     }
   }, [reducedMotion, defer])
 
@@ -399,7 +398,6 @@ function FluidBackgroundComponent({ className = "", defer = false }: FluidBackgr
       style={{
         isolation: "isolate",
         contain: "layout style paint",
-        willChange: "transform",
       }}
     />
   )
@@ -684,4 +682,4 @@ function initWebGL(container: HTMLDivElement): () => void {
   }
 }
 
-export const FluidBackground = memo(FluidBackgroundComponent)
+export const FluidBackground = FluidBackgroundComponent

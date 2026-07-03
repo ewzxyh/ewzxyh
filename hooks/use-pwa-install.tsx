@@ -1,6 +1,7 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import { createContext, use, useState, useEffect, type ReactNode } from "react"
+import { useMounted } from "@/hooks/use-mounted"
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
@@ -17,21 +18,20 @@ interface PWAInstallContextType {
 const PWAInstallContext = createContext<PWAInstallContextType | null>(null)
 
 export function PWAInstallProvider({ children }: { children: ReactNode }) {
+  const mounted = useMounted()
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
-  const [isInstalled, setIsInstalled] = useState(false)
-  const [isIOS, setIsIOS] = useState(false)
+  const [isInstalled, setIsInstalled] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(display-mode: standalone)").matches
+      : false
+  )
+  const [isIOS] = useState(() =>
+    typeof navigator !== "undefined"
+      ? /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window)
+      : false
+  )
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setIsInstalled(true)
-      return
-    }
-
-    // Check if iOS
-    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window)
-    setIsIOS(isIOSDevice)
-
     // Listen for beforeinstallprompt
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault()
@@ -53,7 +53,7 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const install = useCallback(async () => {
+  async function install() {
     if (!deferredPrompt) return
 
     await deferredPrompt.prompt()
@@ -63,14 +63,14 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
       setIsInstalled(true)
     }
     setDeferredPrompt(null)
-  }, [deferredPrompt])
+  }
 
   return (
     <PWAInstallContext.Provider
       value={{
         isInstallable: !!deferredPrompt,
-        isInstalled,
-        isIOS,
+        isInstalled: mounted && isInstalled,
+        isIOS: mounted && isIOS,
         install,
       }}
     >
@@ -80,7 +80,7 @@ export function PWAInstallProvider({ children }: { children: ReactNode }) {
 }
 
 export function usePWAInstall() {
-  const context = useContext(PWAInstallContext)
+  const context = use(PWAInstallContext)
   if (!context) {
     throw new Error("usePWAInstall must be used within PWAInstallProvider")
   }

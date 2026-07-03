@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { User, Briefcase, FolderKanban, Mail, type LucideIcon } from "lucide-react"
-import UseAnimations from "react-useanimations"
+import dynamic from "next/dynamic"
+import Link from "next/link"
 import menu2 from "react-useanimations/lib/menu2"
 import { Logo } from "./logo"
 import { ThemeToggle } from "./theme-toggle"
@@ -15,6 +16,8 @@ import { useI18n } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
+
+const UseAnimations = dynamic(() => import("react-useanimations"), { ssr: false })
 
 interface NavItemConfig {
   id: string
@@ -33,27 +36,28 @@ export function Header() {
   const { t, isTransitioning } = useI18n()
   const headerRef = useRef<HTMLElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const navItemsRef = useRef<(HTMLButtonElement | null)[]>([])
+  const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([])
   const isHiddenRef = useRef(false)
   const hasAnimatedRef = useRef(false)
   const { isAlmostComplete } = useLoading()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const scrollToSection = useCallback((sectionId: string) => {
+  const scrollToSection = (sectionId: string) => {
     setIsMenuOpen(false)
 
     setTimeout(() => {
+      window.history.pushState(null, "", `#${sectionId}`)
       gsap.to(window, {
         duration: 1,
         scrollTo: { y: `#${sectionId}`, offsetY: 80 },
         ease: "power3.inOut",
       })
     }, 300)
-  }, [])
+  }
 
-  const toggleMenu = useCallback(() => {
+  const toggleMenu = () => {
     setIsMenuOpen(prev => !prev)
-  }, [])
+  }
 
   // Animate menu open/close
   useEffect(() => {
@@ -181,22 +185,25 @@ export function Header() {
 
         {/* Main header bar */}
         <div className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2">
-          <a href="#" className="block flex-shrink-0">
+          <Link href="/" className="block flex-shrink-0">
             <Logo className="h-6 sm:h-6 md:h-8 w-auto" />
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <button
+              <a
                 key={item.id}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
+                href={`#${item.id}`}
+                onClick={(event) => {
+                  event.preventDefault()
+                  scrollToSection(item.id)
+                }}
                 className="group flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <item.icon className="w-4 h-4" />
                 <span className="tracking-wide">{t(item.labelKey as any)}</span>
-              </button>
+              </a>
             ))}
           </nav>
 
@@ -241,11 +248,14 @@ export function Header() {
         >
           <nav className="px-3 py-4 flex flex-col">
             {navItems.map((item, index) => (
-              <button
+              <a
                 key={item.id}
                 ref={(el) => { navItemsRef.current[index] = el }}
-                type="button"
-                onClick={() => scrollToSection(item.id)}
+                href={`#${item.id}`}
+                onClick={(event) => {
+                  event.preventDefault()
+                  scrollToSection(item.id)
+                }}
                 className={`group relative w-full text-left py-3 sm:py-4 overflow-hidden transition-all duration-300 hover:pl-4 active:scale-[0.98] ${index < navItems.length - 1 ? "border-b border-border/30" : ""}`}
               >
                 <div className="flex items-center justify-between">
@@ -257,7 +267,7 @@ export function Header() {
 
                 {/* Hover line indicator */}
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-foreground transition-all duration-300 group-hover:w-full" />
-              </button>
+              </a>
             ))}
 
             {/* PWA Install Button */}

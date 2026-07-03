@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react"
+import { createContext, use, useState, type ReactNode } from "react"
 
 interface LoadingContextType {
   isLoadingComplete: boolean
@@ -15,13 +15,13 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
   const [isLoadingComplete, setIsLoadingComplete] = useState(false)
   const [isAlmostComplete, setIsAlmostComplete] = useState(false)
 
-  const setLoadingComplete = useCallback(() => {
+  function setLoadingComplete() {
     setIsLoadingComplete(true)
-  }, [])
+  }
 
-  const setAlmostComplete = useCallback(() => {
+  function setAlmostComplete() {
     setIsAlmostComplete(true)
-  }, [])
+  }
 
   return (
     <LoadingContext.Provider value={{ isLoadingComplete, isAlmostComplete, setLoadingComplete, setAlmostComplete }}>
@@ -31,7 +31,7 @@ export function LoadingProvider({ children }: { children: ReactNode }) {
 }
 
 export function useLoading() {
-  const context = useContext(LoadingContext)
+  const context = use(LoadingContext)
   if (!context) {
     throw new Error("useLoading must be used within a LoadingProvider")
   }

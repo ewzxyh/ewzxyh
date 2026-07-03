@@ -3,8 +3,8 @@
 import { useState, useEffect, useRef } from "react"
 import { useTheme } from "next-themes"
 import { gsap } from "gsap"
-import { ShapeOverlays } from "./shape-overlays"
 import { useLoading } from "./loading-context"
+import { useMounted } from "@/hooks/use-mounted"
 
 const logoPaths = [
   "M85.2494 5.73718C38.2427 5.73718 0 43.9798 0 90.9878C0 137.996 38.2427 176.239 85.2494 176.239H115.687C125.663 176.239 133.776 168.124 133.776 158.148C133.776 148.173 125.663 140.058 115.687 140.058H85.2494C58.1934 140.058 36.18 118.045 36.18 90.9878C36.18 63.9305 58.1934 41.9172 85.2494 41.9172H115.687C125.663 41.9172 133.776 33.8012 133.776 23.8278C133.776 13.8518 125.663 5.73718 115.687 5.73718H85.2494Z",
@@ -35,9 +35,8 @@ const darkGradients = [
 
 export function PageLoader() {
   const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const [logoComplete, setLogoComplete] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
   const [showLogoScreen, setShowLogoScreen] = useState(true)
   const { setLoadingComplete, setAlmostComplete } = useLoading()
 
@@ -48,10 +47,6 @@ export function PageLoader() {
   const isDark = mounted && resolvedTheme === "dark"
   const gradients = isDark ? darkGradients : lightGradients
   const strokeColor = isDark ? "#ffffff" : "#000000"
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   useEffect(() => {
     if (!mounted || !logoSvgRef.current || logoComplete) return
@@ -74,12 +69,13 @@ export function PageLoader() {
         onComplete: () => {
           gsap.to(containerRef.current, {
             opacity: 0,
-            duration: 0.4,
+            duration: 0.18,
             ease: "power2.inOut",
             onComplete: () => {
               setLogoComplete(true)
               setShowLogoScreen(false)
-              setTimeout(() => setIsLoading(false), 100)
+              setAlmostComplete()
+              setLoadingComplete()
             },
           })
         },
@@ -90,9 +86,9 @@ export function PageLoader() {
           path,
           {
             strokeDashoffset: 0,
-            duration: 0.5,
+            duration: 0.25,
           },
-          index * 0.1
+          index * 0.04
         )
       })
 
@@ -102,18 +98,16 @@ export function PageLoader() {
           {
             fillOpacity: 1,
             strokeOpacity: 0,
-            duration: 0.25,
+            duration: 0.12,
             ease: "power2.out",
           },
-          index === 0 ? "-=0.1" : `-=${0.15}`
+          index === 0 ? "-=0.05" : "-=0.08"
         )
       })
-
-      tl.to({}, { duration: 0.5 })
     }, logoSvgRef)
 
     return () => ctx.revert()
-  }, [mounted, logoComplete])
+  }, [mounted, logoComplete, setAlmostComplete, setLoadingComplete])
 
   if (!mounted) {
     return (
@@ -171,14 +165,6 @@ export function PageLoader() {
             ))}
           </svg>
         </div>
-      )}
-
-      {logoComplete && (
-        <ShapeOverlays
-          isActive={isLoading}
-          onComplete={setLoadingComplete}
-          onAlmostComplete={setAlmostComplete}
-        />
       )}
     </>
   )
