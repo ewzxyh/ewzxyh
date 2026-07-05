@@ -64,7 +64,9 @@ export function Logo({ className = "", animate = true }: LogoProps) {
 
     const tl = gsap.timeline({
       defaults: { ease: "power2.inOut" },
-      repeat: -1,
+      onComplete: () => {
+        hoverTimelineRef.current = null
+      },
     })
 
     pathElements.forEach((path) => {

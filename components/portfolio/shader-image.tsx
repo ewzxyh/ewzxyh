@@ -1,8 +1,9 @@
 "use client"
 
+import { gsap } from "gsap"
+import Image from "next/image"
 import { useEffect, useRef } from "react"
 import * as THREE from "three"
-import { gsap } from "gsap"
 
 // Shared velocity proxy for all canvases
 const velocityProxy = { v: 0, s: 0 }
@@ -134,7 +135,7 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const uniformsRef = useRef<Record<string, THREE.IUniform> | null>(null)
   const tickIdRef = useRef<number | null>(null)
-  const isVisibleRef = useRef(true)
+  const isVisibleRef = useRef(false)
 
   useEffect(() => {
     initScrollVelocity()
@@ -193,28 +194,42 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
 
     let last = performance.now()
     let textureLoaded = false
+    let textureStarted = false
+    let texture: THREE.Texture | null = null
+    let disposed = false
     let lastStrength = 0
-
-    // Only render when visible
-    const observer = new IntersectionObserver(
-      (entries) => {
-        isVisibleRef.current = entries[0]?.isIntersecting ?? true
-      },
-      { threshold: 0, rootMargin: "50px" }
-    )
-    observer.observe(container)
 
     const loader = new THREE.TextureLoader()
     loader.setCrossOrigin("anonymous")
-    loader.load(src, (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace
-      uniforms.uTexture.value = tex
-      uniforms.uTextureSize.value.set(tex.image.width, tex.image.height)
-      textureLoaded = true
-      layout()
-      // Render immediately when texture loads
-      renderer.render(scene, camera)
-    })
+    const loadTexture = () => {
+      if (textureStarted) return
+      textureStarted = true
+      loader.load(src, (tex) => {
+        if (disposed) {
+          tex.dispose()
+          return
+        }
+        texture = tex
+        tex.colorSpace = THREE.SRGBColorSpace
+        uniforms.uTexture.value = tex
+        uniforms.uTextureSize.value.set(tex.image.width, tex.image.height)
+        textureLoaded = true
+        layout()
+        // Render immediately when texture loads
+        renderer.render(scene, camera)
+      })
+    }
+
+    // Only load/render when near the viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const isNear = entries[0]?.isIntersecting ?? true
+        isVisibleRef.current = isNear
+        if (isNear) loadTexture()
+      },
+      { threshold: 0, rootMargin: "300px" }
+    )
+    observer.observe(container)
 
     function tick(now: number) {
       if (!textureLoaded || !isVisibleRef.current) return
@@ -240,9 +255,11 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
     tickIdRef.current = tick as unknown as number
 
     return () => {
+      disposed = true
       gsap.ticker.remove(tick)
       window.removeEventListener("resize", handleWindowResize)
       observer.disconnect()
+      texture?.dispose()
       renderer.dispose()
       geom.dispose()
       mat.dispose()
@@ -262,7 +279,20 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
         transform: "translateZ(0)",
         backfaceVisibility: "hidden",
       }}
-      aria-label={alt}
-    />
+    >
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 768px) 100vw, 33vw"
+        loading="lazy"
+        decoding="async"
+        className="object-cover"
+        style={{
+          objectPosition: `center ${position}`,
+          filter: grayscale ? "grayscale(1)" : undefined,
+        }}
+      />
+    </div>
   )
 }

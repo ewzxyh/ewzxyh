@@ -1,36 +1,36 @@
 "use client"
 
-import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { Flip } from "gsap/dist/Flip"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useEffect, useRef } from "react"
+import { useI18n } from "@/lib/i18n"
 import { CanvasParticles } from "./canvas-particles"
 import { ScrollFillLogo } from "./scroll-fill-logo"
 import { ShaderImage } from "./shader-image"
-import { useI18n } from "@/lib/i18n"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
 const localImagesByLocale = {
   "pt-BR": [
-    { src: "/gallery/ewzxyh (1).png", alt: "Interface de produto web por Enzo Yoshida", position: "55%" },
-    { src: "/gallery/ewzxyh (3).png", alt: "Dashboard SaaS desenvolvido por Enzo Yoshida", position: "55%" },
+    { src: "/gallery/ewzxyh (1).webp", alt: "Interface de produto web por Enzo Yoshida", position: "55%" },
+    { src: "/gallery/ewzxyh (3).webp", alt: "Dashboard SaaS desenvolvido por Enzo Yoshida", position: "55%" },
     { src: "", alt: "Animação do logotipo Enzo Yoshida", position: "center" },
-    { src: "/gallery/ewzxyh (6).png", alt: "Tela de automação para operação digital", position: "28%" },
-    { src: "/gallery/ewzxyh (5).png", alt: "Aplicação web com foco em conversão e gestão", position: "center" },
-    { src: "/gallery/ewzxyh (4).png", alt: "Experiência de usuário para produto digital", position: "center" },
+    { src: "/gallery/ewzxyh (6).webp", alt: "Tela de automação para operação digital", position: "28%" },
+    { src: "/gallery/ewzxyh (5).webp", alt: "Aplicação web com foco em conversão e gestão", position: "center" },
+    { src: "/gallery/ewzxyh (4).webp", alt: "Experiência de usuário para produto digital", position: "center" },
     { src: "/gallery/ewzxyh (8).webp", alt: "Sistema web responsivo criado por Enzo Yoshida", position: "12%" },
-    { src: "/gallery/ewzxyh (2).png", alt: "Interface administrativa para produto SaaS", position: "72%" },
+    { src: "/gallery/ewzxyh (2).webp", alt: "Interface administrativa para produto SaaS", position: "72%" },
   ],
   "en-US": [
-    { src: "/gallery/ewzxyh (1).png", alt: "Web product interface by Enzo Yoshida", position: "55%" },
-    { src: "/gallery/ewzxyh (3).png", alt: "SaaS dashboard developed by Enzo Yoshida", position: "55%" },
+    { src: "/gallery/ewzxyh (1).webp", alt: "Web product interface by Enzo Yoshida", position: "55%" },
+    { src: "/gallery/ewzxyh (3).webp", alt: "SaaS dashboard developed by Enzo Yoshida", position: "55%" },
     { src: "", alt: "Enzo Yoshida logo animation", position: "center" },
-    { src: "/gallery/ewzxyh (6).png", alt: "Automation screen for digital operations", position: "28%" },
-    { src: "/gallery/ewzxyh (5).png", alt: "Web application focused on conversion and management", position: "center" },
-    { src: "/gallery/ewzxyh (4).png", alt: "User experience for a digital product", position: "center" },
+    { src: "/gallery/ewzxyh (6).webp", alt: "Automation screen for digital operations", position: "28%" },
+    { src: "/gallery/ewzxyh (5).webp", alt: "Web application focused on conversion and management", position: "center" },
+    { src: "/gallery/ewzxyh (4).webp", alt: "User experience for a digital product", position: "center" },
     { src: "/gallery/ewzxyh (8).webp", alt: "Responsive web system created by Enzo Yoshida", position: "12%" },
-    { src: "/gallery/ewzxyh (2).png", alt: "Administrative interface for a SaaS product", position: "72%" },
+    { src: "/gallery/ewzxyh (2).webp", alt: "Administrative interface for a SaaS product", position: "72%" },
   ],
 } as const
 
@@ -99,7 +99,7 @@ export function BentoGallery() {
     <div ref={wrapRef} className="bento-wrap bg-background">
       <div ref={galleryRef} className="bento-gallery">
         {localImagesByLocale[locale].map((image, index) => (
-          <div key={image.src || "particles"} className="bento-item" aria-label={image.alt}>
+          <div key={image.src || "particles"} className="bento-item">
             {index === 2 ? (
               <div className="relative w-full h-full">
                 <CanvasParticles />

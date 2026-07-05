@@ -5,6 +5,7 @@ import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 import { useMounted } from "@/hooks/use-mounted"
+import { Logo } from "./logo"
 
 export function Footer() {
   const { t, locale } = useI18n()
@@ -48,6 +49,15 @@ export function Footer() {
             ))}
             <PWAInstallButton variant="icon" className="!p-1 !border-0 !bg-transparent text-muted-foreground hover:text-foreground" />
           </div>
+        </div>
+        <div
+          className="mt-8 sm:mt-10 border-t border-border/70 pt-8 sm:pt-10 flex justify-center overflow-hidden pointer-events-none select-none"
+          aria-hidden="true"
+        >
+          <Logo
+            animate={false}
+            className="w-[min(92vw,860px)] h-auto opacity-[0.1] dark:opacity-[0.14]"
+          />
         </div>
       </div>
     </footer>

@@ -27,6 +27,7 @@ function MailIcon({ size, className }: { size: number; className?: string }) {
   const lottieRef = useRef<LottieRefCurrentProps>(null)
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: hover only replays a decorative icon animation; the parent anchor is the interactive control.
     <div
       style={{ width: size, height: size }}
       className={`${className} [&_path]:stroke-current`}
@@ -54,7 +55,7 @@ function scrollToProjects() {
 
 export function Hero() {
   const { t, locale } = useI18n()
-  const { isAlmostComplete } = useLoading()
+  const { isLoadingComplete } = useLoading()
 
   const animatedLinks = [
     { animation: github, href: "https://github.com/ewzxyh", label: "GitHub" },
@@ -77,27 +78,24 @@ export function Hero() {
   const nameRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
-    if (!isAlmostComplete) return
+    if (!isLoadingComplete) return
 
     const terminalText = t("hero.terminal")
 
     const ctx = gsap.context(() => {
-      gsap.set(".hero-terminal", { y: -20 })
-      gsap.set(titleRef.current, { y: 30 })
-      gsap.set(subtitleRef.current, { y: 20 })
-      gsap.set(statsRef.current?.children || [], { y: 20 })
-      gsap.set(socialsRef.current?.children || [], { scale: 0.8 })
-      gsap.set(ctaRef.current, { y: 20 })
+      const stats = statsRef.current?.children || []
+      const socials = socialsRef.current?.children || []
+      const corners = gsap.utils.toArray<HTMLElement>(".corner-decoration")
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
 
-      tl.to(".hero-terminal", { opacity: 1, y: 0, duration: 0.22 })
+      tl.fromTo(".hero-terminal", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.22 })
         .to(terminalTextRef.current, {
           duration: 0.35,
           text: terminalText,
           ease: "none",
         }, "-=0.1")
-        .to(titleRef.current, { opacity: 1, y: 0, duration: 0.25 }, "-=0.2")
+        .fromTo(titleRef.current, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.25 }, "-=0.2")
         .to(nameRef.current, {
           duration: 0.55,
           scrambleText: {
@@ -106,19 +104,21 @@ export function Hero() {
             speed: 0.8,
           },
         }, "-=0.15")
-        .to(subtitleRef.current, { opacity: 1, y: 0, duration: 0.22 }, "-=0.35")
-        .to(
-          statsRef.current?.children || [],
+        .fromTo(subtitleRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.22 }, "-=0.35")
+        .fromTo(
+          stats,
+          { opacity: 0, y: 20 },
           { opacity: 1, y: 0, duration: 0.22, stagger: 0.04 },
           "-=0.12"
         )
-        .to(
-          socialsRef.current?.children || [],
+        .fromTo(
+          socials,
+          { opacity: 0, scale: 0.8 },
           { opacity: 1, scale: 1, duration: 0.18, stagger: 0.04 },
           "-=0.1"
         )
-        .to(ctaRef.current, { opacity: 1, y: 0, duration: 0.2 }, "-=0.1")
-        .to(".corner-decoration", { opacity: 0.5, duration: 0.18, stagger: 0.02 }, "-=0.2")
+        .fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.2 }, "-=0.1")
+        .fromTo(corners, { opacity: 0 }, { opacity: 0.5, duration: 0.18, stagger: 0.02 }, "-=0.2")
 
       // Pin the hero section - About will scroll over it
       ScrollTrigger.create({
@@ -142,7 +142,7 @@ export function Hero() {
         },
       })
 
-      gsap.utils.toArray<HTMLElement>(".corner-decoration").forEach((el, i) => {
+      corners.forEach((el, i) => {
         gsap.to(el, {
           y: (i % 2 === 0 ? -1 : 1) * 50,
           opacity: 0,
@@ -158,7 +158,7 @@ export function Hero() {
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [isAlmostComplete, t])
+  }, [isLoadingComplete, t])
 
   return (
     <section
@@ -204,33 +204,34 @@ export function Hero() {
           </span>
         </p>
 
-        <div ref={statsRef} className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-8 sm:mb-10 text-xs sm:text-sm">
-          <div className="opacity-0 flex flex-col items-center">
+        <div ref={statsRef} className="[&>*]:opacity-0 flex flex-wrap justify-center gap-4 sm:gap-8 mb-8 sm:mb-10 text-xs sm:text-sm">
+          <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold">4+</span>
             <span className="text-muted-foreground tracking-wider">{t("hero.years")}</span>
           </div>
-          <div className="opacity-0 h-10 sm:h-12 w-px bg-border" />
-          <div className="opacity-0 flex flex-col items-center">
+          <div className="h-10 sm:h-12 w-px bg-border" />
+          <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold">50+</span>
             <span className="text-muted-foreground tracking-wider">{t("hero.projects")}</span>
           </div>
-          <div className="opacity-0 h-10 sm:h-12 w-px bg-border" />
-          <div className="opacity-0 flex flex-col items-center">
+          <div className="h-10 sm:h-12 w-px bg-border" />
+          <div className="flex flex-col items-center">
             <span className="text-xl sm:text-2xl font-bold">Next.js</span>
             <span className="text-muted-foreground tracking-wider">{t("hero.specialist")}</span>
           </div>
         </div>
 
-        <div ref={socialsRef} className="flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+        <div ref={socialsRef} className="[&>*]:opacity-0 flex items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-12">
           {animatedLinks.map((link) => (
             <Tooltip key={link.label}>
               <TooltipTrigger
                 render={(
+                  // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
+                    className="group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
                     aria-label={link.label}
                   />
                 )}
@@ -255,11 +256,12 @@ export function Hero() {
             <Tooltip key={link.label}>
               <TooltipTrigger
                 render={(
+                  // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
                   <a
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="opacity-0 group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
+                    className="group p-2 sm:p-2.5 border border-border bg-card/50 text-foreground hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300"
                     aria-label={link.label}
                   />
                 )}
@@ -271,14 +273,14 @@ export function Hero() {
               </TooltipContent>
             </Tooltip>
           ))}
-          <PWAInstallButton variant="icon" className="opacity-0" />
+          <PWAInstallButton variant="icon" />
         </div>
 
         <Button
           ref={ctaRef}
           onClick={scrollToProjects}
           variant="outline"
-          className="opacity-0 group px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base tracking-wider !border !border-foreground !bg-background !text-foreground hover:!bg-foreground hover:!text-background transition-all duration-300"
+          className="group opacity-0 px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base tracking-wider !border !border-foreground !bg-background !text-foreground hover:!bg-foreground hover:!text-background transition-all duration-300"
         >
           {t("hero.cta")}
           <ChevronDown className="ml-2 w-4 h-4 group-hover:translate-y-1 transition-transform" />

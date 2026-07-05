@@ -164,6 +164,22 @@
     cursor: pointer;
   }
 
+  .custom-cursor {
+    display: none;
+  }
+
+  @media (any-hover: hover) and (any-pointer: fine) {
+    html.has-custom-cursor,
+    html.has-custom-cursor * {
+      /* biome-ignore lint/complexity/noImportantStyles: custom cursor must override utility cursor classes */
+      cursor: none !important;
+    }
+
+    .custom-cursor {
+      display: block;
+    }
+  }
+
   /* Icon hover animation */
   svg,
   .icon {

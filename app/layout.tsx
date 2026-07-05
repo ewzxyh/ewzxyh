@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { JetBrains_Mono } from "next/font/google"
-import { siteDescription, siteName, siteUrl } from "@/lib/site"
+import { ogImagePath, siteDescription, siteName, siteTitle, siteUrl } from "@/lib/site"
 import { Providers } from "./providers"
 import "./globals.css"
 
@@ -11,7 +11,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: siteName,
+  title: siteTitle,
   description: siteDescription,
   alternates: {
     canonical: "/",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Enzo Hideki Yoshida" }],
   openGraph: {
-    title: siteName,
+    title: siteTitle,
     description: siteDescription,
     url: "/",
     siteName,
@@ -33,18 +33,24 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og/enzo-yoshida-product-engineer.webp",
+        url: ogImagePath,
         width: 1200,
         height: 630,
-        alt: siteName,
+        alt: `${siteName} - Product Engineer`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteName,
+    title: siteTitle,
     description: siteDescription,
-    images: ["/og/enzo-yoshida-product-engineer.webp"],
+    images: {
+      url: ogImagePath,
+      alt: `${siteName} - Product Engineer`,
+      width: 1200,
+      height: 630,
+      type: "image/webp",
+    },
   },
 }
 

@@ -28,6 +28,9 @@ const highlightsData = [
   },
 ]
 
+const ABOUT_SECTION_ID = "about"
+const ABOUT_CONTENT_ID = "about-content"
+
 export function About() {
   const { t } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
@@ -80,12 +83,12 @@ export function About() {
   }, [])
 
   return (
-    <section ref={sectionRef} id="about" className="relative z-10">
+    <section ref={sectionRef} id={ABOUT_SECTION_ID} className="relative z-10">
       {/* Bento Gallery */}
       <BentoGallery />
 
       {/* About Content - rolls over the gallery */}
-      <div id="about-content" className="relative z-10 py-16 sm:py-24 md:py-32">
+      <div id={ABOUT_CONTENT_ID} className="relative z-10 py-16 sm:py-24 md:py-32">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
         <div ref={headerRef} className="mb-10 sm:mb-16 max-w-3xl mx-auto">
@@ -119,7 +122,7 @@ export function About() {
             {highlightsData.map((item) => (
               <div key={item.titleKey} className="highlight-card p-3 sm:p-4 border border-border bg-card/50">
                 <item.icon className="w-4 h-4 sm:w-5 sm:h-5 mb-2 sm:mb-3 text-muted-foreground" />
-                <h4 className="font-medium mb-1 text-sm sm:text-base">{t(item.titleKey)}</h4>
+                <h3 className="font-medium mb-1 text-sm sm:text-base">{t(item.titleKey)}</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t(item.descKey)}</p>
               </div>
             ))}

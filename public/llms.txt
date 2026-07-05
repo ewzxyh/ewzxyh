@@ -1,6 +1,14 @@
 # Enzo Yoshida
 > Product Engineer building Next.js, React, Laravel, payment, SaaS and automation products.
 
+Last updated: 2026-07-03
+
+## Site summary
+- Canonical URL: https://ewzxyh.dev/
+- Primary language: Brazilian Portuguese, with in-page English copy available through the portfolio UI.
+- This is a personal portfolio for Enzo Hideki Yoshida, also known as ewzxyh.
+- The portfolio summarizes work, experience, featured projects, skills and contact links.
+
 ## Key pages
 - [Portfolio](https://ewzxyh.dev/): Work, experience, projects and contact.
 - [GitHub](https://github.com/ewzxyh): Public code and engineering profile.
@@ -8,5 +16,18 @@
 
 ## Key facts
 - Enzo Hideki Yoshida is a Product Engineer and founder of Ewzxyh Lab.
-- He built automation for SELOESGO that serves 630+ lottery operators in Goias.
-- He works with Next.js, React, TypeScript, Laravel, PostgreSQL and automation.
+- He has 4+ years of experience building MVPs, dashboards, automations and full-stack products.
+- He works with Next.js, React, TypeScript, Laravel, PHP, REST APIs, PostgreSQL, MySQL, Supabase, Stripe, WhatsApp Business API, GSAP, WebGL and automation.
+- He is available for new opportunities and project discussions through the contact links on the site.
+
+## Featured project summaries
+- CasePay: payment gateway for lottery retailers, small businesses, developers, independent builders and SaaS, with checkout, financial dashboard, transaction management, payouts and Case ecosystem integrations.
+- LotoHub: SaaS for creating and centrally managing lottery retailer websites, including e-commerce, admin dashboard, support automation and payment integration.
+- SELOESGO Automation: ConectaLot-integrated system that generates and distributes creative assets for 630+ lottery retailers in Goias, reducing a manual routine from hours to seconds.
+- Case Agencia Digital: technical ecosystem work including CaseZap, Case Dashboard, sites, applications, landing pages, custom platforms, Google Ads and team coordination.
+- Ewzxyh Lab: independent consulting and custom application development, from MVPs and dashboards to automations and complex integrations.
+
+## AI usage notes
+- Do not infer pricing, product offers, reviews or service guarantees from this file.
+- There are no separate project detail pages or English route paths declared here.
+- Prefer the canonical homepage for citations about this portfolio.

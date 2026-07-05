@@ -12,7 +12,7 @@ import { Logo } from "./logo"
 import { ThemeToggle } from "./theme-toggle"
 import { LanguageToggle } from "./language-toggle"
 import { useLoading } from "./loading-context"
-import { useI18n } from "@/lib/i18n"
+import { useI18n, type TranslationKey } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
@@ -22,7 +22,7 @@ const UseAnimations = dynamic(() => import("react-useanimations"), { ssr: false 
 interface NavItemConfig {
   id: string
   icon: LucideIcon
-  labelKey: string
+  labelKey: TranslationKey
 }
 
 const navItems: NavItemConfig[] = [
@@ -39,7 +39,7 @@ export function Header() {
   const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([])
   const isHiddenRef = useRef(false)
   const hasAnimatedRef = useRef(false)
-  const { isAlmostComplete } = useLoading()
+  const { isLoadingComplete } = useLoading()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const scrollToSection = (sectionId: string) => {
@@ -110,19 +110,22 @@ export function Header() {
   }, [isMenuOpen])
 
   useEffect(() => {
-    if (!isAlmostComplete || hasAnimatedRef.current) return
+    if (!isLoadingComplete || hasAnimatedRef.current) return
     hasAnimatedRef.current = true
 
     const header = headerRef.current
     if (!header) return
 
-    gsap.to(header, {
+    gsap.fromTo(header, {
+      opacity: 0,
+      y: -16,
+    }, {
       opacity: 1,
       y: 0,
       duration: 0.6,
       ease: "power3.out",
     })
-  }, [isAlmostComplete])
+  }, [isLoadingComplete])
 
   useEffect(() => {
     const header = headerRef.current
@@ -175,7 +178,7 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-40 px-2 sm:px-4 md:px-6 pt-2 sm:pt-3 md:pt-4 opacity-0 -translate-y-4"
+      className="fixed top-0 left-0 right-0 z-40 opacity-0 px-2 sm:px-4 md:px-6 pt-2 sm:pt-3 md:pt-4"
     >
       <div className="max-w-[calc(100%-16px)] sm:max-w-[calc(72rem-48px)] mx-auto bg-card/50 backdrop-blur-md border border-border overflow-hidden relative">
         {/* Overlay during language transition */}
@@ -185,7 +188,7 @@ export function Header() {
 
         {/* Main header bar */}
         <div className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2">
-          <Link href="/" className="block flex-shrink-0">
+          <Link href="/" className="block flex-shrink-0" aria-label="Enzo Yoshida - página inicial">
             <Logo className="h-6 sm:h-6 md:h-8 w-auto" />
           </Link>
 
@@ -202,7 +205,7 @@ export function Header() {
                 className="group flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors duration-200"
               >
                 <item.icon className="w-4 h-4" />
-                <span className="tracking-wide">{t(item.labelKey as any)}</span>
+                <span className="tracking-wide">{t(item.labelKey)}</span>
               </a>
             ))}
           </nav>
@@ -215,7 +218,7 @@ export function Header() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
               </span>
               <span className="text-[10px] font-medium tracking-wide uppercase">
-                {t("nav.openToWork" as any)}
+                {t("nav.openToWork")}
               </span>
             </div>
 
@@ -226,13 +229,13 @@ export function Header() {
             <button
               type="button"
               onClick={toggleMenu}
-              className="md:hidden flex items-center justify-center px-1.5 py-1.5 flex-shrink-0 border border-border bg-background"
+              className="md:hidden flex h-11 w-11 items-center justify-center flex-shrink-0 border border-border bg-background"
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
               <UseAnimations
                 animation={menu2}
-                size={16}
+                size={20}
                 reverse={isMenuOpen}
                 strokeColor="currentColor"
               />
@@ -260,7 +263,7 @@ export function Header() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground transition-all duration-300 group-hover:text-muted-foreground">
-                    {t(item.labelKey as any)}
+                    {t(item.labelKey)}
                   </span>
                   <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
                 </div>
@@ -280,7 +283,7 @@ export function Header() {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
               <span className="text-sm font-medium text-green-600 dark:text-green-400">
-                {t("nav.openToWork" as any)}
+                {t("nav.openToWork")}
               </span>
             </div>
           </nav>

@@ -15,15 +15,13 @@ export default function NotFound() {
   const { t } = useI18n()
   const { resolvedTheme } = useTheme()
   const mounted = useMounted()
-  const isDark = resolvedTheme === "dark"
-
-  if (!mounted) return null
+  const isDark = mounted && resolvedTheme === "dark"
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6">
       <HeaderActions />
       <div className="max-w-md w-full text-center">
-        {animationData && (
+        {mounted && animationData && (
           <Lottie
             animationData={animationData}
             loop={true}

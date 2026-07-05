@@ -336,7 +336,7 @@ const translations = {
   },
 } as const
 
-type TranslationKey = keyof typeof translations["pt-BR"]
+export type TranslationKey = keyof typeof translations["pt-BR"]
 
 interface I18nContextType {
   locale: Locale
