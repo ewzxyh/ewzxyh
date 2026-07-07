@@ -1,11 +1,18 @@
 "use client"
 
 import { Github, Linkedin, Mail } from "lucide-react"
+import localFont from "next/font/local"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 import { useMounted } from "@/hooks/use-mounted"
-import { Logo } from "./logo"
+
+const atAmiga = localFont({
+  src: "../../app/fonts/AtAmiga-Regular.woff2",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+})
 
 export function Footer() {
   const { t, locale } = useI18n()
@@ -21,8 +28,8 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border py-6 sm:py-8 z-10 relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+      <div className="w-full px-[clamp(1.25rem,3vw,4rem)]">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Logo/Name */}
           <div className="flex items-center gap-2">
             <span className="text-xs sm:text-sm font-medium tracking-wider">EWZXYH_LAB</span>
@@ -30,7 +37,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p className="text-xs sm:text-sm text-muted-foreground text-center">
-            {currentYear} Enzo Yoshida. {t("footer.rights")}
+            {currentYear} Ewzxyh Lab. {t("footer.rights")}
           </p>
 
           {/* Social Links */}
@@ -50,14 +57,18 @@ export function Footer() {
             <PWAInstallButton variant="icon" className="!p-1 !border-0 !bg-transparent text-muted-foreground hover:text-foreground" />
           </div>
         </div>
-        <div
-          className="mt-8 sm:mt-10 border-t border-border/70 pt-8 sm:pt-10 flex justify-center overflow-hidden pointer-events-none select-none"
-          aria-hidden="true"
-        >
-          <Logo
-            animate={false}
-            className="w-[min(92vw,860px)] h-auto opacity-[0.1] dark:opacity-[0.14]"
-          />
+        <div className={`${atAmiga.className} relative mt-8 sm:mt-10 grid grid-cols-4 border-t border-b border-border/70 pointer-events-none select-none`} aria-hidden="true">
+          <span className="absolute left-4 top-4 size-2.5 bg-orange-500 sm:size-3" />
+          <span className="absolute right-4 top-4 size-2.5 bg-orange-500 sm:size-3" />
+          <span className="absolute left-4 bottom-4 size-2.5 bg-orange-500 sm:size-3" />
+          <span className="absolute right-4 bottom-4 size-2.5 bg-orange-500 sm:size-3" />
+          {"LABS".split("").map((letter) => (
+            <div key={letter} className="flex aspect-square items-center justify-center border-l border-border/70 p-[clamp(0.35rem,1.1vw,1.25rem)] first:border-l-0">
+              <span className="text-[clamp(6rem,24vw,28rem)] leading-none text-foreground">
+                {letter}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </footer>

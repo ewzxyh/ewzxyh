@@ -73,7 +73,7 @@ const LETTER_SLOT_VIEWBOX = "0 0 185 182";
 const LETTER_SLOT_WIDTH = 185;
 const LETTER_SLOT_HEIGHT = 182;
 const LETTER_SLOT_CLASS =
-	"absolute left-1/2 top-[22%] h-auto w-[clamp(5.5rem,12vw,13rem)] max-w-[72%] overflow-visible opacity-0";
+	"absolute left-1/2 top-16 h-auto w-[clamp(5.5rem,12vw,13rem)] max-w-[72%] overflow-visible opacity-0 sm:top-[22%]";
 
 const ICON_REVEAL_SECONDS = 0.16;
 const ICON_HOLD_SECONDS = 0.5;
@@ -90,7 +90,10 @@ const LETTER_FILL_START_SECONDS =
 	0.06;
 const LOADER_TIMELINE_SECONDS =
 	LETTER_FILL_START_SECONDS + LETTER_FILL_SECONDS + 0.03;
-const MIN_LOGO_SCREEN_MS = LOADER_TIMELINE_SECONDS * 1000;
+const LOADER_TIMELINE_WALL_SECONDS = LOADER_TIMELINE_SECONDS - 2;
+const LOADER_TIMELINE_TIMESCALE =
+	LOADER_TIMELINE_SECONDS / LOADER_TIMELINE_WALL_SECONDS;
+const MIN_LOGO_SCREEN_MS = LOADER_TIMELINE_WALL_SECONDS * 1000;
 type FinalLetter = keyof typeof finalLetterShapes;
 type CounterColumn = {
 	key: string;
@@ -187,11 +190,11 @@ export function PageLoader() {
 	const hideLogoScreen = useCallback(() => {
 		if (completedRef.current) return;
 		completedRef.current = true;
-		setLoadingComplete();
 
 		const complete = () => {
 			setLogoComplete(true);
 			setShowLogoScreen(false);
+			setLoadingComplete();
 		};
 
 		const columns = columnRefs.current.filter(Boolean);
@@ -565,6 +568,7 @@ export function PageLoader() {
 				);
 
 				tl.to({}, { duration: 0.01 }, LOADER_TIMELINE_SECONDS - 0.01);
+				tl.timeScale(LOADER_TIMELINE_TIMESCALE);
 			}, containerRef);
 		} catch {
 			completeLoading();

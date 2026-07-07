@@ -178,9 +178,9 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-40 opacity-0 px-2 sm:px-4 md:px-6 pt-2 sm:pt-3 md:pt-4"
+      className="fixed top-0 left-0 right-0 z-40 opacity-0 px-[clamp(1rem,3vw,4rem)] pt-2 sm:pt-3 md:pt-4"
     >
-      <div className="max-w-[calc(100%-16px)] sm:max-w-[calc(72rem-48px)] mx-auto bg-card/50 backdrop-blur-md border border-border overflow-hidden relative">
+      <div className="w-full max-w-screen-2xl mx-auto bg-card/50 backdrop-blur-md border border-border overflow-hidden relative">
         {/* Overlay during language transition */}
         {isTransitioning && (
           <div className="absolute inset-0 bg-card/50 backdrop-blur-md z-10 pointer-events-none" />

@@ -96,7 +96,7 @@ export function BentoGallery() {
   }, [])
 
   return (
-    <div ref={wrapRef} className="bento-wrap bg-background">
+    <div ref={wrapRef} className="bento-wrap relative z-[60] bg-background">
       <div ref={galleryRef} className="bento-gallery">
         {localImagesByLocale[locale].map((image, index) => (
           <div key={image.src || "particles"} className="bento-item">

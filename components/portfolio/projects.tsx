@@ -180,7 +180,7 @@ export function Projects() {
       id="projects"
       className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <div className="w-full px-[clamp(1.25rem,3vw,4rem)]">
         {/* Section Header */}
         <div ref={headerRef} className="mb-10 sm:mb-16">
           <div>

@@ -18,7 +18,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+      <div className="w-full px-[clamp(1.25rem,3vw,4rem)] text-center">
         {/* Section Header */}
         <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">
           {t("contact.section")}

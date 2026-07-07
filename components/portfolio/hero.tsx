@@ -1,27 +1,34 @@
 "use client"
 
-import { useEffect, useRef } from "react"
-import { Terminal, ChevronDown } from "lucide-react"
-import dynamic from "next/dynamic"
-import github from "react-useanimations/lib/github"
-import linkedin from "react-useanimations/lib/linkedin"
-import instagram from "react-useanimations/lib/instagram"
-import mail from "react-useanimations/lib/mail"
-import Lottie, { type LottieRefCurrentProps } from "lottie-react"
-import { SiWhatsapp } from "react-icons/si"
-import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { PWAInstallButton } from "@/components/pwa-install-button"
 import { gsap } from "gsap"
+import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { TextPlugin } from "gsap/TextPlugin"
-import { ScrambleTextPlugin } from "gsap/ScrambleTextPlugin"
+import Lottie, { type LottieRefCurrentProps } from "lottie-react"
+import { ChevronDown, Terminal } from "lucide-react"
+import dynamic from "next/dynamic"
+import localFont from "next/font/local"
+import { useEffect, useRef } from "react"
+import { SiWhatsapp } from "react-icons/si"
+import github from "react-useanimations/lib/github"
+import instagram from "react-useanimations/lib/instagram"
+import linkedin from "react-useanimations/lib/linkedin"
+import mail from "react-useanimations/lib/mail"
+import { PWAInstallButton } from "@/components/pwa-install-button"
+import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useI18n } from "@/lib/i18n"
 import { useLoading } from "./loading-context"
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, ScrambleTextPlugin)
 
 const UseAnimations = dynamic(() => import("react-useanimations"), { ssr: false })
+const atAmiga = localFont({
+  src: "../../app/fonts/AtAmiga-Regular.woff2",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+})
 
 function MailIcon({ size, className }: { size: number; className?: string }) {
   const lottieRef = useRef<LottieRefCurrentProps>(null)
@@ -163,10 +170,10 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      className="relative h-screen h-dvh max-h-dvh flex items-center justify-center overflow-hidden"
     >
 
-      <div ref={contentRef} className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
+      <div ref={contentRef} className="relative z-10 w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)] text-center">
         <div className="hero-terminal opacity-0 inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 mb-6 sm:mb-8 border border-border bg-card/50 backdrop-blur-sm">
           <Terminal className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
           <span
@@ -185,7 +192,7 @@ export function Hero() {
           <span className="block text-muted-foreground text-sm sm:text-xl mb-1.5 sm:mb-2 font-normal tracking-[0.2em] sm:tracking-[0.3em]">
             {t("hero.role")}
           </span>
-          <span ref={nameRef} className="animate-flicker">
+          <span ref={nameRef} className={`${atAmiga.className} animate-flicker`}>
             ENZO YOSHIDA
           </span>
         </h1>

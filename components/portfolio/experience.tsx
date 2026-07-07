@@ -606,7 +606,7 @@ export function Experience() {
   return (
     <>
       <section ref={sectionRef} id="experience" className="relative z-10">
-        <div className="max-w-6xl mx-auto px-2 min-[320px]:px-3 xs:px-4 sm:px-6 py-8 min-[320px]:py-10 sm:py-16 md:py-24">
+        <div className="w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)] py-8 min-[320px]:py-10 sm:py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-6 min-[320px]:gap-8 sm:gap-12 lg:gap-16">
             {/* Work Experience */}
             <div ref={workRef} className="lg:col-span-2">

@@ -92,7 +92,7 @@ export default function Home() {
         {JSON.stringify(profileJsonLd).replace(/</g, "\\u003c")}
       </script>
       <LateralPinIndicator />
-      <main className="relative z-10 min-h-screen overflow-x-hidden">
+      <main className="relative z-10 min-h-screen overflow-x-hidden before:pointer-events-none before:fixed before:inset-y-0 before:left-[clamp(1.25rem,3vw,4rem)] before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-[clamp(1.25rem,3vw,4rem)] after:z-30 after:w-px after:bg-border/70">
         <Header />
         <Hero />
         <About />

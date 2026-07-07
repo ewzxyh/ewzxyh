@@ -83,13 +83,13 @@ export function About() {
   }, [])
 
   return (
-    <section ref={sectionRef} id={ABOUT_SECTION_ID} className="relative z-10">
+    <section ref={sectionRef} id={ABOUT_SECTION_ID} className="relative z-[35]">
       {/* Bento Gallery */}
       <BentoGallery />
 
       {/* About Content - rolls over the gallery */}
       <div id={ABOUT_CONTENT_ID} className="relative z-10 py-16 sm:py-24 md:py-32">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)]">
         {/* Section Header */}
         <div ref={headerRef} className="mb-10 sm:mb-16 max-w-3xl mx-auto">
           <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">
