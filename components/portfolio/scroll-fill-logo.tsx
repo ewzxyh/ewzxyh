@@ -103,11 +103,13 @@ export function ScrollFillLogo() {
         viewBox="0 0 525 182"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+        focusable="false"
         className="w-[80%] h-auto max-w-[300px]"
       >
         {paths.map((d, i) => (
           <path
-            key={i}
+            key={d}
             ref={(el) => {
               if (el) pathsRef.current[i] = el
             }}

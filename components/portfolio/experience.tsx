@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useI18n } from "@/lib/i18n"
+import { useI18n, type TranslationKey } from "@/lib/i18n"
 import { Briefcase, GraduationCap, Award, ChevronDown, ExternalLink, X } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 gsap.registerPlugin(ScrollTrigger)
+
+const EXPERIENCE_SECTION_ID = "experience"
 
 const skillDescriptions: Record<string, { "pt-BR": string; "en-US": string }> = {
   // Frameworks & Languages
@@ -98,8 +100,8 @@ const skillDescriptions: Record<string, { "pt-BR": string; "en-US": string }> = 
 
 interface ExperienceItem {
   company: string
-  roleKey: string
-  descKey: string
+  roleKey: TranslationKey
+  descKey: TranslationKey
   period: string
   location: string
   type: string
@@ -109,15 +111,15 @@ interface ExperienceItem {
 
 interface EducationItem {
   institution: string
-  degreeKey: string
+  degreeKey: TranslationKey
   period: string
-  locationKey?: string
+  locationKey?: TranslationKey
   logo?: string
   highlighted?: boolean
 }
 
 interface CertificateItem {
-  nameKey: string
+  nameKey: TranslationKey
   issuer: string
   date: string
   skills: string[]
@@ -346,7 +348,6 @@ function CertificateModal({
       <div
         ref={modalRef}
         className="relative z-10 w-full h-full sm:w-[70vw] sm:h-[90vh] border-0 sm:border border-border bg-background"
-        onClick={(e) => e.stopPropagation()}
       >
         <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 border-b border-border bg-background z-10">
           <span className="text-xs text-muted-foreground font-mono truncate max-w-[calc(100%-3rem)]">
@@ -355,9 +356,10 @@ function CertificateModal({
           <button
             type="button"
             onClick={handleClose}
+            aria-label="Close certificate preview"
             className="p-1 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X aria-hidden="true" className="w-5 h-5" />
           </button>
         </div>
         <iframe
@@ -605,7 +607,7 @@ export function Experience() {
 
   return (
     <>
-      <section ref={sectionRef} id="experience" className="relative z-10">
+      <section ref={sectionRef} id={EXPERIENCE_SECTION_ID} className="relative z-10">
         <div className="w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)] py-8 min-[320px]:py-10 sm:py-16 md:py-24">
           <div className="grid lg:grid-cols-2 gap-6 min-[320px]:gap-8 sm:gap-12 lg:gap-16">
             {/* Work Experience */}
@@ -626,9 +628,9 @@ export function Experience() {
                   <ExpandableItem
                     key={`${item.company}-${item.period}`}
                     title={item.company}
-                    subtitle={t(item.roleKey as any)}
+                    subtitle={t(item.roleKey)}
                     period={item.period}
-                    description={t(item.descKey as any)}
+                    description={t(item.descKey)}
                     skills={item.skills}
                     logo={item.logo}
                     location={item.location}
@@ -657,9 +659,9 @@ export function Experience() {
                   <ExpandableItem
                     key={`${item.institution}-${item.period}`}
                     title={item.institution}
-                    subtitle={t(item.degreeKey as any)}
+                    subtitle={t(item.degreeKey)}
                     period={item.period}
-                    location={item.locationKey ? t(item.locationKey as any) : undefined}
+                    location={item.locationKey ? t(item.locationKey) : undefined}
                     logo={item.logo}
                     icon={GraduationCap}
                     highlighted={item.highlighted}
@@ -685,7 +687,7 @@ export function Experience() {
                 {certificates.map((item) => (
                   <ExpandableItem
                     key={item.credentialUrl ?? item.nameKey}
-                    title={t(item.nameKey as any)}
+                    title={t(item.nameKey)}
                     subtitle={item.issuer}
                     period={item.date}
                     skills={item.skills}

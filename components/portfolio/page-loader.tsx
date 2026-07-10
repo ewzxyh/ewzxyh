@@ -4,7 +4,12 @@ import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import localFont from "next/font/local";
 import { useTheme } from "next-themes";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { useMounted } from "@/hooks/use-mounted";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useLoading } from "./loading-context";
@@ -251,7 +256,8 @@ export function PageLoader() {
 				const lines = text.replace(/\r?\n$/, "").split(/\r?\n/);
 				const columns = Math.max(1, ...lines.map((line) => line.length));
 				const normalizedLines = lines.map((line) => line.padEnd(columns, " "));
-				setAsciiArt(normalizedLines.join("\n"));
+				const normalizedArt = normalizedLines.join("\n");
+				setAsciiArt(normalizedArt);
 				setAsciiSize({
 					columns,
 					lines: Math.max(1, normalizedLines.length),
@@ -632,7 +638,9 @@ export function PageLoader() {
 													key={d}
 													ref={(el) => {
 														if (!el || digitIndex === null) return;
-														finalLetterPathRefs.current[digitIndex] ??= [];
+														if (!finalLetterPathRefs.current[digitIndex]) {
+															finalLetterPathRefs.current[digitIndex] = [];
+														}
 														finalLetterPathRefs.current[digitIndex][pathIndex] =
 															el;
 													}}

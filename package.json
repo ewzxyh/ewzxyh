@@ -7,8 +7,9 @@
     "build": "tsc --noEmit && next build --turbopack",
     "typecheck": "tsc --noEmit",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write"
+    "lint": "biome check app components hooks lib scripts proxy.ts next.config.ts postcss.config.mjs package.json components.json --formatter-enabled=false --assist-enabled=false --css-linter-enabled=false --files-ignore-unknown=true --files-max-size=1048576 --max-diagnostics=80 --diagnostic-level=warn",
+    "lint:full": "biome check app components hooks lib scripts proxy.ts next.config.ts postcss.config.mjs package.json components.json --files-ignore-unknown=true --files-max-size=1048576 --max-diagnostics=120",
+    "format": "biome format --write app components hooks lib scripts proxy.ts next.config.ts postcss.config.mjs package.json components.json --files-ignore-unknown=true --files-max-size=1048576"
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",

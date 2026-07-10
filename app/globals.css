@@ -355,6 +355,7 @@ html.lenis body {
   background: var(--foreground);
   color: var(--background);
 }
+
 ::view-transition-old(root) {
   animation: none;
   z-index: 1;

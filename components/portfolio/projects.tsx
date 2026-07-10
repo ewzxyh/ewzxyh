@@ -7,6 +7,8 @@ import { useI18n } from "@/lib/i18n"
 
 gsap.registerPlugin(ScrollTrigger)
 
+const PROJECTS_SECTION_ID = "projects"
+
 interface Project {
   id: string
   title: string
@@ -177,7 +179,7 @@ export function Projects() {
   return (
     <section
       ref={sectionRef}
-      id="projects"
+      id={PROJECTS_SECTION_ID}
       className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10"
     >
       <div className="w-full px-[clamp(1.25rem,3vw,4rem)]">

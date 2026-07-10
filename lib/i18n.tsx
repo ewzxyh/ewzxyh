@@ -6,6 +6,17 @@ import { useMounted } from "@/hooks/use-mounted"
 type Locale = "pt-BR" | "en-US"
 
 const LOCALE_COOKIE = "preferred-locale"
+const DAY_MS = 24 * 60 * 60 * 1000
+
+type CookieStoreLike = {
+  set: (options: {
+    name: string
+    value: string
+    expires: number
+    path: string
+    sameSite: "lax"
+  }) => Promise<void>
+}
 
 function getCookie(name: string): string | undefined {
   if (typeof document === "undefined") return undefined
@@ -17,7 +28,16 @@ function getCookie(name: string): string | undefined {
 
 function setCookie(name: string, value: string, days: number) {
   if (typeof document === "undefined") return
-  const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString()
+  const expiresAt = Date.now() + days * DAY_MS
+  const cookieStore = (window as Window & { cookieStore?: CookieStoreLike }).cookieStore
+
+  if (cookieStore) {
+    void cookieStore.set({ name, value, expires: expiresAt, path: "/", sameSite: "lax" })
+    return
+  }
+
+  const expires = new Date(expiresAt).toUTCString()
+  // biome-ignore lint/suspicious/noDocumentCookie: fallback for browsers without Cookie Store API.
   document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`
 }
 

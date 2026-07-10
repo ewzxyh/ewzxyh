@@ -5,6 +5,8 @@ import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
 import { PWAInstallButton } from "@/components/pwa-install-button"
 
+const CONTACT_SECTION_ID = "contact"
+
 export function Contact() {
   const { t, locale } = useI18n()
 
@@ -17,7 +19,7 @@ export function Contact() {
     : "Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21"
 
   return (
-    <section id="contact" className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
+    <section id={CONTACT_SECTION_ID} className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
       <div className="w-full px-[clamp(1.25rem,3vw,4rem)] text-center">
         {/* Section Header */}
         <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">

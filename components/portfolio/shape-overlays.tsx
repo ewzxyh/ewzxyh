@@ -1,10 +1,90 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type RefObject } from "react"
 import { gsap } from "gsap"
 
 interface ShapeOverlaysProps {
   isActive?: boolean
+}
+
+const NUM_PATHS = 3
+const NUM_POINTS = 10
+const DELAY_POINTS_MAX = 0.3
+const DELAY_PER_PATH = 0.2
+const DURATION = 0.9
+
+type OverlayPoints = { value: number }[][]
+
+function renderAll(
+  pathsRef: RefObject<SVGPathElement[]>,
+  allPointsRef: RefObject<OverlayPoints>,
+  isOpenedRef: RefObject<boolean>
+) {
+  const isOpened = isOpenedRef.current
+
+  for (let i = 0; i < NUM_PATHS; i++) {
+    const path = pathsRef.current[i]
+    const points = allPointsRef.current[i]
+    if (!path || !points) continue
+
+    let d = ""
+    d += isOpened ? `M 0 0 V ${points[0].value} C` : `M 0 ${points[0].value} C`
+
+    for (let j = 0; j < NUM_POINTS - 1; j++) {
+      const p = ((j + 1) / (NUM_POINTS - 1)) * 100
+      const cp = p - (1 / (NUM_POINTS - 1)) * 100 / 2
+      d += ` ${cp} ${points[j].value} ${cp} ${points[j + 1].value} ${p} ${points[j + 1].value}`
+    }
+
+    d += isOpened ? ` V 100 H 0` : ` V 0 H 0`
+    path.setAttribute("d", d)
+  }
+}
+
+function toggle(
+  pathsRef: RefObject<SVGPathElement[]>,
+  allPointsRef: RefObject<OverlayPoints>,
+  pointsDelayRef: RefObject<number[]>,
+  isOpenedRef: RefObject<boolean>,
+  isAnimatingRef: RefObject<boolean>
+) {
+  if (isAnimatingRef.current) return
+  isAnimatingRef.current = true
+
+  for (let i = 0; i < NUM_POINTS; i++) {
+    pointsDelayRef.current[i] = Math.random() * DELAY_POINTS_MAX
+  }
+
+  const isOpened = isOpenedRef.current
+  const targetValue = isOpened ? 0 : 100
+
+  isOpenedRef.current = !isOpenedRef.current
+
+  const masterTl = gsap.timeline({
+    onUpdate: () => renderAll(pathsRef, allPointsRef, isOpenedRef),
+    onComplete: () => {
+      isAnimatingRef.current = false
+    },
+  })
+
+  for (let i = 0; i < NUM_PATHS; i++) {
+    const points = allPointsRef.current[i]
+    const pathDelay = DELAY_PER_PATH * (isOpened ? (NUM_PATHS - 1 - i) : i)
+
+    for (let j = 0; j < NUM_POINTS; j++) {
+      const pointDelay = pointsDelayRef.current[j]
+
+      masterTl.to(
+        points[j],
+        {
+          value: targetValue,
+          duration: DURATION,
+          ease: "power2.inOut",
+        },
+        pointDelay + pathDelay
+      )
+    }
+  }
 }
 
 export function ShapeOverlays({ isActive }: ShapeOverlaysProps) {
@@ -12,105 +92,36 @@ export function ShapeOverlays({ isActive }: ShapeOverlaysProps) {
   const isAnimatingRef = useRef(false)
   const initializedRef = useRef(false)
 
-  const numPaths = 3
-  const numPoints = 10
-  const delayPointsMax = 0.3
-  const delayPerPath = 0.2
-  const duration = 0.9
-
   const allPointsRef = useRef<{ value: number }[][]>([])
   const pointsDelayRef = useRef<number[]>([])
   const isOpenedRef = useRef(true)
-
-  const renderAll = () => {
-    const isOpened = isOpenedRef.current
-
-    for (let i = 0; i < numPaths; i++) {
-      const path = pathsRef.current[i]
-      const points = allPointsRef.current[i]
-      if (!path || !points) continue
-
-      let d = ""
-      d += isOpened ? `M 0 0 V ${points[0].value} C` : `M 0 ${points[0].value} C`
-
-      for (let j = 0; j < numPoints - 1; j++) {
-        const p = ((j + 1) / (numPoints - 1)) * 100
-        const cp = p - (1 / (numPoints - 1)) * 100 / 2
-        d += ` ${cp} ${points[j].value} ${cp} ${points[j + 1].value} ${p} ${points[j + 1].value}`
-      }
-
-      d += isOpened ? ` V 100 H 0` : ` V 0 H 0`
-      path.setAttribute("d", d)
-    }
-  }
-
-  const toggle = () => {
-    if (isAnimatingRef.current) return
-    isAnimatingRef.current = true
-
-    for (let i = 0; i < numPoints; i++) {
-      pointsDelayRef.current[i] = Math.random() * delayPointsMax
-    }
-
-    const isOpened = isOpenedRef.current
-    const targetValue = isOpened ? 0 : 100
-
-    isOpenedRef.current = !isOpenedRef.current
-
-    const masterTl = gsap.timeline({
-      onUpdate: renderAll,
-      onComplete: () => {
-        isAnimatingRef.current = false
-      },
-    })
-
-    for (let i = 0; i < numPaths; i++) {
-      const points = allPointsRef.current[i]
-      // Top layer (last in DOM) animates first when closing
-      const pathDelay = delayPerPath * (isOpened ? (numPaths - 1 - i) : i)
-
-      for (let j = 0; j < numPoints; j++) {
-        const pointDelay = pointsDelayRef.current[j]
-
-        masterTl.to(
-          points[j],
-          {
-            value: targetValue,
-            duration: duration,
-            ease: "power2.inOut",
-          },
-          pointDelay + pathDelay
-        )
-      }
-    }
-  }
 
   useEffect(() => {
     if (initializedRef.current) return
     initializedRef.current = true
 
     allPointsRef.current = []
-    for (let i = 0; i < numPaths; i++) {
+    for (let i = 0; i < NUM_PATHS; i++) {
       const points: { value: number }[] = []
-      for (let j = 0; j < numPoints; j++) {
+      for (let j = 0; j < NUM_POINTS; j++) {
         points.push({ value: 100 })
       }
       allPointsRef.current.push(points)
     }
 
-    for (let i = 0; i < numPoints; i++) {
+    for (let i = 0; i < NUM_POINTS; i++) {
       pointsDelayRef.current[i] = 0
     }
 
     isOpenedRef.current = true
-    renderAll()
+    renderAll(pathsRef, allPointsRef, isOpenedRef)
   }, [])
 
   useEffect(() => {
     if (!initializedRef.current) return
 
     if (isActive === false && !isAnimatingRef.current) {
-      toggle()
+      toggle(pathsRef, allPointsRef, pointsDelayRef, isOpenedRef, isAnimatingRef)
     }
   }, [isActive])
 
@@ -119,6 +130,8 @@ export function ShapeOverlays({ isActive }: ShapeOverlaysProps) {
       className="fixed inset-0 w-full h-full pointer-events-none z-50"
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
     >
       <path
         ref={(el) => {

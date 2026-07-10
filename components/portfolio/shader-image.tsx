@@ -34,7 +34,7 @@ function initScrollVelocity() {
           s: 0,
           duration: 0.8,
           ease: "sine.inOut",
-          overwrite: true,
+          overwrite: true
         })
       }
       lastScrollY = window.scrollY
@@ -79,6 +79,7 @@ const fragmentShader = /* glsl */ `
   uniform float uScrollVelocity;
   uniform float uVelocityStrength;
   uniform float uGrayscale;
+  uniform float uGrain;
 
   varying vec2 vUv;
   varying vec2 vUvCover;
@@ -110,6 +111,9 @@ const fragmentShader = /* glsl */ `
       color = vec3(gray);
     }
 
+    float noise = fract(sin(dot(gl_FragCoord.xy + uTime * 31.0, vec2(12.9898, 78.233))) * 43758.5453);
+    color += (noise - 0.5) * uGrain;
+
     gl_FragColor = vec4(color, 1.0);
   }
 `
@@ -119,6 +123,8 @@ interface ShaderImageProps {
   alt: string
   grayscale?: boolean
   position?: string
+  hoverOnly?: boolean
+  grain?: number
 }
 
 function parsePosition(pos: string): number {
@@ -130,7 +136,14 @@ function parsePosition(pos: string): number {
   return 0.5
 }
 
-export function ShaderImage({ src, alt, grayscale = false, position = "center" }: ShaderImageProps) {
+export function ShaderImage({
+  src,
+  alt,
+  grayscale = false,
+  position = "center",
+  hoverOnly = false,
+  grain = 0
+}: ShaderImageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
   const uniformsRef = useRef<Record<string, THREE.IUniform> | null>(null)
@@ -166,7 +179,8 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
       uScrollVelocity: { value: 0 },
       uVelocityStrength: { value: 0 },
       uGrayscale: { value: grayscale ? 1.0 : 0.0 },
-      uPositionY: { value: posY },
+      uGrain: { value: grain },
+      uPositionY: { value: posY }
     }
     uniformsRef.current = uniforms
 
@@ -174,7 +188,7 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
       uniforms,
       vertexShader,
       fragmentShader,
-      transparent: true,
+      transparent: true
     })
 
     const mesh = new THREE.Mesh(geom, mat)
@@ -198,6 +212,34 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
     let texture: THREE.Texture | null = null
     let disposed = false
     let lastStrength = 0
+    const hoverProxy = { velocity: 0, strength: 0 }
+
+    const handlePointerEnter = () => {
+      gsap.to(hoverProxy, {
+        strength: 1,
+        duration: 0.3,
+        ease: "power2.out",
+        overwrite: true
+      })
+    }
+    const handlePointerMove = (event: PointerEvent) => {
+      hoverProxy.velocity = gsap.utils.clamp(-2, 2, event.movementX / 16 || 1)
+    }
+    const handlePointerLeave = () => {
+      gsap.to(hoverProxy, {
+        velocity: 0,
+        strength: 0,
+        duration: 0.45,
+        ease: "power2.out",
+        overwrite: true
+      })
+    }
+
+    if (hoverOnly) {
+      container.addEventListener("pointerenter", handlePointerEnter)
+      container.addEventListener("pointermove", handlePointerMove)
+      container.addEventListener("pointerleave", handlePointerLeave)
+    }
 
     const loader = new THREE.TextureLoader()
     loader.setCrossOrigin("anonymous")
@@ -238,17 +280,19 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
       last = now
 
       // Only render when there's velocity or when velocity just stopped
-      const hasVelocity = velocityProxy.s > 0.001
-      const velocityStopped = lastStrength > 0.001 && velocityProxy.s <= 0.001
+      const strength = hoverOnly ? hoverProxy.strength : velocityProxy.s
+      const velocity = hoverOnly ? hoverProxy.velocity : velocityProxy.v
+      const hasVelocity = strength > 0.001
+      const velocityStopped = lastStrength > 0.001 && strength <= 0.001
 
       if (hasVelocity || velocityStopped) {
         uniforms.uTime.value += dt
-        uniforms.uScrollVelocity.value = velocityProxy.v
-        uniforms.uVelocityStrength.value = velocityProxy.s
+        uniforms.uScrollVelocity.value = velocity
+        uniforms.uVelocityStrength.value = strength
         renderer.render(scene, camera)
       }
 
-      lastStrength = velocityProxy.s
+      lastStrength = strength
     }
 
     gsap.ticker.add(tick)
@@ -257,6 +301,10 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
     return () => {
       disposed = true
       gsap.ticker.remove(tick)
+      gsap.killTweensOf(hoverProxy)
+      container.removeEventListener("pointerenter", handlePointerEnter)
+      container.removeEventListener("pointermove", handlePointerMove)
+      container.removeEventListener("pointerleave", handlePointerLeave)
       window.removeEventListener("resize", handleWindowResize)
       observer.disconnect()
       texture?.dispose()
@@ -267,7 +315,7 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
         container.removeChild(renderer.domElement)
       }
     }
-  }, [src, grayscale, position])
+  }, [src, grayscale, position, hoverOnly, grain])
 
   return (
     <div
@@ -277,7 +325,7 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
         isolation: "isolate",
         contain: "layout style paint",
         transform: "translateZ(0)",
-        backfaceVisibility: "hidden",
+        backfaceVisibility: "hidden"
       }}
     >
       <Image
@@ -290,7 +338,7 @@ export function ShaderImage({ src, alt, grayscale = false, position = "center" }
         className="object-cover"
         style={{
           objectPosition: `center ${position}`,
-          filter: grayscale ? "grayscale(1)" : undefined,
+          filter: grayscale ? "grayscale(1)" : undefined
         }}
       />
     </div>

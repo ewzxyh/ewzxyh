@@ -4,18 +4,18 @@ import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useI18n } from "@/lib/i18n"
+import { useI18n, type TranslationKey } from "@/lib/i18n"
 
 gsap.registerPlugin(ScrollTrigger)
 
 interface Skill {
   name: string
   icon: string
-  descriptionKey: string
+  descriptionKey: TranslationKey
 }
 
 interface SkillCategory {
-  titleKey: string
+  titleKey: TranslationKey
   skills: Skill[]
 }
 
@@ -176,7 +176,7 @@ function SkillBadge({ skill, index }: { skill: Skill; index: number }) {
 
       {/* Tooltip */}
       <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-foreground text-background text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50 pointer-events-none">
-        {t(skill.descriptionKey as any)}
+        {t(skill.descriptionKey)}
         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground" />
       </div>
     </div>
@@ -245,14 +245,14 @@ export function Skills() {
         ref={titleRef}
         className="text-lg sm:text-xl font-bold tracking-tight mb-6 sm:mb-8"
       >
-        {t("skills.title" as any)}
+        {t("skills.title")}
       </h3>
 
       <div ref={categoriesRef} className="space-y-6 sm:space-y-8">
         {skillCategories.map((category) => (
           <div key={category.titleKey} className="skill-category">
             <h4 className="text-xs sm:text-sm font-medium text-muted-foreground tracking-wider uppercase mb-3 sm:mb-4">
-              {t(category.titleKey as any)}
+              {t(category.titleKey)}
             </h4>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               {category.skills.map((skill, index) => (

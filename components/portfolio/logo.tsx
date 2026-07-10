@@ -176,6 +176,8 @@ export function Logo({ className = "", animate = true }: LogoProps) {
         )
       })
     }, svgRef)
+
+    return () => ctx.revert()
   }, [mounted, animate, isLoadingComplete])
 
   if (!mounted) {
@@ -196,6 +198,8 @@ export function Logo({ className = "", animate = true }: LogoProps) {
       viewBox="0 0 525 182"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="Ewzxyh Lab logo"
       className={`${className} cursor-pointer`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -219,7 +223,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
       </defs>
       {paths.map((d, i) => (
         <path
-          key={i}
+          key={d}
           ref={(el) => {
             if (el) pathsRef.current[i] = el
           }}
