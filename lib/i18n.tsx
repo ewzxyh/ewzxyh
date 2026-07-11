@@ -48,29 +48,40 @@ const translations = {
     "nav.experience": "Experiência",
     "nav.projects": "Projetos",
     "nav.contact": "Contato",
-    "nav.openToWork": "Open to Work",
+    "nav.openToWork": "Disponível para projetos",
 
     // Hero
-    "hero.role": "PRODUCT ENGINEER",
-    "hero.subtitle": "Construo produtos web rápidos e escaláveis com",
-    "hero.and": "e",
-    "hero.experience": "4+ anos transformando ideias em MVPs, dashboards e automações que geram resultado.",
+    "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
+    "hero.subtitle": "Transformo ideias e operações manuais em produtos digitais prontos para operar.",
+    "hero.experience": "Da estratégia à execução, desenvolvo MVPs, SaaS, dashboards, integrações e automações para empresas que precisam lançar, centralizar ou escalar.",
     "hero.years": "ANOS EXP.",
     "hero.projects": "PROJETOS",
-    "hero.specialist": "ESPECIALISTA",
+    "hero.operators": "OPERADORES",
     "hero.cta": "VER PROJETOS",
-    "hero.terminal": "EWZXYH_LAB://PORTFOLIO",
+    "hero.contactCta": "FALAR SOBRE UM PROJETO",
+    "hero.terminal": "ENZO_YOSHIDA://EWZXYH_LABS",
+
+    // Services
+    "services.eyebrow": "EWZXYH LABS // SERVIÇOS",
+    "services.title": "Da ideia à operação",
+    "services.description": "Enzo Yoshida lidera a Ewzxyh Labs para criar produtos e sistemas sob medida, unindo visão de produto, design e engenharia.",
+    "services.products": "MVPs e SaaS",
+    "services.products.desc": "Produtos digitais completos para validar, lançar e evoluir novas operações.",
+    "services.systems": "Dashboards e integrações",
+    "services.systems.desc": "Painéis e conexões entre sistemas para centralizar dados, pagamentos e decisões.",
+    "services.automation": "Automação operacional",
+    "services.automation.desc": "Fluxos que substituem tarefas manuais por processos rápidos, rastreáveis e escaláveis.",
 
     // About
     "about.section": "01 // SOBRE",
     "about.title": "Quem sou eu",
     "about.intro": "Sou",
     "about.description1": "Product Engineer — combino visão de produto com execução técnica para entregar soluções com impacto real.",
-    "about.description2": "Com mais de 4 anos de experiência, não apenas codifico — proponho, itero e entrego recursos de ponta a ponta com foco em resultados para o usuário. Minha especialidade é construir produtos com",
+    "about.description2": "Com mais de 5 anos de experiência, não apenas codifico — proponho, itero e entrego recursos de ponta a ponta com foco em resultados para o usuário. Minha especialidade é construir produtos com",
     "about.description2.suffix": "que são rápidos, acessíveis e escaláveis.",
     "about.description3": "Atualmente trabalho com autonomia em decisões de produto e arquitetura. Fundei a",
-    "about.description3.suffix": "como minha marca para projetos independentes e consultoria.",
-    "about.status": "Disponível para novas oportunidades",
+    "about.description3.suffix": "como minha empresa para produtos próprios, projetos independentes e desenvolvimento sob medida.",
+    "about.status": "Disponível para projetos e oportunidades",
     "about.product": "Pensamento de Produto",
     "about.product.desc": "Foco em resultados, não apenas entregas.",
     "about.design": "Design UI/UX",
@@ -178,19 +189,14 @@ const translations = {
     "projects.title": "Projetos em destaque",
     // Contact
     "contact.section": "03 // CONTATO",
-    "contact.title": "Vamos conversar?",
-    "contact.description": "Estou sempre aberto a discutir novos projetos, ideias criativas ou oportunidades de trabalho.",
-    "contact.cta": "ENTRE EM CONTATO",
+    "contact.title": "O que você precisa lançar, integrar ou automatizar?",
+    "contact.description": "Conte brevemente o contexto. O contato é direto com Enzo Yoshida para projetos da Ewzxyh Labs ou oportunidades profissionais.",
+    "contact.cta": "FALAR SOBRE MEU PROJETO",
     "contact.alternative": "Ou me encontre no",
 
     // Footer
     "footer.rights": "Todos os direitos reservados.",
     "footer.built": "Construído com",
-
-    // PWA
-    "pwa.install": "Instalar App",
-    "pwa.installed": "App instalado",
-    "pwa.iosHint": "Para instalar: toque em Compartilhar e 'Adicionar à Tela Inicial'",
 
     // 404
     "notFound.title": "Página não encontrada",
@@ -204,29 +210,40 @@ const translations = {
     "nav.experience": "Experience",
     "nav.projects": "Projects",
     "nav.contact": "Contact",
-    "nav.openToWork": "Open to Work",
+    "nav.openToWork": "Available for projects",
 
     // Hero
-    "hero.role": "PRODUCT ENGINEER",
-    "hero.subtitle": "I build fast and scalable web products with",
-    "hero.and": "and",
-    "hero.experience": "4+ years turning ideas into MVPs, dashboards, and automations that deliver results.",
+    "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
+    "hero.subtitle": "I turn ideas and manual operations into digital products ready to run.",
+    "hero.experience": "From strategy to execution, I build MVPs, SaaS, dashboards, integrations, and automations for companies that need to launch, centralize, or scale.",
     "hero.years": "YEARS EXP.",
     "hero.projects": "PROJECTS",
-    "hero.specialist": "SPECIALIST",
+    "hero.operators": "OPERATORS",
     "hero.cta": "VIEW PROJECTS",
-    "hero.terminal": "EWZXYH_LAB://PORTFOLIO",
+    "hero.contactCta": "DISCUSS A PROJECT",
+    "hero.terminal": "ENZO_YOSHIDA://EWZXYH_LABS",
+
+    // Services
+    "services.eyebrow": "EWZXYH LABS // SERVICES",
+    "services.title": "From idea to operation",
+    "services.description": "Enzo Yoshida leads Ewzxyh Labs to build custom products and systems by combining product thinking, design, and engineering.",
+    "services.products": "MVPs and SaaS",
+    "services.products.desc": "Complete digital products to validate, launch, and evolve new operations.",
+    "services.systems": "Dashboards and integrations",
+    "services.systems.desc": "Interfaces and system connections that centralize data, payments, and decisions.",
+    "services.automation": "Operational automation",
+    "services.automation.desc": "Workflows that replace manual tasks with fast, traceable, and scalable processes.",
 
     // About
     "about.section": "01 // ABOUT",
     "about.title": "About me",
     "about.intro": "I'm a",
     "about.description1": "Product Engineer — I combine product vision with technical execution to deliver solutions that drive impact.",
-    "about.description2": "With over 4 years of experience, I don't just code — I propose, iterate, and ship features end-to-end focused on user outcomes. My specialty is building products with",
+    "about.description2": "With over 5 years of experience, I don't just code — I propose, iterate, and ship features end-to-end focused on user outcomes. My specialty is building products with",
     "about.description2.suffix": "that are fast, accessible, and scalable.",
     "about.description3": "Currently working with autonomy on product and architecture decisions. I founded",
-    "about.description3.suffix": "as my brand for independent projects and consulting.",
-    "about.status": "Available for new opportunities",
+    "about.description3.suffix": "as my company for proprietary products, independent projects, and custom development.",
+    "about.status": "Available for projects and opportunities",
     "about.product": "Product Thinking",
     "about.product.desc": "Focus on outcomes, not just outputs.",
     "about.design": "Design UI/UX",
@@ -334,19 +351,14 @@ const translations = {
     "projects.title": "Featured Projects",
     // Contact
     "contact.section": "03 // CONTACT",
-    "contact.title": "Let's talk",
-    "contact.description": "I'm always open to discussing new projects, creative ideas, or job opportunities.",
-    "contact.cta": "GET IN TOUCH",
+    "contact.title": "What do you need to launch, integrate, or automate?",
+    "contact.description": "Share the context briefly. You will speak directly with Enzo Yoshida about Ewzxyh Labs projects or professional opportunities.",
+    "contact.cta": "DISCUSS MY PROJECT",
     "contact.alternative": "Or find me on",
 
     // Footer
     "footer.rights": "All rights reserved.",
     "footer.built": "Built with",
-
-    // PWA
-    "pwa.install": "Install App",
-    "pwa.installed": "App installed",
-    "pwa.iosHint": "To install: tap Share and 'Add to Home Screen'",
 
     // 404
     "notFound.title": "Page not found",

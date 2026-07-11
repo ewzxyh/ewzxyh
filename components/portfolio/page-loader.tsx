@@ -195,8 +195,15 @@ export function PageLoader() {
 	const hideLogoScreen = useCallback(() => {
 		if (completedRef.current) return;
 		completedRef.current = true;
+		let exitFallbackTimer: number | null = null;
+		let exitFinished = false;
 
 		const complete = () => {
+			if (exitFinished) return;
+			exitFinished = true;
+			if (exitFallbackTimer !== null) {
+				window.clearTimeout(exitFallbackTimer);
+			}
 			setLogoComplete(true);
 			setShowLogoScreen(false);
 			setLoadingComplete();
@@ -226,6 +233,9 @@ export function PageLoader() {
 			},
 			0.05,
 		);
+
+		// Keep the page usable if a throttled browser drops GSAP's completion callback.
+		exitFallbackTimer = window.setTimeout(complete, 1200);
 	}, [reducedMotion, setLoadingComplete]);
 
 	const completeLoading = useCallback(() => {

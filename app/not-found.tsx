@@ -50,7 +50,7 @@ export default function NotFound() {
         </Link>
 
         <p className="mt-12 text-xs text-muted-foreground tracking-widest">
-          EWZXYH_LAB://404
+          EWZXYH_LABS://404
         </p>
       </div>
     </main>

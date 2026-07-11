@@ -1,5 +1,4 @@
 import type { NextConfig } from "next"
-import { withSerwist } from "@serwist/turbopack"
 
 const isTurbopack = process.argv.includes("--turbopack") || process.env.TURBOPACK === "1"
 const isWindows = process.platform === "win32"
@@ -42,4 +41,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withSerwist(nextConfig)
+export default nextConfig

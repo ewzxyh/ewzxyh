@@ -113,7 +113,7 @@ export function About() {
           </p>
           <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
             {t("about.description3")}{" "}
-            <span className="text-foreground font-medium">Ewzxyh Lab</span>{" "}
+            <span className="text-foreground font-medium">Ewzxyh Labs</span>{" "}
             {t("about.description3.suffix")}
           </p>
 

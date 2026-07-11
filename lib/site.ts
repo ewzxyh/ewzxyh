@@ -3,6 +3,6 @@ export const siteTitle = "Enzo Yoshida | Product Engineer Next.js, React e SaaS"
 export const siteName = "Enzo Yoshida"
 export const personName = "Enzo Hideki Yoshida"
 export const siteDescription =
-  "Portfólio de Enzo Hideki Yoshida, Product Engineer com 4+ anos em Next.js, React, Laravel e automações SaaS para pagamentos, lotéricas e e-commerce."
+  "Enzo Yoshida é Product Engineer e fundador da Ewzxyh Labs, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida."
 export const siteLastModified = "2026-07-03"
 export const ogImagePath = "/og/enzo-yoshida-product-engineer.webp"

@@ -9,13 +9,12 @@ import { ChevronDown, Terminal } from "lucide-react"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import localFont from "next/font/local"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type RefObject } from "react"
 import { SiWhatsapp } from "react-icons/si"
 import github from "react-useanimations/lib/github"
 import instagram from "react-useanimations/lib/instagram"
 import linkedin from "react-useanimations/lib/linkedin"
 import mail from "react-useanimations/lib/mail"
-import { PWAInstallButton } from "@/components/pwa-install-button"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { useI18n } from "@/lib/i18n"
@@ -60,6 +59,82 @@ function MailIcon({ size, className }: { size: number; className?: string }) {
   )
 }
 
+function SocialRail({ containerRef, locale }: { containerRef: RefObject<HTMLDivElement | null>; locale: "pt-BR" | "en-US" }) {
+  const animatedLinks = [
+    { animation: github, href: "https://github.com/ewzxyh", label: "GitHub" },
+    {
+      animation: linkedin,
+      href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh",
+      label: "LinkedIn"
+    },
+    { animation: instagram, href: "https://instagram.com/yoshidaenzoh", label: "Instagram" },
+    { animation: mail, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" }
+  ]
+
+  const whatsappHref =
+    locale === "en-US"
+      ? "https://wa.me/5562984268492?text=Hello%2C%20I%20came%20from%20your%20portfolio%21"
+      : "https://wa.me/5562984268492?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21"
+
+  return (
+    <div
+      ref={containerRef}
+      className="grid grid-cols-5 border-t border-border [&>*]:opacity-0 md:grid-cols-1 md:grid-rows-5 md:border-l md:border-t-0"
+    >
+      {animatedLinks.map(link => (
+        <Tooltip key={link.label}>
+          <TooltipTrigger
+            render={
+              // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex min-h-12 items-center justify-center border-r border-border bg-card/30 text-foreground transition-colors duration-300 last:border-r-0 hover:bg-foreground hover:text-background md:min-h-0 md:border-b md:border-r-0"
+                aria-label={link.label}
+              />
+            }
+          >
+            {link.label === "Email" ? (
+              <MailIcon size={24} className="transition-transform duration-200 group-hover:scale-125" />
+            ) : (
+              <UseAnimations
+                animation={link.animation}
+                size={24}
+                className="transition-transform duration-200 group-hover:scale-125"
+                strokeColor="currentColor"
+              />
+            )}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">{link.label}</p>
+          </TooltipContent>
+        </Tooltip>
+      ))}
+
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex min-h-12 items-center justify-center bg-card/30 text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background md:min-h-0"
+              aria-label="WhatsApp"
+            />
+          }
+        >
+          <SiWhatsapp className="h-5 w-5 transition-transform duration-200 group-hover:scale-125 sm:h-6 sm:w-6" />
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-xs">WhatsApp</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  )
+}
+
 function scrollToProjects() {
   document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
 }
@@ -71,32 +146,6 @@ function scrollToContact() {
 export function Hero() {
   const { t, locale } = useI18n()
   const { isLoadingComplete } = useLoading()
-
-  const animatedLinks = [
-    { animation: github, href: "https://github.com/ewzxyh", label: "GitHub" },
-    {
-      animation: linkedin,
-      href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh",
-      label: "LinkedIn"
-    },
-    {
-      animation: instagram,
-      href: "https://instagram.com/yoshidaenzoh",
-      label: "Instagram"
-    },
-    { animation: mail, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" }
-  ]
-
-  const staticLinks = [
-    {
-      icon: SiWhatsapp,
-      href:
-        locale === "en-US"
-          ? "https://wa.me/5562984268492?text=Hello%2C%20I%20came%20from%20your%20portfolio%21"
-          : "https://wa.me/5562984268492?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21",
-      label: "WhatsApp"
-    }
-  ]
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const portraitRef = useRef<HTMLDivElement>(null)
@@ -119,7 +168,7 @@ export function Hero() {
       if (window.matchMedia("(max-width: 767px)").matches) {
         name.style.transform = "none"
         if (mobileYoshida.offsetWidth > 0) {
-          mobileYoshida.style.transform = `scaleX(${title.clientWidth / mobileYoshida.offsetWidth})`
+          mobileYoshida.style.transform = `scaleX(${(title.clientWidth / mobileYoshida.offsetWidth) * 0.98})`
         }
         return
       }
@@ -223,48 +272,75 @@ export function Hero() {
     >
       <div
         ref={contentRef}
-        className="relative z-10 grid h-full w-full grid-cols-12 grid-rows-[minmax(0,1fr)_auto] gap-x-4 px-6 pb-6 pt-24 text-left sm:px-10 sm:pt-28 md:pb-8 lg:gap-x-8 lg:px-16"
+        className="relative z-10 grid h-full w-full grid-rows-[minmax(0,1fr)_auto] px-[clamp(1.25rem,3vw,4rem)] pb-4 pt-20 text-left sm:pb-6 sm:pt-24 md:pb-8 md:pt-28"
       >
-        <div
-          ref={portraitRef}
-          className="relative col-span-7 col-start-1 row-start-1 hidden aspect-[3/4] w-full self-start overflow-hidden border-x border-border opacity-0 md:block md:col-span-5 md:col-start-1 md:h-[min(54dvh,32rem)] md:w-auto"
-        >
-          <ShaderImage
-            src="/hero/enzo-yoshida-portrait.webp"
-            alt="Retrato de Enzo Yoshida"
-            grayscale
-            position="center"
-            hoverOnly
-            grain={0.035}
-          />
-        </div>
-
-        <div className="relative z-20 col-span-12 col-start-1 row-start-1 flex min-h-0 flex-col items-start justify-start gap-5 md:col-span-5 md:col-start-8 md:justify-center md:gap-6">
-          <div className="relative aspect-square w-full overflow-hidden md:hidden">
-            <Image
-              src="/hero/enzo-yoshida-mobile-source.webp"
-              alt="Retrato de Enzo Yoshida"
-              fill
-              priority
-              sizes="calc(100vw - 3rem)"
-              className="object-cover grayscale"
-            />
+        <div className="grid min-h-0 overflow-hidden border-y border-border md:grid-cols-[minmax(16rem,0.9fr)_minmax(24rem,1.1fr)_3.75rem]">
+          <div className="flex min-h-0 items-center justify-center p-3 sm:p-4 md:border-r md:border-border">
+            <div
+              ref={portraitRef}
+              className="relative aspect-square w-full max-w-[42dvh] overflow-hidden border-x border-border opacity-0 md:aspect-[3/4] md:h-[min(51dvh,32rem)] md:w-auto md:max-w-none"
+            >
+              <div className="hidden h-full w-full md:block">
+                <ShaderImage
+                  src="/hero/enzo-yoshida-portrait.webp"
+                  alt="Retrato de Enzo Yoshida"
+                  grayscale
+                  position="center"
+                  hoverOnly
+                  grain={0.035}
+                  priority
+                />
+              </div>
+              <Image
+                src="/hero/enzo-yoshida-mobile-source.webp"
+                alt="Retrato de Enzo Yoshida"
+                fill
+                priority
+                sizes="(max-width: 767px) 84vw, 1px"
+                className="object-cover grayscale md:hidden"
+              />
+            </div>
           </div>
 
-          <div className="hero-terminal hidden items-center gap-2 border border-border bg-card/50 px-4 py-2 opacity-0 backdrop-blur-sm sm:inline-flex">
-            <Terminal className="h-4 w-4 text-muted-foreground" />
-            <span ref={terminalTextRef} className="text-xs text-muted-foreground sm:text-sm">
-              {t("hero.terminal")}
-            </span>
-            <span className="h-4 w-2 animate-pulse bg-foreground" />
-          </div>
+          <div className="relative z-20 flex min-h-0 flex-col justify-center gap-4 border-t border-border px-4 py-5 sm:px-6 md:border-t-0 md:px-[clamp(1.5rem,4vw,4.5rem)] md:py-8">
+            <div className="hero-terminal hidden w-fit items-center gap-2 border border-border bg-card/50 px-4 py-2 opacity-0 backdrop-blur-sm sm:inline-flex">
+              <Terminal className="h-4 w-4 text-muted-foreground" />
+              <span ref={terminalTextRef} className="text-xs text-muted-foreground sm:text-sm">
+                {t("hero.terminal")}
+              </span>
+              <span className="h-4 w-2 animate-pulse bg-foreground" />
+            </div>
 
-          <div className="mt-auto flex w-full flex-col gap-5 md:contents">
-            <div className="flex w-full items-center gap-3 md:w-auto">
+            <p
+              ref={subtitleRef}
+              className="max-w-[38ch] text-lg leading-snug text-foreground opacity-0 sm:text-xl lg:text-2xl"
+            >
+              {t("hero.subtitle")}
+              <span className="mt-3 block max-w-[58ch] text-sm leading-relaxed text-muted-foreground sm:text-base">
+                {t("hero.experience")}
+              </span>
+            </p>
+
+            <div ref={statsRef} className="grid w-full grid-cols-3 border-y border-border text-xs [&>*]:opacity-0">
+              <div className="py-3 pr-3 sm:py-4">
+                <span className="block text-xl font-bold sm:text-2xl">5+</span>
+                <span className="text-muted-foreground">{t("hero.years")}</span>
+              </div>
+              <div className="border-x border-border px-3 py-3 sm:py-4">
+                <span className="block text-xl font-bold sm:text-2xl">50+</span>
+                <span className="text-muted-foreground">{t("hero.projects")}</span>
+              </div>
+              <div className="py-3 pl-3 sm:py-4">
+                <span className="block text-xl font-bold sm:text-2xl">630+</span>
+                <span className="text-muted-foreground">{t("hero.operators")}</span>
+              </div>
+            </div>
+
+            <div className="grid w-full grid-cols-2 gap-3">
               <Button
                 ref={ctaRef}
                 onClick={scrollToProjects}
-                className="group h-14 flex-1 border border-foreground bg-foreground px-4 text-sm text-background opacity-0 transition-colors duration-300 hover:bg-background hover:text-foreground md:flex-none md:px-7"
+                className="group h-12 border border-foreground bg-foreground px-3 text-xs text-background opacity-0 transition-colors duration-300 hover:bg-background hover:text-foreground sm:h-14 sm:text-sm"
               >
                 {t("hero.cta")}
                 <ChevronDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-1" />
@@ -272,101 +348,23 @@ export function Hero() {
               <Button
                 onClick={scrollToContact}
                 variant="outline"
-                className="h-14 flex-1 border-foreground bg-background px-4 text-sm text-foreground md:hidden"
+                className="h-12 border-foreground bg-background px-3 text-xs text-foreground sm:h-14 sm:text-sm"
               >
-                {t("nav.contact")}
+                {t("hero.contactCta")}
               </Button>
             </div>
-
-            <p
-              ref={subtitleRef}
-              className="max-w-[42ch] text-base leading-relaxed text-muted-foreground opacity-0 lg:text-lg"
-            >
-              {t("hero.subtitle")} <span className="font-medium text-foreground">Next.js</span>,{" "}
-              <span className="font-medium text-foreground">React</span> {t("hero.and")}{" "}
-              <span className="font-medium text-foreground">TypeScript</span>.
-              <span className="mt-3 hidden text-sm opacity-70 md:block">{t("hero.experience")}</span>
-            </p>
           </div>
 
-          <div ref={statsRef} className="hidden items-center gap-5 text-xs [&>*]:opacity-0 lg:flex xl:gap-8">
-            <div>
-              <span className="block text-xl font-bold xl:text-2xl">4+</span>
-              <span className="text-muted-foreground">{t("hero.years")}</span>
-            </div>
-            <div className="h-10 w-px bg-border" />
-            <div>
-              <span className="block text-xl font-bold xl:text-2xl">50+</span>
-              <span className="text-muted-foreground">{t("hero.projects")}</span>
-            </div>
-            <div className="h-10 w-px bg-border" />
-            <div>
-              <span className="block text-xl font-bold xl:text-2xl">Next.js</span>
-              <span className="text-muted-foreground">{t("hero.specialist")}</span>
-            </div>
-          </div>
-
-          <div ref={socialsRef} className="hidden flex-wrap items-center gap-3 [&>*]:opacity-0 md:flex">
-            {animatedLinks.map((link) => (
-              <Tooltip key={link.label}>
-                <TooltipTrigger
-                  render={
-                    // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group border border-border bg-card/50 p-2 text-foreground transition-all duration-300 hover:border-foreground hover:bg-foreground hover:text-background sm:p-2.5"
-                      aria-label={link.label}
-                    />
-                  }
-                >
-                  {link.label === "Email" ? (
-                    <MailIcon size={24} className="transition-transform duration-200 group-hover:scale-125" />
-                  ) : (
-                    <UseAnimations
-                      animation={link.animation}
-                      size={24}
-                      className="transition-transform duration-200 group-hover:scale-125"
-                      strokeColor="currentColor"
-                    />
-                  )}
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">{link.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-            {staticLinks.map((link) => (
-              <Tooltip key={link.label}>
-                <TooltipTrigger
-                  render={
-                    // biome-ignore lint/a11y/useAnchorContent: Base UI renders the visible icon children into this anchor.
-                    <a
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group border border-border bg-card/50 p-2 text-foreground transition-all duration-300 hover:border-foreground hover:bg-foreground hover:text-background sm:p-2.5"
-                      aria-label={link.label}
-                    />
-                  }
-                >
-                  <link.icon className="h-5 w-5 transition-transform duration-200 group-hover:scale-125 sm:h-6 sm:w-6" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">{link.label}</p>
-                </TooltipContent>
-              </Tooltip>
-            ))}
-            <PWAInstallButton variant="icon" />
-          </div>
+          <SocialRail containerRef={socialsRef} locale={locale} />
         </div>
 
         <h1
           ref={titleRef}
-          className="pointer-events-none relative z-30 col-span-12 col-start-1 row-start-2 self-end overflow-hidden pb-1 text-6xl font-normal leading-none text-foreground opacity-0 sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[11rem] 2xl:text-[12rem]"
+          className="pointer-events-none relative z-30 self-end overflow-hidden border-b border-border pb-2 pt-3 text-6xl font-normal leading-none text-foreground opacity-0 sm:text-8xl md:text-9xl lg:text-[10rem] xl:text-[11rem] 2xl:text-[12rem]"
         >
-          <span className="mb-3 block text-lg italic opacity-60 md:text-lg md:not-italic">{t("hero.role")}</span>
+          <span className="mb-3 block pl-3 text-sm opacity-60 sm:pl-4 sm:text-base md:pl-5 md:text-lg">
+            {t("hero.role")}
+          </span>
           <span className={`${atAmiga.className} animate-flicker block md:hidden`}>
             <span className="block">ENZO</span>
             <span ref={mobileYoshidaRef} className="block w-max origin-left">

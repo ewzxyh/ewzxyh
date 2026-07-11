@@ -62,7 +62,6 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={jetbrainsMono.variable} suppressHydrationWarning>
       <head>
-        <link rel="manifest" href="/favicon/site.webmanifest" />
         <meta name="theme-color" content="#0a0a0a" />
         <link rel="apple-touch-icon" href="/favicon/apple-touch-icon.png" />
       </head>

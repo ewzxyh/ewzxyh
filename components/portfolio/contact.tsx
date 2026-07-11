@@ -3,7 +3,6 @@
 import { Mail, ArrowRight } from "lucide-react"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
-import { PWAInstallButton } from "@/components/pwa-install-button"
 
 const CONTACT_SECTION_ID = "contact"
 
@@ -15,8 +14,12 @@ export function Contact() {
     : "https://linkedin.com/in/ewzxyh"
 
   const whatsappMessage = locale === "en-US"
-    ? "Hello%2C%20I%20came%20from%20your%20portfolio%21"
-    : "Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21"
+    ? "Hello%2C%20Enzo.%20I%20came%20from%20your%20portfolio%20and%20would%20like%20to%20discuss%20a%20project."
+    : "Ol%C3%A1%2C%20Enzo.%20Vim%20pelo%20seu%20portf%C3%B3lio%20e%20quero%20conversar%20sobre%20um%20projeto."
+
+  const emailHref = locale === "en-US"
+    ? "mailto:yoshidaenzo@hotmail.com?subject=Web%20product%20project"
+    : "mailto:yoshidaenzo@hotmail.com?subject=Projeto%20de%20produto%20web"
 
   return (
     <section id={CONTACT_SECTION_ID} className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
@@ -34,7 +37,7 @@ export function Contact() {
 
         {/* CTA */}
         <a
-          href="mailto:yoshidaenzo@hotmail.com"
+          href={emailHref}
           className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base tracking-wider border border-foreground bg-foreground text-background hover:bg-background hover:text-foreground transition-all duration-300"
         >
           <Mail className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
@@ -53,11 +56,6 @@ export function Contact() {
           WhatsApp
           <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
         </a>
-
-        {/* PWA Install */}
-        <div className="mt-4">
-          <PWAInstallButton variant="button" />
-        </div>
 
         {/* Alternative */}
         <p className="mt-5 sm:mt-6 text-xs sm:text-sm text-muted-foreground">

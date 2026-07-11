@@ -125,6 +125,7 @@ interface ShaderImageProps {
   position?: string
   hoverOnly?: boolean
   grain?: number
+  priority?: boolean
 }
 
 function parsePosition(pos: string): number {
@@ -142,7 +143,8 @@ export function ShaderImage({
   grayscale = false,
   position = "center",
   hoverOnly = false,
-  grain = 0
+  grain = 0,
+  priority = false
 }: ShaderImageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
@@ -333,7 +335,8 @@ export function ShaderImage({
         alt={alt}
         fill
         sizes="(max-width: 768px) 100vw, 33vw"
-        loading="lazy"
+        priority={priority}
+        loading={priority ? undefined : "lazy"}
         decoding="async"
         className="object-cover"
         style={{

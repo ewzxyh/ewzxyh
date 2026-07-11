@@ -13,7 +13,6 @@ import { ThemeToggle } from "./theme-toggle"
 import { LanguageToggle } from "./language-toggle"
 import { useLoading } from "./loading-context"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
-import { PWAInstallButton } from "@/components/pwa-install-button"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -272,9 +271,6 @@ export function Header() {
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-foreground transition-all duration-300 group-hover:w-full" />
               </a>
             ))}
-
-            {/* PWA Install Button */}
-            <PWAInstallButton variant="menu" />
 
             {/* Mobile Open to Work Badge */}
             <div className="lg:hidden flex items-center gap-2 pt-3">

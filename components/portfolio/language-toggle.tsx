@@ -31,6 +31,7 @@ export function LanguageToggle() {
       {/* Language Toggle Button */}
       <button
         type="button"
+        data-cuelume-toggle
         onClick={toggleLocale}
         className="px-2 py-1.5 text-[10px] sm:text-xs font-medium tracking-wide border border-border bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300 flex-shrink-0"
         aria-label={locale === "pt-BR" ? "Alternar idioma" : "Switch language"}

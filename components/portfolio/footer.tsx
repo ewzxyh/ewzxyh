@@ -4,7 +4,6 @@ import { Github, Linkedin, Mail } from "lucide-react"
 import localFont from "next/font/local"
 import { SiWhatsapp } from "react-icons/si"
 import { useI18n } from "@/lib/i18n"
-import { PWAInstallButton } from "@/components/pwa-install-button"
 import { useMounted } from "@/hooks/use-mounted"
 
 const atAmiga = localFont({
@@ -32,12 +31,12 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Logo/Name */}
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm font-medium tracking-wider">EWZXYH_LAB</span>
+            <span className="text-xs sm:text-sm font-medium tracking-wider">EWZXYH_LABS</span>
           </div>
 
           {/* Copyright */}
           <p className="text-xs sm:text-sm text-muted-foreground text-center">
-            {currentYear} Ewzxyh Lab. {t("footer.rights")}
+            {currentYear} Ewzxyh Labs. {t("footer.rights")}
           </p>
 
           {/* Social Links */}
@@ -54,7 +53,6 @@ export function Footer() {
                 <link.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </a>
             ))}
-            <PWAInstallButton variant="icon" className="!p-1 !border-0 !bg-transparent text-muted-foreground hover:text-foreground" />
           </div>
         </div>
         <div className={`${atAmiga.className} relative mt-8 sm:mt-10 grid grid-cols-4 border-t border-b border-border/70 pointer-events-none select-none`} aria-hidden="true">

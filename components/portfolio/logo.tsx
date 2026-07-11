@@ -199,7 +199,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label="Ewzxyh Lab logo"
+      aria-label="Ewzxyh Labs logo"
       className={`${className} cursor-pointer`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

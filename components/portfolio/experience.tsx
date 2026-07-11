@@ -189,7 +189,7 @@ const workExperience: ExperienceItem[] = [
     logo: "/empresas/lovtoklogo.jpeg",
   },
   {
-    company: "Ewzxyh Lab",
+    company: "Ewzxyh Labs",
     roleKey: "experience.ewzxyh.role",
     descKey: "experience.ewzxyh.desc",
     period: "jan 2021 - Present",
