@@ -4,73 +4,11 @@ import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
+import { projectsByLocale, type Project } from "@/lib/profile"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const PROJECTS_SECTION_ID = "projects"
-
-interface Project {
-  id: string
-  title: string
-  description: string
-  tags: string[]
-  featured?: boolean
-}
-
-const projectsByLocale: Record<"pt-BR" | "en-US", Project[]> = {
-  "pt-BR": [
-    {
-      id: "1",
-      title: "CasePay",
-      description:
-        "Gateway de pagamentos para lotéricas e pequenos negócios, com checkout, dashboard financeiro, gestão de transações, repasses e integrações com o ecossistema Case.",
-      tags: ["Laravel", "Next.js", "Pagamentos", "Dashboard"],
-      featured: true,
-    },
-    {
-      id: "2",
-      title: "LotoHub",
-      description:
-        "SaaS para criação e gestão centralizada de sites de lotéricas, com e-commerce, painel administrativo, automação de atendimento e integração de pagamentos.",
-      tags: ["Next.js", "Supabase", "Stripe", "SaaS"],
-      featured: true,
-    },
-    {
-      id: "3",
-      title: "SELOESGO Automação",
-      description:
-        "Sistema integrado à ConectaLot que gera e distribui artes automaticamente para mais de 630 lotéricos em Goiás, reduzindo uma rotina manual de horas para segundos.",
-      tags: ["Automação", "ConectaLot", "Design Ops", "API"],
-      featured: true,
-    },
-  ],
-  "en-US": [
-    {
-      id: "1",
-      title: "CasePay",
-      description:
-        "Payment gateway for lottery retailers and small businesses, with checkout, financial dashboard, transaction management, payouts, and integrations with the Case ecosystem.",
-      tags: ["Laravel", "Next.js", "Payments", "Dashboard"],
-      featured: true,
-    },
-    {
-      id: "2",
-      title: "LotoHub",
-      description:
-        "SaaS for creating and centrally managing lottery retailer websites, with e-commerce, admin panel, support automation, and payment integration.",
-      tags: ["Next.js", "Supabase", "Stripe", "SaaS"],
-      featured: true,
-    },
-    {
-      id: "3",
-      title: "SELOESGO Automation",
-      description:
-        "System integrated with ConectaLot that automatically generates and distributes creative assets for more than 630 lottery retailers in Goiás, reducing a manual routine from hours to seconds.",
-      tags: ["Automation", "ConectaLot", "Design Ops", "API"],
-      featured: true,
-    },
-  ],
-}
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLElement>(null)
@@ -142,7 +80,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           {project.tags.map((tag) => (
             <span
               key={tag}
-              className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs tracking-wider border border-border text-muted-foreground"
+              className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[11px] sm:text-[13px] tracking-wider border border-border text-muted-foreground"
             >
               {tag}
             </span>

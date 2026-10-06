@@ -4,8 +4,17 @@ import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useI18n, type TranslationKey } from "@/lib/i18n"
-import { Briefcase, GraduationCap, Award, ChevronDown, ExternalLink, X } from "lucide-react"
+import { useI18n } from "@/lib/i18n"
+import { certificates, education, workExperience } from "@/lib/profile"
+import {
+  AltArrowDownIcon,
+  ArrowRightUpIcon,
+  CaseIcon,
+  CloseIcon,
+  MedalRibbonStarIcon,
+  SquareAcademicCapIcon,
+  type Icon as SolarIcon,
+} from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -98,197 +107,6 @@ const skillDescriptions: Record<string, { "pt-BR": string; "en-US": string }> = 
   "Vuex": { "pt-BR": "Gerenciamento de estado para Vue.js", "en-US": "State management for Vue.js" },
 }
 
-interface ExperienceItem {
-  company: string
-  roleKey: TranslationKey
-  descKey: TranslationKey
-  period: string
-  location: string
-  type: string
-  skills: string[]
-  logo?: string
-}
-
-interface EducationItem {
-  institution: string
-  degreeKey: TranslationKey
-  period: string
-  locationKey?: TranslationKey
-  logo?: string
-  highlighted?: boolean
-}
-
-interface CertificateItem {
-  nameKey: TranslationKey
-  issuer: string
-  date: string
-  skills: string[]
-  credentialUrl?: string
-  logo?: string
-}
-
-const workExperience: ExperienceItem[] = [
-  {
-    company: "CasePay",
-    roleKey: "experience.casepay.role",
-    descKey: "experience.casepay.desc",
-    period: "nov 2025 - Present",
-    location: "Remota",
-    type: "Autônomo",
-    skills: ["Laravel", "PHP", "REST APIs", "Next.js", "Segurança de aplicativos web", "Payment Processing", "Empreendedorismo", "MySQL"],
-    logo: "/empresas/casepay.png",
-  },
-  {
-    company: "Case Agência Digital",
-    roleKey: "experience.case.role",
-    descKey: "experience.case.desc",
-    period: "fev 2024 - Present",
-    location: "Remota",
-    type: "Freelance",
-    skills: ["Next.js", "TypeScript", "Laravel", "React.js", "REST APIs", "WhatsApp Business API", "Google Ads", "SaaS", "Full-Stack Development", "Team Leadership", "WebGL", "GSAP", "PostgreSQL", "Product Development"],
-    logo: "/empresas/caselogoicon.png",
-  },
-  {
-    company: "SELOESGO",
-    roleKey: "experience.seloesgo.role",
-    descKey: "experience.seloesgo.desc",
-    period: "set 2021 - Present",
-    location: "Remota",
-    type: "Freelance",
-    skills: ["Design", "Next.js", "Product Engineer", "REST APIs", "Automação de processos", "WhatsApp Business API", "Processamento de imagem", "Geração de Imagem", "PostgreSQL"],
-    logo: "/empresas/seloesgologo.jpeg",
-  },
-  {
-    company: "Loteria Amazonas",
-    roleKey: "experience.loteria.role",
-    descKey: "experience.loteria.desc",
-    period: "dez 2024 - Present",
-    location: "Remota",
-    type: "Freelance",
-    skills: ["Gestão de tecnologias", "Next.js", "Google Ads", "Automação", "Comércio eletrônico"],
-    logo: "/empresas/rainhalogo.png",
-  },
-  {
-    company: "LotoHub",
-    roleKey: "experience.lotohub.role",
-    descKey: "experience.lotohub.desc",
-    period: "dez 2024 - Present",
-    location: "Remota",
-    type: "Autônomo",
-    skills: ["SaaS", "Desenvolvimento de produtos", "Desenvolvimento de software", "Comércio eletrônico", "Product Engineer", "REST APIs", "Next.js", "TypeScript"],
-    logo: "/empresas/lotohublogo.webp",
-  },
-  {
-    company: "Lovtok",
-    roleKey: "experience.lovtok.role",
-    descKey: "experience.lovtok.desc",
-    period: "jul 2021 - Present",
-    location: "Remota",
-    type: "Autônomo",
-    skills: ["Google Ads", "Comércio eletrônico", "Marketing", "Design de experiência do usuário (UX)", "Design gráfico", "Desenvolvimento WordPress", "Gestão de vendas", "Empreendedorismo"],
-    logo: "/empresas/lovtoklogo.jpeg",
-  },
-  {
-    company: "Ewzxyh Labs",
-    roleKey: "experience.ewzxyh.role",
-    descKey: "experience.ewzxyh.desc",
-    period: "jan 2021 - Present",
-    location: "Remota",
-    type: "Autônomo",
-    skills: ["Desenvolvimento de software", "Desenvolvimento de produtos", "Next.js", "PostgreSQL", "REST APIs", "React.js", "Full-Stack Development", "Consultoria de TI", "JavaScript", "WebGL", "Aplicativos web", "Design", "Design de experiência do usuário (UX)", "Web design"],
-    logo: "/empresas/ewzxyh-logo-black.png",
-  },
-]
-
-const education: EducationItem[] = [
-  {
-    institution: "NBCC",
-    degreeKey: "experience.edu.nbcc",
-    period: "set 2026 - mai 2028",
-    locationKey: "experience.location.canada",
-    logo: "/estudo/nbcc.jpg",
-    highlighted: true,
-  },
-  {
-    institution: "PUC-GO",
-    degreeKey: "experience.edu.puc",
-    period: "fev 2021 - dez 2024",
-    locationKey: "experience.location.brazil",
-    logo: "/estudo/pucgoias_logo.jpeg",
-  },
-  {
-    institution: "Colégio WR",
-    degreeKey: "experience.edu.colegio",
-    period: "jan 2019 - dez 2021",
-    locationKey: "experience.location.brazil",
-    logo: "/estudo/wr.png",
-  },
-  {
-    institution: "Escola Interamérica",
-    degreeKey: "experience.edu.escola",
-    period: "jan 2011 - dez 2018",
-    locationKey: "experience.location.brazil",
-    logo: "/estudo/interamerica.jpg",
-  },
-]
-
-const certificates: CertificateItem[] = [
-  {
-    nameKey: "experience.cert.nextjs",
-    issuer: "Udemy",
-    date: "set 2025",
-    skills: ["Next.js", "Tailwind CSS", "TypeScript", "REST APIs", "React"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-b627ea8a-f5cf-4546-b57d-96303228436d/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    nameKey: "experience.cert.english.believer",
-    issuer: "BELIEVER INGLÊS POR IMERSÃO",
-    date: "mar 2025",
-    skills: ["English"],
-    logo: "/certificados/believer.png",
-  },
-  {
-    nameKey: "experience.cert.java",
-    issuer: "Udemy",
-    date: "nov 2024",
-    skills: ["Java", "OOP", "Spring Boot", "Hibernate", "PostgreSQL"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-fef74280-d7e8-44c2-b3ce-ca4ec4a8796e/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    nameKey: "experience.cert.postgres",
-    issuer: "Udemy",
-    date: "jun 2024",
-    skills: ["PostgreSQL", "SQL", "HAProxy", "Linux"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-4896293f-c9bd-4b86-812e-6932927d2a01/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    nameKey: "experience.cert.vue",
-    issuer: "Udemy",
-    date: "abr 2024",
-    skills: ["Vue.js", "JavaScript", "Vue Router", "Vuex"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-7aa963e5-e616-4bf9-b4ab-3aea7a3e5a0a/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    nameKey: "experience.cert.english.cultura",
-    issuer: "Cultura Inglesa",
-    date: "jan 2016 - out 2019",
-    skills: ["English"],
-    logo: "/certificados/cultura_inglesa_logo.jpeg",
-  },
-  {
-    nameKey: "experience.cert.english.duolingo",
-    issuer: "Duolingo English Test",
-    date: "2024",
-    skills: ["English"],
-    credentialUrl: "https://certs.duolingo.com/4yw87od9hv48b53o",
-    logo: "/certificados/duolingo_english_test__logo.jpeg",
-  },
-]
-
 function CertificateModal({
   url,
   onClose,
@@ -359,7 +177,7 @@ function CertificateModal({
             aria-label="Close certificate preview"
             className="p-1 text-muted-foreground hover:text-foreground transition-colors"
           >
-            <X aria-hidden="true" className="w-5 h-5" />
+            <CloseIcon aria-hidden="true" className="w-6 h-6" />
           </button>
         </div>
         <iframe
@@ -400,16 +218,28 @@ function ExpandableItem({
   logo?: string
   location?: string
   type?: string
-  icon: typeof Briefcase
+  icon: SolarIcon
   credentialUrl?: string
   onOpenCertificate?: (url: string) => void
   highlighted?: boolean
 }) {
   const { locale } = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
+  // The details (skill tags with tooltips) are only mounted once an item is opened for the first time.
+  const [hasOpened, setHasOpened] = useState(false)
   const contentRef = useRef<HTMLDivElement>(null)
   const skillsRef = useRef<HTMLDivElement>(null)
   const itemRef = useRef<HTMLDivElement>(null)
+
+  const toggleExpanded = () => {
+    if (hasOpened) {
+      setIsExpanded((current) => !current)
+      return
+    }
+    // Mount collapsed, wait for a painted frame, then expand so the height transition still plays.
+    setHasOpened(true)
+    requestAnimationFrame(() => requestAnimationFrame(() => setIsExpanded(true)))
+  }
 
   useEffect(() => {
     if (isExpanded && skillsRef.current) {
@@ -431,7 +261,7 @@ function ExpandableItem({
     >
       <button
         type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={toggleExpanded}
         className="w-full flex flex-col min-[400px]:flex-row min-[400px]:items-center gap-2 min-[400px]:gap-3 sm:gap-4 p-2.5 min-[320px]:p-3 sm:p-4 transition-all duration-300 text-left hover:bg-foreground/[0.02]"
       >
         <div className="flex items-center gap-2 min-[400px]:gap-3 sm:gap-4 flex-1 min-w-0">
@@ -445,27 +275,27 @@ function ExpandableItem({
                 className="w-4 h-4 min-[320px]:w-5 min-[320px]:h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110"
               />
             ) : (
-              <Icon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
+              <Icon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
             )}
           </div>
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 min-[320px]:gap-2 flex-wrap">
-              <h4 className="font-medium text-[11px] min-[320px]:text-xs sm:text-sm transition-colors duration-300 group-hover:text-foreground">
+              <h4 className="font-medium text-xs min-[320px]:text-[13px] sm:text-base transition-colors duration-300 group-hover:text-foreground">
                 {title}
               </h4>
               {highlighted && (
-                <span className="text-[7px] min-[320px]:text-[8px] sm:text-[9px] px-1 min-[320px]:px-1.5 py-0.5 bg-foreground/10 dark:bg-foreground/15 text-foreground/70 uppercase tracking-wider font-medium">
+                <span className="text-[8px] min-[320px]:text-[9px] sm:text-[11px] px-1 min-[320px]:px-1.5 py-0.5 bg-foreground/10 dark:bg-foreground/15 text-foreground/70 uppercase tracking-wider font-medium">
                   Upcoming
                 </span>
               )}
               {location && (
-                <span className="text-[8px] min-[320px]:text-[9px] sm:text-[10px] px-1 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
+                <span className="text-[9px] min-[320px]:text-[10px] sm:text-[11px] px-1 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
                   {location}
                 </span>
               )}
             </div>
-            <p className="text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground truncate transition-colors duration-300">
+            <p className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground truncate transition-colors duration-300">
               {subtitle}
               {type && <span className="ml-1 opacity-70">· {type}</span>}
             </p>
@@ -473,18 +303,18 @@ function ExpandableItem({
         </div>
 
         <div className="flex items-center justify-between min-[400px]:justify-end gap-2 pl-9 min-[320px]:pl-10 min-[400px]:pl-0">
-          <span className="text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground font-mono transition-colors duration-300 group-hover:text-foreground/70">
+          <span className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground font-mono transition-colors duration-300 group-hover:text-foreground/70">
             {period}
           </span>
           {(description || skills) && (
-            <ChevronDown
-              className={`w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 text-muted-foreground transition-all duration-300 group-hover:text-foreground flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
+            <AltArrowDownIcon
+              className={`w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
             />
           )}
         </div>
       </button>
 
-      {(description || skills) && (
+      {(description || skills) && hasOpened && (
         <div
           ref={contentRef}
           className={`grid transition-all duration-500 ease-out ${
@@ -494,7 +324,7 @@ function ExpandableItem({
           <div className="overflow-hidden">
             <div className="px-2.5 min-[320px]:px-3 sm:px-4 pb-3 min-[320px]:pb-4 sm:pb-5 pl-9 min-[320px]:pl-10 min-[400px]:pl-14 sm:pl-[4.5rem]">
               {description && (
-                <p className="text-[10px] min-[320px]:text-[11px] sm:text-xs text-muted-foreground leading-relaxed mb-3 min-[320px]:mb-4">
+                <p className="max-w-[88ch] text-[11px] min-[320px]:text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3 min-[320px]:mb-4">
                   {description}
                 </p>
               )}
@@ -506,7 +336,7 @@ function ExpandableItem({
                     const description = skillData?.[locale]
                     return (
                       <Tooltip key={skill}>
-                        <TooltipTrigger className="skill-tag text-[8px] min-[320px]:text-[9px] sm:text-[10px] px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
+                        <TooltipTrigger className="skill-tag text-[9px] min-[320px]:text-[10px] sm:text-xs px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
                           {skill}
                         </TooltipTrigger>
                         {description && (
@@ -527,9 +357,9 @@ function ExpandableItem({
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
+                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
-                    <ExternalLink className="w-3 h-3 transition-transform duration-300 group-hover/link:rotate-12" />
+                    <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
                     Ver credencial
                   </a>
                 ) : (
@@ -539,9 +369,9 @@ function ExpandableItem({
                       e.stopPropagation()
                       onOpenCertificate?.(credentialUrl)
                     }}
-                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[9px] min-[320px]:text-[10px] sm:text-xs text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
+                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
-                    <ExternalLink className="w-3 h-3 transition-transform duration-300 group-hover/link:rotate-12" />
+                    <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
                     Ver credencial
                   </button>
                 )
@@ -616,8 +446,8 @@ export function Experience() {
                 ref={(el) => { headersRef.current[0] = el }}
                 className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <Briefcase className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <CaseIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.work")}
                 </h3>
                 <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
@@ -635,7 +465,7 @@ export function Experience() {
                     logo={item.logo}
                     location={item.location}
                     type={item.type}
-                    icon={Briefcase}
+                    icon={CaseIcon}
                   />
                 ))}
               </div>
@@ -647,8 +477,8 @@ export function Experience() {
                 ref={(el) => { headersRef.current[1] = el }}
                 className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <GraduationCap className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <SquareAcademicCapIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.education")}
                 </h3>
                 <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
@@ -663,7 +493,7 @@ export function Experience() {
                     period={item.period}
                     location={item.locationKey ? t(item.locationKey) : undefined}
                     logo={item.logo}
-                    icon={GraduationCap}
+                    icon={SquareAcademicCapIcon}
                     highlighted={item.highlighted}
                   />
                 ))}
@@ -676,8 +506,8 @@ export function Experience() {
                 ref={(el) => { headersRef.current[2] = el }}
                 className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
               >
-                <Award className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-lg font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
+                <MedalRibbonStarIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
+                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
                   {t("experience.certificates")}
                 </h3>
                 <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
@@ -693,7 +523,7 @@ export function Experience() {
                     skills={item.skills}
                     credentialUrl={item.credentialUrl}
                     logo={item.logo}
-                    icon={Award}
+                    icon={MedalRibbonStarIcon}
                     onOpenCertificate={setCertificateUrl}
                   />
                 ))}

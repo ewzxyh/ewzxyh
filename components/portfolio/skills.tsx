@@ -4,74 +4,10 @@ import { useEffect, useRef } from "react"
 import Image from "next/image"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useI18n, type TranslationKey } from "@/lib/i18n"
+import { useI18n } from "@/lib/i18n"
+import { skillCategories, type Skill } from "@/lib/profile"
 
 gsap.registerPlugin(ScrollTrigger)
-
-interface Skill {
-  name: string
-  icon: string
-  descriptionKey: TranslationKey
-}
-
-interface SkillCategory {
-  titleKey: TranslationKey
-  skills: Skill[]
-}
-
-const skillCategories: SkillCategory[] = [
-  {
-    titleKey: "skills.frontend",
-    skills: [
-      { name: "React", icon: "react", descriptionKey: "skills.react.desc" },
-      { name: "Expo", icon: "expo", descriptionKey: "skills.expo.desc" },
-      { name: "Next.js", icon: "nextjs", descriptionKey: "skills.nextjs.desc" },
-      { name: "TypeScript", icon: "typescript", descriptionKey: "skills.typescript.desc" },
-      { name: "JavaScript", icon: "javascript", descriptionKey: "skills.javascript.desc" },
-      { name: "Tailwind CSS", icon: "tailwindcss", descriptionKey: "skills.tailwind.desc" },
-      { name: "Figma", icon: "figma", descriptionKey: "skills.figma.desc" },
-      { name: "Three.js", icon: "threejs", descriptionKey: "skills.threejs.desc" },
-      { name: "GSAP", icon: "gsap", descriptionKey: "skills.gsap.desc" },
-      { name: "Vite", icon: "vite", descriptionKey: "skills.vite.desc" },
-      { name: "WebGL", icon: "webgl", descriptionKey: "skills.webgl.desc" },
-      { name: "PHP", icon: "php", descriptionKey: "skills.php.desc" },
-    ],
-  },
-  {
-    titleKey: "skills.backend",
-    skills: [
-      { name: "Node.js", icon: "nodejs", descriptionKey: "skills.nodejs.desc" },
-      { name: "Bun", icon: "bun", descriptionKey: "skills.bun.desc" },
-      { name: "PHP", icon: "php", descriptionKey: "skills.php.desc" },
-      { name: "Laravel", icon: "laravel", descriptionKey: "skills.laravel.desc" },
-      { name: "REST API", icon: "openapi", descriptionKey: "skills.restapi.desc" },
-      { name: "PostgreSQL", icon: "postgresql", descriptionKey: "skills.postgresql.desc" },
-      { name: "MySQL", icon: "mysql", descriptionKey: "skills.mysql.desc" },
-      { name: "Supabase", icon: "supabase", descriptionKey: "skills.supabase.desc" },
-      { name: "Prisma", icon: "prisma", descriptionKey: "skills.prisma.desc" },
-      { name: "Redis", icon: "redis", descriptionKey: "skills.redis.desc" },
-    ],
-  },
-  {
-    titleKey: "skills.automation",
-    skills: [
-      { name: "Git", icon: "git", descriptionKey: "skills.git.desc" },
-      { name: "Docker", icon: "docker", descriptionKey: "skills.docker.desc" },
-      { name: "Linux", icon: "linux", descriptionKey: "skills.linux.desc" },
-      { name: "Vercel", icon: "vercel", descriptionKey: "skills.vercel.desc" },
-      { name: "Cloudflare", icon: "cloudflare", descriptionKey: "skills.cloudflare.desc" },
-      { name: "Nginx", icon: "nginx", descriptionKey: "skills.nginx.desc" },
-      { name: "Coolify", icon: "coolify", descriptionKey: "skills.coolify.desc" },
-      { name: "n8n", icon: "n8n", descriptionKey: "skills.n8n.desc" },
-      { name: "Bash", icon: "bash", descriptionKey: "skills.bash.desc" },
-      { name: "GitHub Actions", icon: "githubactions", descriptionKey: "skills.githubactions.desc" },
-      { name: "ChatCase", icon: "chatcase", descriptionKey: "skills.chatcase.desc" },
-      { name: "ChatGPT", icon: "openai", descriptionKey: "skills.chatgpt.desc" },
-      { name: "Claude", icon: "claude", descriptionKey: "skills.claude.desc" },
-      { name: "Gemini", icon: "gemini", descriptionKey: "skills.gemini.desc" },
-    ],
-  },
-]
 
 function getIconUrl(iconName: string): string {
   const localIcons: Record<string, string> = {
@@ -123,46 +59,12 @@ function getIconUrl(iconName: string): string {
   return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${deviconMap[iconName] || `${iconName}/${iconName}-original.svg`}`
 }
 
-function SkillBadge({ skill, index }: { skill: Skill; index: number }) {
+function SkillBadge({ skill }: { skill: Skill }) {
   const { t } = useI18n()
-  const badgeRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const badge = badgeRef.current
-    if (!badge) return
-
-    const handleMouseEnter = () => {
-      gsap.to(badge, {
-        scale: 1.05,
-        y: -2,
-        duration: 0.2,
-        ease: "power2.out",
-      })
-    }
-
-    const handleMouseLeave = () => {
-      gsap.to(badge, {
-        scale: 1,
-        y: 0,
-        duration: 0.2,
-        ease: "power2.out",
-      })
-    }
-
-    badge.addEventListener("mouseenter", handleMouseEnter)
-    badge.addEventListener("mouseleave", handleMouseLeave)
-
-    return () => {
-      badge.removeEventListener("mouseenter", handleMouseEnter)
-      badge.removeEventListener("mouseleave", handleMouseLeave)
-    }
-  }, [])
 
   return (
     <div
-      ref={badgeRef}
-      className="skill-badge group relative flex items-center gap-2 px-3 py-2 border border-border bg-card/50 hover:bg-card hover:border-foreground/20 transition-colors duration-200 cursor-default"
-      style={{ animationDelay: `${index * 50}ms` }}
+      className="skill-badge group relative flex items-center gap-2 px-3 py-2 border border-border bg-card/50 hover:bg-card hover:border-foreground/20 hover:-translate-y-0.5 hover:scale-105 transition-[background-color,border-color,translate,scale] duration-200 ease-out cursor-default"
     >
       <Image
         src={getIconUrl(skill.icon)}
@@ -255,8 +157,8 @@ export function Skills() {
               {t(category.titleKey)}
             </h4>
             <div className="flex flex-wrap gap-2 sm:gap-3">
-              {category.skills.map((skill, index) => (
-                <SkillBadge key={skill.name} skill={skill} index={index} />
+              {category.skills.map((skill) => (
+                <SkillBadge key={skill.name} skill={skill} />
               ))}
             </div>
           </div>
