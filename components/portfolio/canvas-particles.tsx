@@ -1,140 +1,202 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 
 const PARTICLE_IMAGES = Array.from({ length: 21 }, (_, i) =>
   `https://assets.codepen.io/16327/flair-${2 + i}.png`
 )
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth <= 768 : false
-  )
+// Upper bound for the canvas backing store (device-independent pixels), so very large screens stay cheap.
+const MAX_PIXELS = 5e6
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768)
-    window.addEventListener("resize", checkMobile)
-    return () => window.removeEventListener("resize", checkMobile)
-  }, [])
-
-  return isMobile
-}
+// Sprites are drawn a bit larger than their natural size so the small grid tile still feels full of shapes
+// while they stay clearly apart from each other.
+const SPRITE_SIZE = 1.3
 
 interface Particle {
   x: number
   y: number
   scale: number
   rotate: number
-  img: HTMLImageElement
+  sprite: number
 }
+
+const byScale = (a: Particle, b: Particle) => a.scale - b.scale
 
 export function CanvasParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const particlesRef = useRef<Particle[]>([])
-  const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
-  const sizeRef = useRef({ cw: 0, ch: 0, radius: 0 })
-  const isMobile = useIsMobile()
+  const reducedMotion = useReducedMotion()
 
   useEffect(() => {
+    const canvas = canvasRef.current
+    const container = containerRef.current
+    const ctx = canvas?.getContext("2d")
+    if (!canvas || !container || !ctx) return
+
+    const mobileQuery = window.matchMedia("(max-width: 768px)")
+    let sprites: HTMLImageElement[] = []
+    let particles: Particle[] = []
     let timeline: gsap.core.Timeline | null = null
+    let resizeTimer = 0
+    let disposed = false
+    let visible = false
+    let width = 0
+    let height = 0
+    let spriteScale = 1
+    // Viewport the current picture was composed for.
+    let builtWidth = 0
+    let builtHeight = 0
 
     function draw() {
-      const ctx = ctxRef.current
-      const { cw, ch } = sizeRef.current
-      if (!ctx || cw === 0 || ch === 0) return
+      if (!ctx || !width || !height) return
 
-      particlesRef.current.sort((a, b) => a.scale - b.scale)
-      ctx.clearRect(0, 0, cw, ch)
+      particles.sort(byScale)
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.clearRect(0, 0, width, height)
 
-      for (const p of particlesRef.current) {
-        if (p.img.complete && p.img.naturalWidth > 0) {
-          ctx.translate(cw / 2, ch / 2)
-          ctx.rotate(p.rotate)
-          ctx.drawImage(
-            p.img,
-            p.x,
-            p.y,
-            p.img.width * p.scale,
-            p.img.height * p.scale
-          )
-          ctx.resetTransform()
-        }
+      for (const particle of particles) {
+        const sprite = sprites[particle.sprite]
+        if (!sprite?.naturalWidth) continue
+
+        const scale = particle.scale * spriteScale
+        const drawWidth = sprite.naturalWidth * scale
+        if (drawWidth < 0.5) continue
+
+        const cos = Math.cos(particle.rotate)
+        const sin = Math.sin(particle.rotate)
+        ctx.setTransform(cos, sin, -sin, cos, width / 2, height / 2)
+        ctx.drawImage(sprite, particle.x, particle.y, drawWidth, sprite.naturalHeight * scale)
       }
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
     }
 
-    function initAnimation() {
-      const canvas = canvasRef.current
-      const container = containerRef.current
-      if (!canvas || !container) return
-
-      const ctx = canvas.getContext("2d")
-      if (!ctx) return
-      ctxRef.current = ctx
-
-      const cw = container.offsetWidth
-      const ch = container.offsetHeight
-
-      if (cw === 0 || ch === 0) return
-
-      canvas.width = cw
-      canvas.height = ch
-
-      const radius = Math.max(cw, ch)
-      sizeRef.current = { cw, ch, radius }
-
-      const particleCount = isMobile ? 33 : 99
-
-      const particles: Particle[] = []
-      for (let i = 0; i < particleCount; i++) {
-        const img = new Image()
-        img.src = PARTICLE_IMAGES[i % PARTICLE_IMAGES.length]
-        particles.push({
-          x: 0,
-          y: 0,
-          scale: 0,
-          rotate: 0,
-          img,
+    // The artwork lives far below the fold: images are only requested once the gallery is getting close.
+    function loadSprites() {
+      if (sprites.length > 0) return
+      sprites = PARTICLE_IMAGES.map((src) => {
+        const image = new Image()
+        image.decoding = "async"
+        image.addEventListener("load", () => {
+          if (!disposed && (reducedMotion || !visible)) draw()
         })
-      }
-      particlesRef.current = particles
-
-      timeline?.kill()
-
-      const staggerEach = isMobile ? -0.15 : -0.05
-
-      timeline = gsap.timeline({ onUpdate: draw })
-        .fromTo(particles, {
-          x: (i: number) => {
-            const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
-            return Math.cos(angle * 10) * radius
-          },
-          y: (i: number) => {
-            const angle = (i / particleCount) * Math.PI * 2 - Math.PI / 2
-            return Math.sin(angle * 10) * radius
-          },
-          scale: 0.6,
-          rotate: 0,
-        }, {
-          duration: 5,
-          ease: "sine",
-          x: 0,
-          y: 0,
-          scale: 0,
-          rotate: -3,
-          stagger: { each: staggerEach, repeat: -1 }
-        }, 0)
-        .seek(99)
+        image.src = src
+        return image
+      })
     }
 
-    const timer = setTimeout(initAnimation, 100)
+    // The vortex is composed once, for the largest size its tile ever reaches (the whole viewport, where the
+    // gallery animation ends). The canvas is never resized while the gallery animates: `object-fit: cover`
+    // scales this one picture along with the tile, so the particles keep flowing without a single blank frame
+    // and keep their proportions from the small grid tile to full screen.
+    function build() {
+      timeline?.kill()
+      if (!canvas) return
+
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+      if (!viewportWidth || !viewportHeight) return
+
+      builtWidth = viewportWidth
+      builtHeight = viewportHeight
+      const shrink = Math.min(1, Math.sqrt(MAX_PIXELS / (viewportWidth * viewportHeight)))
+      width = Math.round(viewportWidth * shrink)
+      height = Math.round(viewportHeight * shrink)
+      spriteScale = shrink * SPRITE_SIZE
+
+      canvas.width = width
+      canvas.height = height
+
+      const radius = Math.max(width, height)
+      // Particles x stagger always add up to one 5 s cycle. Phones get twice the original 33 particles: the tile
+      // shows a narrow slice of the picture now, so 33 would leave it almost empty at the start.
+      const isMobile = mobileQuery.matches
+      const particleCount = isMobile ? 66 : 99
+      const staggerEach = isMobile ? -0.075 : -0.05
+
+      particles = Array.from({ length: particleCount }, (_, i) => ({
+        x: 0,
+        y: 0,
+        scale: 0,
+        rotate: 0,
+        sprite: i % PARTICLE_IMAGES.length,
+      }))
+
+      timeline = gsap
+        .timeline({ onUpdate: draw, paused: reducedMotion || !visible })
+        .fromTo(
+          particles,
+          {
+            x: (i: number) => Math.cos(((i / particleCount) * Math.PI * 2 - Math.PI / 2) * 10) * radius,
+            y: (i: number) => Math.sin(((i / particleCount) * Math.PI * 2 - Math.PI / 2) * 10) * radius,
+            scale: 0.6,
+            rotate: 0,
+          },
+          {
+            duration: 5,
+            ease: "sine",
+            x: 0,
+            y: 0,
+            scale: 0,
+            rotate: -3,
+            stagger: { each: staggerEach, repeat: -1 },
+          },
+          0
+        )
+        .seek(99)
+
+      // `seek` does not fire onUpdate: paint the first frame so the tile is never empty.
+      draw()
+    }
+
+    // Everything is prepared before the gallery gets here; the timeline only runs while the tile is (almost) visible.
+    const prepare = new IntersectionObserver(
+      (entries) => {
+        if (!entries[entries.length - 1]?.isIntersecting) return
+        loadSprites()
+        if (!timeline) build()
+      },
+      { rootMargin: "1200px 0px" }
+    )
+    prepare.observe(container)
+
+    const visibility = new IntersectionObserver(
+      (entries) => {
+        visible = entries[entries.length - 1]?.isIntersecting ?? false
+        if (!timeline || reducedMotion) return
+        timeline.paused(!visible)
+        if (visible) draw()
+      },
+      { rootMargin: "400px 0px" }
+    )
+    visibility.observe(container)
+
+    // Only a real viewport change recomposes the picture. Touch browsers also fire resize while the URL bar
+    // collapses (height only), which must not restart the vortex.
+    const handleResize = () => {
+      window.clearTimeout(resizeTimer)
+      resizeTimer = window.setTimeout(() => {
+        if (!timeline) return
+        const widthChanged = window.innerWidth !== builtWidth
+        const heightChanged = Math.abs(window.innerHeight - builtHeight) > builtHeight * 0.2
+        if (widthChanged || heightChanged) build()
+      }, 200)
+    }
+    window.addEventListener("resize", handleResize)
+    mobileQuery.addEventListener("change", build)
 
     return () => {
-      clearTimeout(timer)
+      disposed = true
+      window.clearTimeout(resizeTimer)
+      prepare.disconnect()
+      visibility.disconnect()
+      window.removeEventListener("resize", handleResize)
+      mobileQuery.removeEventListener("change", build)
       timeline?.kill()
     }
-  }, [isMobile])
+  }, [reducedMotion])
 
   return (
     <div
@@ -148,7 +210,7 @@ export function CanvasParticles() {
     >
       <canvas
         ref={canvasRef}
-        className="w-full h-full block"
+        className="block h-full w-full object-cover"
         style={{
           imageRendering: "auto",
           transform: "translateZ(0)",
