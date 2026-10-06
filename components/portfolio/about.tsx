@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Database, Lightbulb, Palette } from "lucide-react"
+import { DatabaseIcon, LightbulbIcon, PaletteIcon } from "@/components/ui/icons"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
@@ -12,17 +12,17 @@ gsap.registerPlugin(ScrollTrigger)
 
 const highlightsData = [
   {
-    icon: Lightbulb,
+    icon: LightbulbIcon,
     titleKey: "about.product" as const,
     descKey: "about.product.desc" as const,
   },
   {
-    icon: Palette,
+    icon: PaletteIcon,
     titleKey: "about.design" as const,
     descKey: "about.design.desc" as const,
   },
   {
-    icon: Database,
+    icon: DatabaseIcon,
     titleKey: "about.fullstack" as const,
     descKey: "about.fullstack.desc" as const,
   },
@@ -121,7 +121,7 @@ export function About() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 sm:pt-6">
             {highlightsData.map((item) => (
               <div key={item.titleKey} className="highlight-card p-3 sm:p-4 border border-border bg-card/50">
-                <item.icon className="w-4 h-4 sm:w-5 sm:h-5 mb-2 sm:mb-3 text-muted-foreground" />
+                <item.icon className="w-5 h-5 sm:w-6 sm:h-6 mb-2 sm:mb-3 text-muted-foreground" />
                 <h3 className="font-medium mb-1 text-sm sm:text-base">{t(item.titleKey)}</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground">{t(item.descKey)}</p>
               </div>

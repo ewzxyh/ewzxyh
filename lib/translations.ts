@@ -14,8 +14,6 @@ export const translations = {
 
     // Hero
     "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
-    "hero.experience": "Da estratégia à execução, desenvolvo MVPs, SaaS, dashboards, integrações e automações para empresas que precisam lançar, centralizar ou escalar.",
-    "hero.terminal": "ENZO_YOSHIDA://EWZXYH_LABS",
     "hero.subtitle": "Transformo ideias e operações manuais em produtos digitais prontos para operar.",
     "hero.years": "ANOS EXP.",
     "hero.projects": "PROJETOS",
@@ -179,8 +177,6 @@ export const translations = {
 
     // Hero
     "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
-    "hero.experience": "From strategy to execution, I build MVPs, SaaS, dashboards, integrations, and automations for companies that need to launch, centralize, or scale.",
-    "hero.terminal": "ENZO_YOSHIDA://EWZXYH_LABS",
     "hero.subtitle": "I turn ideas and manual operations into digital products ready to run.",
     "hero.years": "YEARS EXP.",
     "hero.projects": "PROJECTS",

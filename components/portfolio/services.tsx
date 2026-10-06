@@ -1,12 +1,12 @@
 "use client"
 
-import { Boxes, Gauge, Workflow } from "lucide-react"
+import { BoxIcon, RoutingIcon, Widget4Icon } from "@/components/ui/icons"
 import { useI18n } from "@/lib/i18n"
 
 const services = [
-  { icon: Boxes, title: "services.products", description: "services.products.desc" },
-  { icon: Gauge, title: "services.systems", description: "services.systems.desc" },
-  { icon: Workflow, title: "services.automation", description: "services.automation.desc" },
+  { icon: BoxIcon, title: "services.products", description: "services.products.desc" },
+  { icon: Widget4Icon, title: "services.systems", description: "services.systems.desc" },
+  { icon: RoutingIcon, title: "services.automation", description: "services.automation.desc" },
 ] as const
 
 export function Services() {
@@ -32,7 +32,7 @@ export function Services() {
                 key={title}
                 className="border-b border-border px-0 py-10 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:py-16 sm:last:border-r-0 lg:px-8 lg:py-20"
               >
-                <Icon className="mb-8 size-5 text-muted-foreground" aria-hidden="true" />
+                <Icon className="mb-8 size-6 text-muted-foreground" aria-hidden="true" />
                 <h3 className="text-lg font-medium">{t(title)}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t(description)}</p>
               </article>

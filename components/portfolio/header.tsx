@@ -4,31 +4,48 @@ import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
-import { User, Briefcase, FolderKanban, Mail, type LucideIcon } from "lucide-react"
+import { CaseIcon, FolderKanbanIcon, LetterIcon, UserIcon, type Icon } from "@/components/ui/icons"
 import dynamic from "next/dynamic"
 import Link from "next/link"
-import menu2 from "react-useanimations/lib/menu2"
 import { Logo } from "./logo"
-import { ThemeToggle } from "./theme-toggle"
 import { LanguageToggle } from "./language-toggle"
 import { useLoading } from "./loading-context"
+import { onIdle } from "@/lib/idle"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
-const UseAnimations = dynamic(() => import("react-useanimations"), { ssr: false })
+// The theme switch is a Lottie animation (a heavy library plus a large JSON): it loads after the page settles.
+const ThemeToggle = dynamic(() => import("./theme-toggle").then((mod) => mod.ThemeToggle), { ssr: false })
+
+function useAfterIdle(delay: number) {
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    let cancelIdle: (() => void) | undefined
+    const timer = window.setTimeout(() => {
+      cancelIdle = onIdle(() => setReady(true), 2000)
+    }, delay)
+    return () => {
+      window.clearTimeout(timer)
+      cancelIdle?.()
+    }
+  }, [delay])
+
+  return ready
+}
 
 interface NavItemConfig {
   id: string
-  icon: LucideIcon
+  icon: Icon
   labelKey: TranslationKey
 }
 
 const navItems: NavItemConfig[] = [
-  { id: "about-content", icon: User, labelKey: "nav.about" },
-  { id: "experience", icon: Briefcase, labelKey: "nav.experience" },
-  { id: "projects", icon: FolderKanban, labelKey: "nav.projects" },
-  { id: "contact", icon: Mail, labelKey: "nav.contact" },
+  { id: "about-content", icon: UserIcon, labelKey: "nav.about" },
+  { id: "experience", icon: CaseIcon, labelKey: "nav.experience" },
+  { id: "projects", icon: FolderKanbanIcon, labelKey: "nav.projects" },
+  { id: "contact", icon: LetterIcon, labelKey: "nav.contact" },
 ]
 
 export function Header() {
@@ -38,7 +55,8 @@ export function Header() {
   const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([])
   const isHiddenRef = useRef(false)
   const hasAnimatedRef = useRef(false)
-  const { isLoadingComplete } = useLoading()
+  const { isRevealing } = useLoading()
+  const togglesReady = useAfterIdle(600)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const scrollToSection = (sectionId: string) => {
@@ -109,7 +127,7 @@ export function Header() {
   }, [isMenuOpen])
 
   useEffect(() => {
-    if (!isLoadingComplete || hasAnimatedRef.current) return
+    if (!isRevealing || hasAnimatedRef.current) return
     hasAnimatedRef.current = true
 
     const header = headerRef.current
@@ -124,7 +142,7 @@ export function Header() {
       duration: 0.6,
       ease: "power3.out",
     })
-  }, [isLoadingComplete])
+  }, [isRevealing])
 
   useEffect(() => {
     const header = headerRef.current
@@ -201,9 +219,9 @@ export function Header() {
                   event.preventDefault()
                   scrollToSection(item.id)
                 }}
-                className="group flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors duration-200"
+                className="group flex items-center gap-2 px-2.5 py-2 text-sm text-muted-foreground xl:px-3.5 hover:text-foreground transition-colors duration-200"
               >
-                <item.icon className="w-4 h-4" />
+                <item.icon className="size-[18px]" />
                 <span className="tracking-wide">{t(item.labelKey)}</span>
               </a>
             ))}
@@ -212,16 +230,20 @@ export function Header() {
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* Open to Work Badge - Desktop only */}
             <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-2 border border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400">
-              <span className="relative flex h-2 w-2">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
-              <span className="text-[10px] font-medium tracking-wide uppercase">
+              <span className="text-xs font-medium tracking-wide uppercase">
                 {t("nav.openToWork")}
               </span>
             </div>
 
-            <ThemeToggle />
+            {togglesReady ? (
+              <ThemeToggle />
+            ) : (
+              <div aria-hidden="true" className="h-8 w-8 flex-shrink-0 sm:h-10 sm:w-10 md:h-12 md:w-12" />
+            )}
             <LanguageToggle />
 
             {/* Mobile Menu Toggle */}
@@ -232,12 +254,23 @@ export function Header() {
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
-              <UseAnimations
-                animation={menu2}
-                size={20}
-                reverse={isMenuOpen}
-                strokeColor="currentColor"
-              />
+              <span aria-hidden="true" className="relative block h-3.5 w-5">
+                <span
+                  className={`absolute left-0 top-0 h-0.5 w-full bg-current transition-transform duration-300 ${
+                    isMenuOpen ? "translate-y-[6px] rotate-45" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute left-0 top-[6px] h-0.5 w-full bg-current transition-opacity duration-200 ${
+                    isMenuOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`absolute left-0 top-[12px] h-0.5 w-full bg-current transition-transform duration-300 ${
+                    isMenuOpen ? "-translate-y-[6px] -rotate-45" : ""
+                  }`}
+                />
+              </span>
             </button>
           </div>
         </div>
