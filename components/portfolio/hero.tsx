@@ -12,6 +12,7 @@ import {
   LinkedinIcon,
   ProgrammingIcon,
   WhatsappIcon,
+  XIcon,
   type Icon as SolarIcon,
 } from "@/components/ui/icons"
 import { getImageProps } from "next/image"
@@ -20,6 +21,7 @@ import type { IconType } from "react-icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { atAmiga } from "@/lib/fonts"
 import { useI18n } from "@/lib/i18n"
+import { socialProfiles } from "@/lib/site"
 import { useLoading } from "./loading-context"
 import { ShaderImage } from "./shader-image"
 
@@ -43,13 +45,14 @@ function getSocialLinks(locale: "pt-BR" | "en-US"): SocialLink[] {
     locale === "en-US" ? "Hello%2C%20I%20came%20from%20your%20portfolio%21" : "Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21"
 
   return [
-    { icon: GithubIcon, href: "https://github.com/ewzxyh", label: "GitHub" },
+    { icon: GithubIcon, href: socialProfiles.github, label: "GitHub" },
     {
       icon: LinkedinIcon,
-      href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh",
+      href: locale === "en-US" ? `${socialProfiles.linkedin}?locale=en_US` : socialProfiles.linkedin,
       label: "LinkedIn",
     },
-    { icon: InstagramIcon, href: "https://instagram.com/yoshidaenzoh", label: "Instagram" },
+    { icon: XIcon, href: socialProfiles.x, label: "X" },
+    { icon: InstagramIcon, href: socialProfiles.instagram, label: "Instagram" },
     { icon: LetterIcon, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" },
     { icon: WhatsappIcon, href: `https://wa.me/5562984268492?text=${whatsappText}`, label: "WhatsApp" },
   ]
@@ -59,7 +62,7 @@ function SocialRail({ locale, label }: { locale: "pt-BR" | "en-US"; label: strin
   return (
     <nav
       aria-label={label}
-      className="grid grid-cols-5 border-t border-border md:grid-cols-1 md:grid-rows-5 md:border-l md:border-t-0"
+      className="grid grid-cols-6 border-t border-border md:grid-cols-1 md:grid-rows-6 md:border-l md:border-t-0"
     >
       {getSocialLinks(locale).map(({ icon: Icon, href, label: name }) => (
         <a

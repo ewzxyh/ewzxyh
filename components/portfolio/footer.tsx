@@ -1,28 +1,25 @@
 "use client"
 
-import { Github, Linkedin, Mail } from "lucide-react"
-import localFont from "next/font/local"
-import { SiWhatsapp } from "react-icons/si"
+import { GithubIcon, InstagramIcon, LetterIcon, LinkedinIcon, WhatsappIcon, XIcon } from "@/components/ui/icons"
+import { atAmiga } from "@/lib/fonts"
 import { useI18n } from "@/lib/i18n"
+import { htmlLangs, localePaths, socialProfiles } from "@/lib/site"
 import { useMounted } from "@/hooks/use-mounted"
 
-const atAmiga = localFont({
-  src: "../../app/fonts/AtAmiga-Regular.woff2",
-  weight: "400",
-  style: "normal",
-  display: "swap",
-})
-
 export function Footer() {
-  const { t, locale } = useI18n()
+  const { t, locale, setLocale } = useI18n()
   const mounted = useMounted()
   const currentYear = mounted ? new Date().getFullYear() : 2026
 
+  const otherLocale = locale === "en-US" ? "pt-BR" : "en-US"
+
   const socialLinks = [
-    { icon: Github, href: "https://github.com/ewzxyh", label: "GitHub" },
-    { icon: Linkedin, href: locale === "en-US" ? "https://linkedin.com/in/ewzxyh?locale=en_US" : "https://linkedin.com/in/ewzxyh", label: "LinkedIn" },
-    { icon: Mail, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" },
-    { icon: SiWhatsapp, href: locale === "en-US" ? "https://wa.me/5562984268492?text=Hello%2C%20I%20came%20from%20your%20portfolio%21" : "https://wa.me/5562984268492?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21", label: "WhatsApp" },
+    { icon: GithubIcon, href: socialProfiles.github, label: "GitHub" },
+    { icon: LinkedinIcon, href: locale === "en-US" ? `${socialProfiles.linkedin}?locale=en_US` : socialProfiles.linkedin, label: "LinkedIn" },
+    { icon: XIcon, href: socialProfiles.x, label: "X" },
+    { icon: InstagramIcon, href: socialProfiles.instagram, label: "Instagram" },
+    { icon: LetterIcon, href: "mailto:yoshidaenzo@hotmail.com", label: "Email" },
+    { icon: WhatsappIcon, href: locale === "en-US" ? "https://wa.me/5562984268492?text=Hello%2C%20I%20came%20from%20your%20portfolio%21" : "https://wa.me/5562984268492?text=Ol%C3%A1%2C%20vim%20pelo%20seu%20portf%C3%B3lio%21", label: "WhatsApp" },
   ]
 
   return (
@@ -34,10 +31,26 @@ export function Footer() {
             <span className="text-xs sm:text-sm font-medium tracking-wider">EWZXYH_LABS</span>
           </div>
 
-          {/* Copyright */}
-          <p className="text-xs sm:text-sm text-muted-foreground text-center">
-            {currentYear} Ewzxyh Labs. {t("footer.rights")}
-          </p>
+          {/* Copyright and the link to the other language (a real link, so crawlers find the other version) */}
+          <div className="flex flex-col items-center gap-1 text-center">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              {currentYear} Ewzxyh Labs. {t("footer.rights")}
+            </p>
+            <a
+              href={localePaths[otherLocale]}
+              hrefLang={htmlLangs[otherLocale]}
+              lang={htmlLangs[otherLocale]}
+              onClick={(event) => {
+                // Plain clicks switch language in place (same animation as the header button); modified clicks keep their normal meaning.
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+                event.preventDefault()
+                setLocale(otherLocale)
+              }}
+              className="text-xs sm:text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+            >
+              {t("footer.otherLanguage")}
+            </a>
+          </div>
 
           {/* Social Links */}
           <div className="flex items-center gap-3 sm:gap-4">
@@ -50,7 +63,7 @@ export function Footer() {
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={link.label}
               >
-                <link.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <link.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             ))}
           </div>

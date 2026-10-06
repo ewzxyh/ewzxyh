@@ -1,17 +1,15 @@
 "use client"
 
-import { Mail, ArrowRight } from "lucide-react"
-import { SiWhatsapp } from "react-icons/si"
+import { ArrowRightIcon, LetterIcon, WhatsappIcon } from "@/components/ui/icons"
 import { useI18n } from "@/lib/i18n"
+import { socialProfiles } from "@/lib/site"
 
 const CONTACT_SECTION_ID = "contact"
 
 export function Contact() {
   const { t, locale } = useI18n()
 
-  const linkedinUrl = locale === "en-US"
-    ? "https://linkedin.com/in/ewzxyh?locale=en_US"
-    : "https://linkedin.com/in/ewzxyh"
+  const linkedinUrl = locale === "en-US" ? `${socialProfiles.linkedin}?locale=en_US` : socialProfiles.linkedin
 
   const whatsappMessage = locale === "en-US"
     ? "Hello%2C%20Enzo.%20I%20came%20from%20your%20portfolio%20and%20would%20like%20to%20discuss%20a%20project."
@@ -40,9 +38,9 @@ export function Contact() {
           href={emailHref}
           className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base tracking-wider border border-foreground bg-foreground text-background hover:bg-background hover:text-foreground transition-all duration-300"
         >
-          <Mail className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+          <LetterIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
           {t("contact.cta")}
-          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
+          <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
         </a>
 
         {/* WhatsApp CTA */}
@@ -52,9 +50,9 @@ export function Contact() {
           rel="noopener noreferrer"
           className="inline-flex items-center justify-center px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base tracking-wider border border-foreground bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300 mt-4"
         >
-          <SiWhatsapp className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+          <WhatsappIcon className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
           WhatsApp
-          <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
+          <ArrowRightIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
         </a>
 
         {/* Alternative */}
