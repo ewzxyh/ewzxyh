@@ -1,8 +1,68 @@
-export const siteUrl = "https://ewzxyh.dev"
+// Who the site is and where it lives. Metadata, JSON-LD, sitemap, robots, llms.txt and the markdown twins all read
+// from here, so a name, URL or handle is only ever written once.
+
+// The production host. `www.ewzxyh.com` answers with a 301 to this apex, so the apex is the canonical one.
+export const siteUrl = "https://ewzxyh.com"
 export const siteTitle = "Enzo Yoshida | Product Engineer Next.js, React e SaaS"
+export const siteTitleEn = "Enzo Yoshida | Product Engineer Next.js, React & SaaS"
 export const siteName = "Enzo Yoshida"
 export const personName = "Enzo Hideki Yoshida"
+export const brandName = "Ewzxyh Labs"
+export const handle = "ewzxyh"
+
 export const siteDescription =
   "Enzo Yoshida é Product Engineer e fundador da Ewzxyh Labs, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida."
-export const siteLastModified = "2026-07-03"
-export const ogImagePath = "/og/enzo-yoshida-product-engineer.webp"
+export const siteDescriptionEn =
+  "Enzo Yoshida is a Product Engineer and founder of Ewzxyh Labs, with 5+ years building MVPs, SaaS products, dashboards, integrations and custom automations."
+
+// Bump when the content of the page really changes: it feeds sitemap lastmod, JSON-LD dateModified and llms.txt.
+export const siteLastModified = "2026-10-05"
+
+export const contactEmail = "yoshidaenzo@hotmail.com"
+export const whatsappNumber = "5562984268492"
+
+export const twitterHandle = `@${handle}`
+
+export const socialProfiles = {
+  x: `https://x.com/${handle}`,
+  linkedin: `https://www.linkedin.com/in/${handle}`,
+  instagram: `https://www.instagram.com/${handle}`,
+  github: `https://github.com/${handle}`,
+} as const
+
+// ---------- languages ----------
+//
+// Each language has its own URL: Portuguese at the root and English under /en. Search engines index a page per URL
+// and ask for one language per URL, so the two are linked with hreflang instead of swapping text on a single address.
+
+export type SiteLocale = "pt-BR" | "en-US"
+
+export const localePaths: Record<SiteLocale, string> = { "pt-BR": "/", "en-US": "/en" }
+
+// Value for <html lang> and Content-Language (English is not written for one country, so it is the bare language).
+export const htmlLangs: Record<SiteLocale, string> = { "pt-BR": "pt-BR", "en-US": "en" }
+
+export function pageUrl(locale: SiteLocale) {
+  return `${siteUrl}${localePaths[locale]}`
+}
+
+export function localeFromPath(pathname: string): SiteLocale {
+  return pathname === "/en" || pathname.startsWith("/en/") ? "en-US" : "pt-BR"
+}
+
+export function pageTitle(locale: SiteLocale) {
+  return locale === "en-US" ? siteTitleEn : siteTitle
+}
+
+export function pageDescription(locale: SiteLocale) {
+  return locale === "en-US" ? siteDescriptionEn : siteDescription
+}
+
+// Every language version of the page, plus the one search engines should pick when nothing matches the visitor.
+export function alternateLanguages(): Record<string, string> {
+  return {
+    "pt-BR": localePaths["pt-BR"],
+    en: localePaths["en-US"],
+    "x-default": localePaths["en-US"],
+  }
+}

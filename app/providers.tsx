@@ -9,6 +9,7 @@ import { PageLoader } from "@/components/portfolio/page-loader"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { onIdle } from "@/lib/idle"
 import { I18nProvider } from "@/lib/i18n"
+import type { SiteLocale } from "@/lib/site"
 
 const interactiveSelector =
   'a[href], button, input, select, textarea, summary, [role="button"], [role="link"], [role="switch"], [role="tab"]'
@@ -71,10 +72,18 @@ function DeferredBackground() {
   return <FluidBackground className="fixed inset-0 z-0 pointer-events-none" paused={!isAlmostComplete} />
 }
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  locale,
+  restoreChoice,
+  children,
+}: {
+  locale: SiteLocale
+  restoreChoice: boolean
+  children: ReactNode
+}) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <I18nProvider>
+      <I18nProvider locale={locale} restoreChoice={restoreChoice}>
         <LoadingProvider>
           <InteractionSounds />
           <DeferredBackground />

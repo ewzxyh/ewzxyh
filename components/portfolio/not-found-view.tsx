@@ -3,16 +3,18 @@
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import { useTheme } from "next-themes"
-import { Home } from "lucide-react"
+import { Home2Icon } from "@/components/ui/icons"
 import { useI18n } from "@/lib/i18n"
+import { localePaths } from "@/lib/site"
 import { HeaderActions } from "@/components/portfolio/header-actions"
 import { useMounted } from "@/hooks/use-mounted"
 import animationData from "@/public/Not found.json"
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
 
-export default function NotFound() {
-  const { t } = useI18n()
+// Body of the 404 page; app/global-not-found.tsx wraps it in the document shell.
+export function NotFoundView() {
+  const { t, locale } = useI18n()
   const { resolvedTheme } = useTheme()
   const mounted = useMounted()
   const isDark = mounted && resolvedTheme === "dark"
@@ -42,10 +44,10 @@ export default function NotFound() {
         </p>
 
         <Link
-          href="/"
+          href={localePaths[locale]}
           className="inline-flex items-center justify-center px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium tracking-wider border border-foreground bg-foreground text-background hover:bg-background hover:text-foreground transition-all duration-300"
         >
-          <Home className="w-4 h-4 mr-2" />
+          <Home2Icon className="w-4 h-4 mr-2" />
           {t("notFound.backHome")}
         </Link>
 

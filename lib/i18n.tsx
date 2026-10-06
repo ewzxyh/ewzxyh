@@ -1,12 +1,14 @@
 "use client"
 
-import { createContext, use, useState, type ReactNode } from "react"
+import { createContext, use, useEffect, useState, type ReactNode } from "react"
 import { useMounted } from "@/hooks/use-mounted"
+import { htmlLangs, localePaths, pageTitle } from "./site"
 import { translations, type Locale, type TranslationKey } from "./translations"
 
 export type { Locale, TranslationKey }
 
-const LOCALE_COOKIE = "preferred-locale"
+// Written only when the visitor presses the language button; proxy.ts reads it to decide where "/" should open.
+const LOCALE_COOKIE = "locale-choice"
 const DAY_MS = 24 * 60 * 60 * 1000
 
 type CookieStoreLike = {
@@ -42,6 +44,25 @@ function setCookie(name: string, value: string, days: number) {
   document.cookie = `${name}=${value}; expires=${expires}; path=/; SameSite=Lax`
 }
 
+function storedLocale(): Locale | null {
+  const value = getCookie(LOCALE_COOKIE)
+  return value === "pt-BR" || value === "en-US" ? value : null
+}
+
+const isHomePath = (pathname: string) => Object.values(localePaths).includes(pathname)
+
+// Both home pages render the same tree, so switching language does not navigate: it swaps the text and rewrites the
+// address bar, which keeps the page, the animations and the scroll position. A reload or a shared link then opens
+// the language that was on screen (each language has its own server-rendered page). Other pages (the 404) keep
+// their address.
+function showLanguageInAddressBar(locale: Locale) {
+  const { pathname, search, hash } = window.location
+  const target = localePaths[locale]
+  if (!isHomePath(pathname) || pathname === target) return
+  window.history.replaceState(null, "", `${target}${search}${hash}`)
+  document.title = pageTitle(locale)
+}
+
 interface I18nContextType {
   locale: Locale
   setLocale: (locale: Locale) => void
@@ -51,20 +72,28 @@ interface I18nContextType {
 
 const I18nContext = createContext<I18nContextType | null>(null)
 
-function getInitialLocale(): Locale {
-  if (typeof document === "undefined") return "pt-BR"
-  const cookieLocale = getCookie(LOCALE_COOKIE)
-  if (cookieLocale === "pt-BR" || cookieLocale === "en-US") {
-    return cookieLocale
-  }
-  return "pt-BR"
-}
-
-export function I18nProvider({ children }: { children: ReactNode }) {
+// `pageLocale` is the language the server rendered the page in (each root layout knows its own). `restoreChoice` is for
+// pages that have no language of their own, like the 404, which open in the language the visitor picked before.
+export function I18nProvider({
+  locale: pageLocale,
+  restoreChoice,
+  children,
+}: {
+  locale: Locale
+  restoreChoice: boolean
+  children: ReactNode
+}) {
   const mounted = useMounted()
-  const [locale, setLocaleState] = useState<Locale>(getInitialLocale)
+  const [choice, setChoice] = useState<Locale | null>(null)
   const [isTransitioning, setIsTransitioning] = useState(false)
-  const activeLocale = mounted ? locale : "pt-BR"
+
+  // What was pressed wins, then (only once mounted, so the server HTML matches the first client render, and only when
+  // asked to) what the visitor picked on an earlier visit, then the language of the page.
+  const locale: Locale = choice ?? (restoreChoice && mounted ? storedLocale() : null) ?? pageLocale
+
+  useEffect(() => {
+    document.documentElement.lang = htmlLangs[locale]
+  }, [locale])
 
   function setLocale(newLocale: Locale) {
     if (newLocale === locale) return
@@ -73,7 +102,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setCookie(LOCALE_COOKIE, newLocale, 365)
 
     setTimeout(() => {
-      setLocaleState(newLocale)
+      setChoice(newLocale)
+      showLanguageInAddressBar(newLocale)
       setTimeout(() => {
         setIsTransitioning(false)
       }, 800)
@@ -81,11 +111,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   }
 
   function t(key: TranslationKey): string {
-    return translations[activeLocale][key] || key
+    return translations[locale][key] || key
   }
 
   return (
-    <I18nContext.Provider value={{ locale: activeLocale, setLocale, t, isTransitioning }}>
+    <I18nContext.Provider value={{ locale, setLocale, t, isTransitioning }}>
       {children}
     </I18nContext.Provider>
   )
