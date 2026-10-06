@@ -2,26 +2,12 @@
 
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
-import localFont from "next/font/local";
-import { useTheme } from "next-themes";
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { useMounted } from "@/hooks/use-mounted";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { atAmiga } from "@/lib/fonts";
 import { useLoading } from "./loading-context";
 
 gsap.registerPlugin(MorphSVGPlugin);
-
-const atAmiga = localFont({
-	src: "../../app/fonts/AtAmiga-Regular.woff2",
-	weight: "400",
-	style: "normal",
-	display: "swap",
-});
 
 const iconPaths = [
 	"M0.565231 48.3871C0.565231 95.2585 38.8514 133.391 85.913 133.391C132.975 133.391 171.261 95.2585 171.261 48.3871V18.0373C171.261 8.08998 163.137 3.86996e-06 153.149 3.86996e-06C143.163 3.86996e-06 135.04 8.08998 135.04 18.0373V48.3871C135.04 75.3653 113.001 97.3153 85.913 97.3153C58.8248 97.3153 36.7865 75.3653 36.7865 48.3871V18.0373C36.7865 8.08998 28.6612 3.86996e-06 18.6765 3.86996e-06C8.68913 3.86996e-06 0.565231 8.08998 0.565231 18.0373V48.3871Z",
@@ -99,6 +85,55 @@ const LOADER_TIMELINE_WALL_SECONDS = LOADER_TIMELINE_SECONDS - 2;
 const LOADER_TIMELINE_TIMESCALE =
 	LOADER_TIMELINE_SECONDS / LOADER_TIMELINE_WALL_SECONDS;
 const MIN_LOGO_SCREEN_MS = LOADER_TIMELINE_WALL_SECONDS * 1000;
+
+// The full intro plays once per tab session; later loads replay the same animation, just faster.
+const INTRO_SEEN_KEY = "ewzxyh:intro-seen";
+const QUICK_REPLAY_SPEED = 2.6;
+// The background (and everything behind the loader) is told to get ready at this point of the timeline.
+const READY_SIGNAL_SECONDS = MORPH_EXIT_SECONDS;
+
+function hasSeenIntro() {
+	try {
+		return window.sessionStorage.getItem(INTRO_SEEN_KEY) === "1";
+	} catch {
+		return false;
+	}
+}
+
+function markIntroSeen() {
+	try {
+		window.sessionStorage.setItem(INTRO_SEEN_KEY, "1");
+	} catch {
+		// Storage can be unavailable (private mode): the full intro simply plays again.
+	}
+}
+
+type AsciiArt = { text: string; columns: number; lines: number };
+
+const ASCII_URL = "/loader-ascii-column-4.txt";
+let asciiRequest: Promise<AsciiArt | null> | null = null;
+
+function parseAscii(raw: string): AsciiArt {
+	const lines = raw.replace(/\r?\n$/, "").split(/\r?\n/);
+	const columns = Math.max(1, ...lines.map((line) => line.length));
+	return {
+		text: lines.map((line) => line.padEnd(columns, " ")).join("\n"),
+		columns,
+		lines: Math.max(1, lines.length),
+	};
+}
+
+// Started as soon as this module loads (and hinted in <head>) so the art is ready when the loader hydrates.
+function requestAscii() {
+	asciiRequest ??= fetch(ASCII_URL)
+		.then((response) => (response.ok ? response.text() : Promise.reject(new Error("ascii art"))))
+		.then(parseAscii)
+		.catch(() => null);
+	return asciiRequest;
+}
+
+if (typeof window !== "undefined") void requestAscii();
+
 type FinalLetter = keyof typeof finalLetterShapes;
 type CounterColumn = {
 	key: string;
@@ -116,22 +151,18 @@ const counterColumns: CounterColumn[] = [
 ];
 
 export function PageLoader() {
-	const { resolvedTheme } = useTheme();
-	const mounted = useMounted();
 	const reducedMotion = useReducedMotion();
-	const [logoComplete, setLogoComplete] = useState(false);
 	const [showLogoScreen, setShowLogoScreen] = useState(true);
-	const [asciiArt, setAsciiArt] = useState("");
-	const [asciiSize, setAsciiSize] = useState({ columns: 1, lines: 1 });
-	const [asciiMetrics, setAsciiMetrics] = useState({
-		fontSize: 1,
-		marginX: 0,
-		marginY: 0,
+	const [ascii, setAscii] = useState<AsciiArt | null>(null);
+	const { setLoadingComplete, setAlmostComplete, setRevealing } = useLoading();
+
+	// The animation effect must not restart when the provider re-renders: it reads the latest callbacks here.
+	const loadingRef = useRef({ setLoadingComplete, setAlmostComplete, setRevealing });
+	useEffect(() => {
+		loadingRef.current = { setLoadingComplete, setAlmostComplete, setRevealing };
 	});
-	const { setLoadingComplete, setAlmostComplete } = useLoading();
 
 	const containerRef = useRef<HTMLDivElement>(null);
-	const asciiFrameRef = useRef<HTMLDivElement>(null);
 	const morphSvgRef = useRef<SVGSVGElement>(null);
 	const morphGroupRef = useRef<SVGGElement>(null);
 	const morphPathsRef = useRef<SVGPathElement[]>([]);
@@ -140,12 +171,6 @@ export function PageLoader() {
 	const finalLetterPathRefs = useRef<SVGPathElement[][]>([]);
 	const counterDigitsRef = useRef<HTMLSpanElement[]>([]);
 	const counterValueRef = useRef({ value: 0 });
-	const completedRef = useRef(false);
-	const loadingStateSentRef = useRef(false);
-	const startedAtRef = useRef(0);
-	const completionTimerRef = useRef<number | null>(null);
-
-	const isDark = mounted && resolvedTheme === "dark";
 
 	const setCounter = useCallback((value: number) => {
 		const formatted = String(Math.round(value)).padStart(3, "0");
@@ -154,188 +179,96 @@ export function PageLoader() {
 		});
 	}, []);
 
-	const updateAsciiMetrics = useCallback(() => {
-		const frame = asciiFrameRef.current;
-		if (!frame || asciiSize.columns <= 1 || asciiSize.lines <= 1) return;
-
-		const charAspectRatio = 0.6;
-		const width = frame.clientWidth;
-		const height = frame.clientHeight;
-		const fontSize = Math.min(
-			width / (asciiSize.columns * charAspectRatio),
-			height / asciiSize.lines,
-		);
-		const actualWidth = asciiSize.columns * fontSize * charAspectRatio;
-		const actualHeight = asciiSize.lines * fontSize;
-		const nextMetrics = {
-			fontSize,
-			marginX: Math.max(0, (width - actualWidth) / 2),
-			marginY: Math.max(0, height - actualHeight),
-		};
-
-		setAsciiMetrics((current) => {
-			if (
-				Math.abs(current.fontSize - nextMetrics.fontSize) < 0.01 &&
-				Math.abs(current.marginX - nextMetrics.marginX) < 0.01 &&
-				Math.abs(current.marginY - nextMetrics.marginY) < 0.01
-			) {
-				return current;
-			}
-
-			return nextMetrics;
-		});
-	}, [asciiSize.columns, asciiSize.lines]);
-
-	const markPortfolioReady = useCallback(() => {
-		if (loadingStateSentRef.current) return;
-		loadingStateSentRef.current = true;
-		setAlmostComplete();
-	}, [setAlmostComplete]);
-
-	const hideLogoScreen = useCallback(() => {
-		if (completedRef.current) return;
-		completedRef.current = true;
-		let exitFallbackTimer: number | null = null;
-		let exitFinished = false;
-
-		const complete = () => {
-			if (exitFinished) return;
-			exitFinished = true;
-			if (exitFallbackTimer !== null) {
-				window.clearTimeout(exitFallbackTimer);
-			}
-			setLogoComplete(true);
-			setShowLogoScreen(false);
-			setLoadingComplete();
-		};
-
-		const columns = columnRefs.current.filter(Boolean);
-
-		if (reducedMotion || !containerRef.current || columns.length === 0) {
-			complete();
-			return;
-		}
-
-		gsap.set(containerRef.current, { backgroundColor: "transparent" });
-		gsap.set(columns, { willChange: "transform" });
-
-		const tl = gsap.timeline({
-			onComplete: complete,
-		});
-
-		tl.to(
-			columns,
-			{
-				yPercent: -105,
-				duration: 0.75,
-				ease: "power3.inOut",
-				stagger: 0.06,
-			},
-			0.05,
-		);
-
-		// Keep the page usable if a throttled browser drops GSAP's completion callback.
-		exitFallbackTimer = window.setTimeout(complete, 1200);
-	}, [reducedMotion, setLoadingComplete]);
-
-	const completeLoading = useCallback(() => {
-		if (completedRef.current || completionTimerRef.current) return;
-		markPortfolioReady();
-
-		const elapsed = performance.now() - startedAtRef.current;
-		const remaining = Math.max(0, MIN_LOGO_SCREEN_MS - elapsed);
-		if (remaining > 0) {
-			completionTimerRef.current = window.setTimeout(() => {
-				completionTimerRef.current = null;
-				hideLogoScreen();
-			}, remaining);
-			return;
-		}
-
-		hideLogoScreen();
-	}, [hideLogoScreen, markPortfolioReady]);
-
 	useEffect(() => {
 		let active = true;
-
-		fetch("/loader-ascii-column-4.txt")
-			.then((response) => response.text())
-			.then((text) => {
-				if (!active) return;
-
-				const lines = text.replace(/\r?\n$/, "").split(/\r?\n/);
-				const columns = Math.max(1, ...lines.map((line) => line.length));
-				const normalizedLines = lines.map((line) => line.padEnd(columns, " "));
-				const normalizedArt = normalizedLines.join("\n");
-				setAsciiArt(normalizedArt);
-				setAsciiSize({
-					columns,
-					lines: Math.max(1, normalizedLines.length),
-				});
-			})
-			.catch(() => undefined);
-
+		void requestAscii().then((art) => {
+			if (active && art) setAscii(art);
+		});
 		return () => {
 			active = false;
 		};
 	}, []);
 
 	useEffect(() => {
-		const frame = asciiFrameRef.current;
-		if (!asciiArt || !frame) return;
+		if (!containerRef.current) return;
 
-		updateAsciiMetrics();
-		const observer = new ResizeObserver(updateAsciiMetrics);
-		observer.observe(frame);
+		const quick = !reducedMotion && hasSeenIntro();
+		const speed = quick ? QUICK_REPLAY_SPEED : 1;
+		const minScreenMs = MIN_LOGO_SCREEN_MS / speed;
+		const startedAt = performance.now();
 
-		return () => observer.disconnect();
-	}, [asciiArt, updateAsciiMetrics]);
+		let readySent = false;
+		let exiting = false;
+		let finished = false;
+		let completionTimer: number | undefined;
+		let exitFallbackTimer: number | undefined;
+		let exitTimeline: gsap.core.Timeline | undefined;
+		let ctx: gsap.Context | undefined;
 
-	useEffect(() => {
-		if (!mounted || logoComplete) return;
-
-		startedAtRef.current = performance.now();
-		markPortfolioReady();
-		const fallbackTimer = window.setTimeout(
-			completeLoading,
-			MIN_LOGO_SCREEN_MS,
-		);
-		const cleanupTimers = () => {
-			window.clearTimeout(fallbackTimer);
-			if (completionTimerRef.current) {
-				window.clearTimeout(completionTimerRef.current);
-				completionTimerRef.current = null;
-			}
-			if (containerRef.current) {
-				gsap.killTweensOf(containerRef.current);
-			}
-			const columns = columnRefs.current.filter(Boolean);
-			if (columns.length > 0) {
-				gsap.killTweensOf(columns);
-			}
-			const finalLetters = finalLetterRefs.current.filter(Boolean);
-			if (finalLetters.length > 0) {
-				gsap.killTweensOf(finalLetters);
-			}
-			const finalLetterPaths = finalLetterPathRefs.current
-				.flat()
-				.filter(Boolean);
-			if (finalLetterPaths.length > 0) {
-				gsap.killTweensOf(finalLetterPaths);
-			}
-			if (morphSvgRef.current) {
-				gsap.killTweensOf(morphSvgRef.current);
-			}
-			if (morphGroupRef.current) {
-				gsap.killTweensOf(morphGroupRef.current);
-			}
-			const morphPaths = morphPathsRef.current.filter(Boolean);
-			if (morphPaths.length > 0) {
-				gsap.killTweensOf(morphPaths);
-			}
+		const markReady = () => {
+			if (readySent) return;
+			readySent = true;
+			loadingRef.current.setAlmostComplete();
 		};
 
-		if (reducedMotion) {
+		const finish = () => {
+			if (finished) return;
+			finished = true;
+			window.clearTimeout(exitFallbackTimer);
+			markIntroSeen();
+			setShowLogoScreen(false);
+			loadingRef.current.setLoadingComplete();
+		};
+
+		const startExit = () => {
+			if (exiting) return;
+			exiting = true;
+
+			const container = containerRef.current;
+			const columns = columnRefs.current.filter(Boolean);
+
+			if (reducedMotion || !container || columns.length === 0) {
+				finish();
+				return;
+			}
+
+			gsap.set(container, { backgroundColor: "transparent" });
+
+			exitTimeline = gsap.timeline({ onComplete: finish });
+			exitTimeline.to(
+				columns,
+				{
+					yPercent: -105,
+					duration: 0.75,
+					ease: "power3.inOut",
+					stagger: 0.06,
+				},
+				0.05,
+			);
+			// Page content starts entering while the columns are still wiping away.
+			exitTimeline.call(() => loadingRef.current.setRevealing(), undefined, 0.3);
+			exitTimeline.timeScale(quick ? 1.5 : 1);
+
+			// Keep the page usable if a throttled browser drops GSAP's completion callback.
+			exitFallbackTimer = window.setTimeout(finish, 1400);
+		};
+
+		const requestExit = (immediate = false) => {
+			if (exiting || completionTimer) return;
+			markReady();
+
+			const remaining = immediate ? 0 : Math.max(0, minScreenMs - (performance.now() - startedAt));
+			if (remaining > 0) {
+				completionTimer = window.setTimeout(() => {
+					completionTimer = undefined;
+					startExit();
+				}, remaining);
+				return;
+			}
+			startExit();
+		};
+
+		const showFinalState = () => {
 			setCounter(100);
 			gsap.set(finalLetterRefs.current.filter(Boolean), {
 				autoAlpha: 1,
@@ -349,384 +282,368 @@ export function PageLoader() {
 				strokeOpacity: 0,
 				strokeDashoffset: 0,
 			});
-			completeLoading();
-			return cleanupTimers;
-		}
+		};
+
+		// Safety net if the timeline never reports completion.
+		const fallbackTimer = window.setTimeout(requestExit, minScreenMs);
 
 		const morphPaths = morphPathsRef.current.filter(Boolean);
-		if (morphPaths.length === 0) {
-			gsap.set(finalLetterRefs.current.filter(Boolean), {
-				autoAlpha: 1,
-				xPercent: -50,
-				yPercent: -50,
-				y: 0,
-				scale: 1,
-			});
-			gsap.set(finalLetterPathRefs.current.flat().filter(Boolean), {
-				fillOpacity: 1,
-				strokeOpacity: 0,
-				strokeDashoffset: 0,
-			});
-			completeLoading();
-			return cleanupTimers;
-		}
+		if (reducedMotion || morphPaths.length === 0) {
+			showFinalState();
+			requestExit(true);
+		} else {
+			try {
+				ctx = gsap.context(() => {
+					const morphSvg = morphSvgRef.current;
+					const morphGroup = morphGroupRef.current;
+					const finalLetters = finalLetterRefs.current.filter(Boolean);
+					const finalLetterPaths = finalLetterPathRefs.current
+						.flat()
+						.filter(Boolean);
 
-		let ctx: ReturnType<typeof gsap.context> | undefined;
-
-		try {
-			ctx = gsap.context(() => {
-				const morphSvg = morphSvgRef.current;
-				const morphGroup = morphGroupRef.current;
-				const finalLetters = finalLetterRefs.current.filter(Boolean);
-				const finalLetterPaths = finalLetterPathRefs.current
-					.flat()
-					.filter(Boolean);
-
-				gsap.set(finalLetters, {
-					autoAlpha: 0,
-					xPercent: -50,
-					yPercent: -50,
-					y: 18,
-					scale: 0.94,
-					transformOrigin: "center center",
-				});
-
-				finalLetterPaths.forEach((path) => {
-					const length = path.getTotalLength();
-					gsap.set(path, {
-						strokeDasharray: length,
-						strokeDashoffset: length,
-						fillOpacity: 0,
-						strokeOpacity: 1,
-					});
-				});
-
-				if (morphSvg) {
-					gsap.set(morphSvg, {
-						opacity: 0,
+					gsap.set(finalLetters, {
+						autoAlpha: 0,
 						xPercent: -50,
 						yPercent: -50,
-						scale: 1,
+						y: 18,
+						scale: 0.94,
 						transformOrigin: "center center",
 					});
-				}
 
-				if (morphGroup) {
-					gsap.set(morphGroup, {
-						x: morphStates.icon.x,
-						y: morphStates.icon.y,
-						rotate: -12,
-						scale: 1,
-						transformOrigin: "center center",
-						svgOrigin: "92.5 91",
+					finalLetterPaths.forEach((path) => {
+						const length = path.getTotalLength();
+						gsap.set(path, {
+							strokeDasharray: length,
+							strokeDashoffset: length,
+							fillOpacity: 0,
+							strokeOpacity: 1,
+						});
 					});
-				}
 
-				morphPaths.forEach((path, index) => {
-					gsap.set(path, {
-						attr: { d: morphStates.icon.paths[index] },
-						opacity: morphStates.icon.opacities[index],
-					});
-				});
-
-				const tl = gsap.timeline({
-					onComplete: completeLoading,
-				});
-
-				tl.to(
-					counterValueRef.current,
-					{
-						value: 100,
-						duration: LOADER_TIMELINE_SECONDS,
-						ease: "none",
-						onUpdate: () => setCounter(counterValueRef.current.value),
-					},
-					0,
-				);
-
-				if (morphSvg) {
-					tl.to(
-						morphSvg,
-						{
-							opacity: 1,
+					if (morphSvg) {
+						gsap.set(morphSvg, {
+							opacity: 0,
+							xPercent: -50,
+							yPercent: -50,
 							scale: 1,
-							duration: ICON_REVEAL_SECONDS,
-							ease: "power2.out",
+							transformOrigin: "center center",
+						});
+					}
+
+					if (morphGroup) {
+						gsap.set(morphGroup, {
+							x: morphStates.icon.x,
+							y: morphStates.icon.y,
+							rotate: -12,
+							scale: 1,
+							transformOrigin: "center center",
+							svgOrigin: "92.5 91",
+						});
+					}
+
+					morphPaths.forEach((path, index) => {
+						gsap.set(path, {
+							attr: { d: morphStates.icon.paths[index] },
+							opacity: morphStates.icon.opacities[index],
+						});
+					});
+
+					const tl = gsap.timeline({
+						onComplete: () => requestExit(),
+					});
+
+					tl.to(
+						counterValueRef.current,
+						{
+							value: 100,
+							duration: LOADER_TIMELINE_SECONDS,
+							ease: "none",
+							onUpdate: () => setCounter(counterValueRef.current.value),
 						},
 						0,
 					);
-				}
 
-				if (morphGroup) {
-					tl.to(
-						morphGroup,
-						{
-							rotate: 0,
-							scale: 1,
-							duration: 0.4,
-							ease: "expo.inOut",
-						},
-						MORPH_START_SECONDS,
-					);
+					if (morphSvg) {
+						tl.to(
+							morphSvg,
+							{
+								opacity: 1,
+								scale: 1,
+								duration: ICON_REVEAL_SECONDS,
+								ease: "power2.out",
+							},
+							0,
+						);
+					}
 
-					tl.to(
-						morphGroup,
-						{
-							rotate: 8,
-							duration: 0.6,
-							ease: "none",
-						},
-						MORPH_START_SECONDS + 0.18,
-					);
-
-					const morphTo = (
-						state: (typeof morphStates)[keyof typeof morphStates],
-						position: number,
-					) => {
+					if (morphGroup) {
 						tl.to(
 							morphGroup,
 							{
-								x: state.x,
-								y: state.y,
 								rotate: 0,
 								scale: 1,
-								duration: 0.36,
-								ease: "power3.inOut",
+								duration: 0.4,
+								ease: "expo.inOut",
 							},
-							position,
+							MORPH_START_SECONDS,
 						);
 
-						morphPaths.forEach((path, index) => {
+						tl.to(
+							morphGroup,
+							{
+								rotate: 8,
+								duration: 0.6,
+								ease: "none",
+							},
+							MORPH_START_SECONDS + 0.18,
+						);
+
+						const morphTo = (
+							state: (typeof morphStates)[keyof typeof morphStates],
+							position: number,
+						) => {
 							tl.to(
-								path,
+								morphGroup,
 								{
-									morphSVG: {
-										shape: state.paths[index],
-										shapeIndex: "auto",
-									},
+									x: state.x,
+									y: state.y,
+									rotate: 0,
+									scale: 1,
 									duration: 0.36,
 									ease: "power3.inOut",
 								},
 								position,
 							);
-							tl.to(
-								path,
-								{
-									opacity: state.opacities[index],
-									duration: 0.18,
-									ease: "power2.out",
-								},
-								position + 0.08,
-							);
-						});
+
+							morphPaths.forEach((path, index) => {
+								tl.to(
+									path,
+									{
+										morphSVG: {
+											shape: state.paths[index],
+											shapeIndex: "auto",
+										},
+										duration: 0.36,
+										ease: "power3.inOut",
+									},
+									position,
+								);
+								tl.to(
+									path,
+									{
+										opacity: state.opacities[index],
+										duration: 0.18,
+										ease: "power2.out",
+									},
+									position + 0.08,
+								);
+							});
+						};
+
+						morphTo(morphStates.e, MORPH_START_SECONDS + 0.52);
+						morphTo(morphStates.h, MORPH_START_SECONDS + 0.9);
+						morphTo(morphStates.y, MORPH_START_SECONDS + 1.28);
+					}
+
+					if (morphSvg) {
+						tl.to(
+							morphSvg,
+							{
+								opacity: 0,
+								scale: 1,
+								duration: 0.18,
+								ease: "power3.inOut",
+							},
+							MORPH_EXIT_SECONDS,
+						);
+					}
+
+					const drawLetter = (index: number, position: number) => {
+						const letter = finalLetterRefs.current[index];
+						const paths =
+							finalLetterPathRefs.current[index]?.filter(Boolean) ?? [];
+						if (!letter || paths.length === 0) return;
+
+						tl.to(
+							letter,
+							{
+								autoAlpha: 1,
+								y: 0,
+								scale: 1,
+								duration: 0.12,
+								ease: "power2.out",
+							},
+							position,
+						);
+						tl.to(
+							paths,
+							{
+								strokeDashoffset: 0,
+								duration: LETTER_DRAW_SECONDS,
+								ease: "power2.out",
+								stagger: 0.03,
+							},
+							position,
+						);
 					};
 
-					morphTo(morphStates.e, MORPH_START_SECONDS + 0.52);
-					morphTo(morphStates.h, MORPH_START_SECONDS + 0.9);
-					morphTo(morphStates.y, MORPH_START_SECONDS + 1.28);
-				}
-
-				if (morphSvg) {
-					tl.to(
-						morphSvg,
-						{
-							opacity: 0,
-							scale: 1,
-							duration: 0.18,
-							ease: "power3.inOut",
-						},
-						MORPH_EXIT_SECONDS,
-					);
-				}
-
-				const drawLetter = (index: number, position: number) => {
-					const letter = finalLetterRefs.current[index];
-					const paths =
-						finalLetterPathRefs.current[index]?.filter(Boolean) ?? [];
-					if (!letter || paths.length === 0) return;
+					drawLetter(0, FIRST_LETTER_DRAW_SECONDS);
+					drawLetter(1, FIRST_LETTER_DRAW_SECONDS + LETTER_STEP_SECONDS);
+					drawLetter(2, FIRST_LETTER_DRAW_SECONDS + LETTER_STEP_SECONDS * 2);
 
 					tl.to(
-						letter,
+						finalLetterPaths,
 						{
-							autoAlpha: 1,
-							y: 0,
-							scale: 1,
-							duration: 0.12,
+							fillOpacity: 1,
+							strokeOpacity: 0,
+							duration: LETTER_FILL_SECONDS,
 							ease: "power2.out",
 						},
-						position,
+						LETTER_FILL_START_SECONDS,
 					);
-					tl.to(
-						paths,
-						{
-							strokeDashoffset: 0,
-							duration: LETTER_DRAW_SECONDS,
-							ease: "power2.out",
-							stagger: 0.03,
-						},
-						position,
-					);
-				};
 
-				drawLetter(0, FIRST_LETTER_DRAW_SECONDS);
-				drawLetter(1, FIRST_LETTER_DRAW_SECONDS + LETTER_STEP_SECONDS);
-				drawLetter(2, FIRST_LETTER_DRAW_SECONDS + LETTER_STEP_SECONDS * 2);
-
-				tl.to(
-					finalLetterPaths,
-					{
-						fillOpacity: 1,
-						strokeOpacity: 0,
-						duration: LETTER_FILL_SECONDS,
-						ease: "power2.out",
-					},
-					LETTER_FILL_START_SECONDS,
-				);
-
-				tl.to({}, { duration: 0.01 }, LOADER_TIMELINE_SECONDS - 0.01);
-				tl.timeScale(LOADER_TIMELINE_TIMESCALE);
-			}, containerRef);
-		} catch {
-			completeLoading();
+					tl.call(markReady, undefined, READY_SIGNAL_SECONDS);
+					tl.to({}, { duration: 0.01 }, LOADER_TIMELINE_SECONDS - 0.01);
+					tl.timeScale(LOADER_TIMELINE_TIMESCALE * speed);
+				}, containerRef);
+			} catch {
+				showFinalState();
+				requestExit(true);
+			}
 		}
 
 		return () => {
-			cleanupTimers();
+			window.clearTimeout(fallbackTimer);
+			window.clearTimeout(completionTimer);
+			window.clearTimeout(exitFallbackTimer);
+			exitTimeline?.kill();
 			ctx?.revert();
 		};
-	}, [
-		mounted,
-		logoComplete,
-		reducedMotion,
-		completeLoading,
-		markPortfolioReady,
-		setCounter,
-	]);
+	}, [reducedMotion, setCounter]);
+
+	if (!showLogoScreen) return null;
 
 	return (
-		<>
-			{showLogoScreen && (
-				<div
-					ref={containerRef}
-					className={`fixed inset-0 z-[100] flex items-center justify-center overflow-hidden ${
-						isDark ? "bg-stone-800" : "bg-stone-200"
-					}`}
-				>
+		<div
+			ref={containerRef}
+			data-page-loader=""
+			className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-200 dark:bg-stone-800"
+		>
+			<div
+				className={`${atAmiga.className} absolute inset-0 grid grid-cols-[minmax(0,0.18fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.18fr)] sm:grid-cols-[minmax(0,0.06fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.06fr)] pointer-events-none select-none overflow-hidden text-foreground/10 dark:text-foreground/10`}
+				aria-hidden="true"
+			>
+				{counterColumns.map(({ key, digitIndex, letter }, columnIndex) => (
 					<div
-						className={`${atAmiga.className} absolute inset-0 grid grid-cols-[minmax(0,0.18fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.18fr)] sm:grid-cols-[minmax(0,0.06fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.06fr)] pointer-events-none select-none overflow-hidden text-foreground/10 dark:text-foreground/10`}
-						aria-hidden="true"
+						key={key}
+						ref={(el) => {
+							if (el) columnRefs.current[columnIndex] = el;
+						}}
+						className={`flex items-end justify-center overflow-hidden border-l border-foreground/10 bg-stone-200 pb-8 will-change-transform first:border-l-0 sm:pb-12 dark:bg-stone-800 ${
+							letter || key === "empty-main" ? "relative" : ""
+						}`}
 					>
-						{counterColumns.map(({ key, digitIndex, letter }, columnIndex) => (
-							<div
-								key={key}
+						{letter && (
+							<svg
 								ref={(el) => {
-									if (el) columnRefs.current[columnIndex] = el;
+									if (el && digitIndex !== null)
+										finalLetterRefs.current[digitIndex] = el;
 								}}
-								className={`flex items-end justify-center overflow-hidden border-l border-foreground/10 pb-8 first:border-l-0 sm:pb-12 ${
-									isDark ? "bg-stone-800" : "bg-stone-200"
-								} ${letter || key === "empty-main" ? "relative" : ""}`}
+								viewBox={LETTER_SLOT_VIEWBOX}
+								width={LETTER_SLOT_WIDTH}
+								height={LETTER_SLOT_HEIGHT}
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								className={LETTER_SLOT_CLASS}
+								aria-hidden="true"
 							>
-								{letter && (
-									<svg
-										ref={(el) => {
-											if (el && digitIndex !== null)
-												finalLetterRefs.current[digitIndex] = el;
-										}}
-										viewBox={LETTER_SLOT_VIEWBOX}
-										width={LETTER_SLOT_WIDTH}
-										height={LETTER_SLOT_HEIGHT}
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-										className={LETTER_SLOT_CLASS}
-										aria-hidden="true"
-									>
-										<g
-											transform={`translate(${finalLetterShapes[letter].x} ${finalLetterShapes[letter].y})`}
-										>
-											{finalLetterShapes[letter].paths.map((d, pathIndex) => (
-												<path
-													key={d}
-													ref={(el) => {
-														if (!el || digitIndex === null) return;
-														if (!finalLetterPathRefs.current[digitIndex]) {
-															finalLetterPathRefs.current[digitIndex] = [];
-														}
-														finalLetterPathRefs.current[digitIndex][pathIndex] =
-															el;
-													}}
-													d={d}
-													fill="currentColor"
-													stroke="currentColor"
-													strokeWidth="2"
-													vectorEffect="non-scaling-stroke"
-													style={{ fillOpacity: 0, strokeOpacity: 1 }}
-												/>
-											))}
-										</g>
-									</svg>
-								)}
-								{digitIndex === 0 && (
-									<svg
-										ref={morphSvgRef}
-										width={LETTER_SLOT_WIDTH}
-										height={LETTER_SLOT_HEIGHT}
-										viewBox={LETTER_SLOT_VIEWBOX}
-										fill="none"
-										xmlns="http://www.w3.org/2000/svg"
-										className={`${LETTER_SLOT_CLASS} z-10 overflow-visible`}
-										aria-hidden="true"
-									>
-										<g ref={morphGroupRef}>
-											{iconPaths.map((d, i) => (
-												<path
-													key={d}
-													ref={(el) => {
-														if (el) morphPathsRef.current[i] = el;
-													}}
-													d={d}
-													fill="currentColor"
-													opacity={1}
-												/>
-											))}
-										</g>
-									</svg>
-								)}
-								{digitIndex !== null && (
-									<span
-										ref={(el) => {
-											if (el) counterDigitsRef.current[digitIndex] = el;
-										}}
-										className="text-[clamp(5rem,16vw,19rem)] leading-none tabular-nums"
-									>
-										0
-									</span>
-								)}
-								{key === "empty-main" && asciiArt && (
-									<div
-										ref={asciiFrameRef}
-										className="absolute inset-x-2 bottom-8 top-8 overflow-hidden sm:inset-x-4 sm:bottom-12 sm:top-12"
-									>
-										<pre
-											className="block overflow-hidden whitespace-pre text-center font-bold text-foreground/30 dark:text-foreground/30"
-											style={{
-												margin: `${asciiMetrics.marginY}px ${asciiMetrics.marginX}px`,
-												fontFamily: '"Courier New", monospace',
-												fontSize: `${asciiMetrics.fontSize}px`,
-												lineHeight: `${asciiMetrics.fontSize}px`,
-												fontVariantLigatures: "none",
-												letterSpacing: 0,
-												tabSize: 1,
+								<g
+									transform={`translate(${finalLetterShapes[letter].x} ${finalLetterShapes[letter].y})`}
+								>
+									{finalLetterShapes[letter].paths.map((d, pathIndex) => (
+										<path
+											key={d}
+											ref={(el) => {
+												if (!el || digitIndex === null) return;
+												if (!finalLetterPathRefs.current[digitIndex]) {
+													finalLetterPathRefs.current[digitIndex] = [];
+												}
+												finalLetterPathRefs.current[digitIndex][pathIndex] =
+													el;
 											}}
-										>
-											{asciiArt}
-										</pre>
-									</div>
-								)}
+											d={d}
+											fill="currentColor"
+											stroke="currentColor"
+											strokeWidth="2"
+											vectorEffect="non-scaling-stroke"
+											style={{ fillOpacity: 0, strokeOpacity: 1 }}
+										/>
+									))}
+								</g>
+							</svg>
+						)}
+						{digitIndex === 0 && (
+							<svg
+								ref={morphSvgRef}
+								width={LETTER_SLOT_WIDTH}
+								height={LETTER_SLOT_HEIGHT}
+								viewBox={LETTER_SLOT_VIEWBOX}
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+								className={`${LETTER_SLOT_CLASS} z-10 overflow-visible`}
+								aria-hidden="true"
+							>
+								<g ref={morphGroupRef}>
+									{iconPaths.map((d, i) => (
+										<path
+											key={d}
+											ref={(el) => {
+												if (el) morphPathsRef.current[i] = el;
+											}}
+											d={d}
+											fill="currentColor"
+											opacity={1}
+										/>
+									))}
+								</g>
+							</svg>
+						)}
+						{digitIndex !== null && (
+							<span
+								ref={(el) => {
+									if (el) counterDigitsRef.current[digitIndex] = el;
+								}}
+								className="text-[clamp(3.25rem,19vw,5rem)] leading-none tabular-nums sm:text-[clamp(5rem,16vw,19rem)]"
+							>
+								0
+							</span>
+						)}
+						{key === "empty-main" && ascii && (
+							// Sized purely in CSS (container query units): no measuring, no resize jump.
+							<div className="absolute inset-x-2 bottom-8 top-8 flex items-end justify-center overflow-hidden [container-type:size] sm:inset-x-4 sm:bottom-12 sm:top-12">
+								<pre
+									className="animate-in fade-in duration-700 whitespace-pre text-center font-bold text-foreground/30"
+									style={
+										{
+											"--ascii-columns": ascii.columns,
+											"--ascii-lines": ascii.lines,
+											fontFamily: '"Courier New", monospace',
+											fontSize:
+												"min(calc(100cqw / (var(--ascii-columns) * 0.6)), calc(100cqh / var(--ascii-lines)))",
+											lineHeight: 1,
+											fontVariantLigatures: "none",
+											letterSpacing: 0,
+											tabSize: 1,
+										} as CSSProperties
+									}
+								>
+									{ascii.text}
+								</pre>
 							</div>
-						))}
+						)}
 					</div>
-				</div>
-			)}
-		</>
+				))}
+			</div>
+		</div>
 	);
 }

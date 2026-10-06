@@ -34,6 +34,9 @@ export function CustomCursor() {
     const root = document.documentElement
     root.classList.add("has-custom-cursor")
 
+    // The hover selector is expensive, so it only runs when the element under the pointer changes.
+    let lastTarget: EventTarget | null = null
+
     function setHovering(next: boolean) {
       if (hoveringRef.current === next) return
       hoveringRef.current = next
@@ -47,10 +50,14 @@ export function CustomCursor() {
 
       cursor.style.opacity = "1"
       cursor.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`
-      setHovering(hasHoverTarget(event.target))
+      if (event.target !== lastTarget) {
+        lastTarget = event.target
+        setHovering(hasHoverTarget(event.target))
+      }
     }
 
     function hideCursor() {
+      lastTarget = null
       if (cursorRef.current) cursorRef.current.style.opacity = "0"
       setHovering(false)
     }

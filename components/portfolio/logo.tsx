@@ -13,7 +13,7 @@ interface LogoProps {
 
 export function Logo({ className = "", animate = true }: LogoProps) {
   const { resolvedTheme } = useTheme()
-  const { isLoadingComplete } = useLoading()
+  const { isRevealing } = useLoading()
   const svgRef = useRef<SVGSVGElement>(null)
   const pathsRef = useRef<SVGPathElement[]>([])
   const hasAnimatedRef = useRef(false)
@@ -124,7 +124,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
   }
 
   useEffect(() => {
-    if (!mounted || !animate || !svgRef.current || hasAnimatedRef.current || !isLoadingComplete) return
+    if (!mounted || !animate || !svgRef.current || hasAnimatedRef.current || !isRevealing) return
 
     const pathElements = pathsRef.current.filter(Boolean)
     if (pathElements.length === 0) return
@@ -178,7 +178,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     }, svgRef)
 
     return () => ctx.revert()
-  }, [mounted, animate, isLoadingComplete])
+  }, [mounted, animate, isRevealing])
 
   if (!mounted) {
     return (
