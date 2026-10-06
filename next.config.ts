@@ -35,6 +35,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // Public markdown twins of the page (/index.md, /en/index.md, ...) are served by app/md/[locale]/[doc].
+  async rewrites() {
+    return [
+      { source: "/en/:doc.md", destination: "/md/en-US/:doc" },
+      { source: "/:doc.md", destination: "/md/pt-BR/:doc" },
+    ]
+  },
   async headers() {
     return [
       {

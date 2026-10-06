@@ -1,0 +1,23 @@
+/* TEAM */
+Creator: Enzo Hideki Yoshida (Enzo Yoshida, ewzxyh)
+Role: Product Engineer, founder of Ewzxyh Labs
+Site: https://ewzxyh.com (Português) and https://ewzxyh.com/en (English)
+Contact: yoshidaenzo@hotmail.com
+GitHub: https://github.com/ewzxyh
+LinkedIn: https://www.linkedin.com/in/ewzxyh
+X: https://x.com/ewzxyh
+Instagram: https://www.instagram.com/ewzxyh
+
+/* SITE */
+Last update: 2026/10/05
+Language: Portuguese (Brazil), English
+Standards: HTML5, CSS3, JSON-LD (schema.org), llms.txt
+Components: Next.js, React, TypeScript, Tailwind CSS, GSAP, Lenis, WebGL
+Machine-readable: https://ewzxyh.com/llms.txt, https://ewzxyh.com/llms-full.txt, https://ewzxyh.com/index.md, https://ewzxyh.com/en/index.md
+
+/* THANKS */
+Icons: Solar Icon Set by 480 Design, licensed CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), via @solar-icons/react
+Brand logos: Phosphor Icons (MIT), https://phosphoricons.com
+Text typeface: JetBrains Mono (SIL Open Font License 1.1), https://www.jetbrains.com/lp/mono/
+Display typeface: AT Amiga
+Animation: GSAP, Lottie

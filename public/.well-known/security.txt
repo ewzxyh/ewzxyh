@@ -1,0 +1,4 @@
+Contact: mailto:yoshidaenzo@hotmail.com
+Expires: 2027-09-30T23:59:00.000Z
+Preferred-Languages: pt, en
+Canonical: https://ewzxyh.com/.well-known/security.txt
