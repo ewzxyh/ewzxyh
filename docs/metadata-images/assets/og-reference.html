@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>OG reference render (1200x630, light theme)</title>
+<!--
+  Layout reference for the share-image briefs (docs/metadata-images). It is built from the real brand parts: the logo
+  SVG, the AT Amiga display face, JetBrains Mono and the site's light palette, so every number in the briefs can be
+  checked against something real.
+
+    og-reference.html            Portuguese copy (default)
+    og-reference.html?lang=en    English copy
+    og-reference.html?guides     adds the crop and margin overlays (for people, never attach this version to a generator)
+    og-reference.html?format=x   the native 2:1 card for X, 1600x800 (combine with &lang=en)
+    og-reference.html?layer=background   frame, corner squares and contour lines only (no text, no logo)
+
+  Open it at 1200x630 (devicePixelRatio 1 or 2) and screenshot it, or attach the exported PNG to an image model as a
+  composition reference. No build step: a browser is enough.
+-->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: "AT Amiga"; src: url("../../../app/fonts/AtAmiga-Regular.woff2") format("woff2"); font-weight: 400; }
+  :root {
+    --bg: #f5f5f4;        /* stone-100, the site's light background */
+    --ink: #1c1917;       /* stone-900, the site's light foreground */
+    --muted: #79716b;     /* muted foreground */
+    --line: #d7d3d1;      /* border */
+    --accent: #f97316;    /* orange-500, the only accent (the corner squares of the footer) */
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; background: var(--bg); overflow: hidden; }
+  .card { position: relative; width: 1200px; height: 630px; background: var(--bg); color: var(--ink); font-family: "JetBrains Mono", monospace; }
+  #topo { position: absolute; inset: 0; width: 1200px; height: 630px; }
+  .frame { position: absolute; inset: 24px; border: 1px solid var(--line); }
+  .corner { position: absolute; width: 10px; height: 10px; background: var(--accent); }
+  .c1 { left: 40px; top: 40px; } .c2 { right: 40px; top: 40px; } .c3 { left: 40px; bottom: 40px; } .c4 { right: 40px; bottom: 40px; }
+  .logo { position: absolute; left: 72px; top: 60px; height: 48px; }
+  .domain { position: absolute; right: 72px; top: 68px; font-size: 26px; font-weight: 500; letter-spacing: 0.04em; line-height: 1.2; color: var(--muted); }
+  .chip { position: absolute; left: 72px; top: 156px; height: 54px; display: flex; align-items: center; padding: 0 20px; border: 1px solid var(--line); background: rgba(245,245,244,.9);
+          font-size: 24px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .tagline { position: absolute; left: 72px; top: 236px; width: 1056px; font-size: 44px; font-weight: 500; line-height: 1.2; letter-spacing: -0.02em; white-space: nowrap; }
+  .stack { position: absolute; left: 72px; top: 306px; font-size: 24px; font-weight: 400; letter-spacing: 0.02em; line-height: 1.2; color: var(--muted); }
+  .name { position: absolute; left: 72px; bottom: 56px; font-family: "AT Amiga", sans-serif; font-size: 128px; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+
+  /* ?format=x: the native 2:1 card for X (1600x800). Same hierarchy, own coordinates. */
+  html.x, html.x body, html.x .card, html.x #topo { width: 1600px; height: 800px; }
+  html.x .frame { inset: 32px; }
+  html.x .corner { width: 12px; height: 12px; }
+  html.x .c1 { left: 54px; top: 54px; } html.x .c2 { right: 54px; top: 54px; } html.x .c3 { left: 54px; bottom: 54px; } html.x .c4 { right: 54px; bottom: 54px; }
+  html.x .logo { left: 96px; top: 80px; height: 64px; }
+  html.x .domain { right: 96px; top: 90px; font-size: 34px; }
+  html.x .chip { left: 96px; top: 208px; height: 72px; padding: 0 27px; font-size: 32px; }
+  html.x .tagline { left: 96px; top: 314px; width: 1408px; font-size: 58px; }
+  html.x .stack { left: 96px; top: 408px; font-size: 32px; }
+  html.x .name { left: 96px; bottom: 128px; } /* leaves the bottom-left band free for the label X draws over large cards */
+</style>
+</head>
+<body>
+<div class="card">
+  <svg id="topo" viewBox="0 0 1200 630" aria-hidden="true"></svg>
+  <div class="frame"></div>
+  <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+  <img class="logo" src="../../../public/ewzxyh-logo-black.svg" alt="">
+  <div class="domain">ewzxyh.com</div>
+  <div class="chip">Product Engineer · Ewzxyh Labs</div>
+  <div class="tagline" id="tagline">Produtos digitais prontos para operar.</div>
+  <div class="stack">Next.js · React · TypeScript · Laravel · SaaS</div>
+  <div class="name" id="name">Enzo Yoshida</div>
+</div>
+<script>
+  const isX = location.search.includes("format=x");
+  if (isX) document.documentElement.classList.add("x");
+  // ?layer=background keeps only the frame, the corner squares and the contour lines (a ready base for a hybrid workflow).
+  if (location.search.includes("layer=background")) {
+    document.querySelectorAll(".logo, .domain, .chip, .tagline, .stack, .name").forEach((el) => { el.style.display = "none"; });
+  }
+  if (location.search.includes("lang=en")) {
+    document.documentElement.lang = "en";
+    document.getElementById("tagline").textContent = "Digital products, ready to run.";
+  }
+
+  // Soft topographic contour lines: marching squares over a smooth value-noise field. Seeded, so renders are repeatable.
+  const W = isX ? 1600 : 1200, H = isX ? 800 : 630, STEP = isX ? 10 : 8;
+  let seed = 20260105;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const grid = 6; const lattice = [];
+  for (let i = 0; i <= grid; i++) { lattice[i] = []; for (let j = 0; j <= grid; j++) lattice[i][j] = rnd(); }
+  const smooth = (t) => t * t * (3 - 2 * t);
+  function noise(x, y) {
+    const fx = (x / W) * (grid - 1), fy = (y / H) * (grid - 1);
+    const ix = Math.floor(fx), iy = Math.floor(fy), tx = smooth(fx - ix), ty = smooth(fy - iy);
+    const n = grid + 1, at = (i, j) => lattice[((i % n) + n) % n][((j % n) + n) % n];
+    const a = at(ix, iy), b = at(ix + 1, iy), c = at(ix, iy + 1), d = at(ix + 1, iy + 1);
+    return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
+  }
+  const cols = Math.ceil(W / STEP) + 1, rows = Math.ceil(H / STEP) + 1;
+  const field = [];
+  for (let i = 0; i < cols; i++) { field[i] = []; for (let j = 0; j < rows; j++) field[i][j] = noise(i * STEP, j * STEP) * 0.88 + noise(i * STEP * 2.3 + 40, j * STEP * 2.3 + 90) * 0.12; }
+  const levels = Array.from({ length: 9 }, (_, k) => 0.22 + k * 0.07);
+  let d = "";
+  const lerp = (p, q, v) => (v - p) / (q - p);
+  for (const level of levels) {
+    for (let i = 0; i < cols - 1; i++) for (let j = 0; j < rows - 1; j++) {
+      const v0 = field[i][j], v1 = field[i + 1][j], v2 = field[i + 1][j + 1], v3 = field[i][j + 1];
+      const idx = (v0 > level ? 8 : 0) | (v1 > level ? 4 : 0) | (v2 > level ? 2 : 0) | (v3 > level ? 1 : 0);
+      if (idx === 0 || idx === 15) continue;
+      const x = i * STEP, y = j * STEP;
+      const top = [x + lerp(v0, v1, level) * STEP, y], right = [x + STEP, y + lerp(v1, v2, level) * STEP];
+      const bottom = [x + lerp(v3, v2, level) * STEP, y + STEP], left = [x, y + lerp(v0, v3, level) * STEP];
+      const segs = { 1: [[left, bottom]], 2: [[bottom, right]], 3: [[left, right]], 4: [[top, right]], 5: [[left, top], [bottom, right]], 6: [[top, bottom]], 7: [[left, top]], 8: [[left, top]], 9: [[top, bottom]], 10: [[left, bottom], [top, right]], 11: [[top, right]], 12: [[left, right]], 13: [[bottom, right]], 14: [[left, bottom]] }[idx];
+      for (const [p, q] of segs) d += `M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}`;
+    }
+  }
+  // Fade the lines toward the text column on the left so the type stays calm.
+  document.getElementById("topo").innerHTML =
+    `<defs><linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.7"/><stop offset="1" stop-color="#fff" stop-opacity="0.95"/></linearGradient>
+     <mask id="m"><rect width="${W}" height="${H}" fill="url(#fade)"/></mask></defs>
+     <path d="${d}" fill="none" stroke="#d7d3d1" stroke-width="1.15" stroke-linecap="round" mask="url(#m)"/>`;
+
+  // ?guides draws the crop and margin overlays used by the briefs (1200x630 only).
+  if (location.search.includes("guides") && !isX) {
+    const card = document.querySelector(".card");
+    const box = (css, label, color) => {
+      const el = document.createElement("div");
+      el.style.cssText = "position:absolute;pointer-events:none;" + css;
+      if (label) {
+        const tag = document.createElement("span");
+        tag.textContent = label;
+        tag.style.cssText = `position:absolute;font:11px 'JetBrains Mono',monospace;padding:1px 4px;background:#fff;color:${color};white-space:nowrap;`;
+        el.appendChild(tag);
+      }
+      card.appendChild(el);
+      return el;
+    };
+    // 2:1 crop (X large card, some feeds): 15 px lost top and bottom.
+    box("left:0;top:15px;width:1200px;border-top:2px dashed #dc2626;", "", "#dc2626").innerHTML = "<span style=\"position:absolute;right:6px;top:2px;font:11px monospace;color:#dc2626;background:#fff;padding:1px 4px\">2:1 crop: 1200x600 (y 15..615)</span>";
+    box("left:0;top:615px;width:1200px;border-top:2px dashed #dc2626;", "", "#dc2626");
+    // 1:1 center crop (a few apps use a square thumbnail): 285 px lost on each side.
+    box("left:285px;top:0;height:630px;border-left:2px dashed #16a34a;", "", "#16a34a").innerHTML = "<span style=\"position:absolute;left:4px;bottom:22px;font:11px monospace;color:#16a34a;background:#fff;padding:1px 4px;white-space:nowrap\">1:1 crop: 630x630 (x 285..915)</span>";
+    box("left:915px;top:0;height:630px;border-left:2px dashed #16a34a;", "", "#16a34a");
+    // Content margin.
+    box("left:72px;top:0;height:630px;border-left:1px solid #c026d3;", "", "#c026d3").innerHTML = "<span style=\"position:absolute;left:4px;top:4px;font:11px monospace;color:#c026d3;background:#fff;padding:1px 4px\">margin 72</span>";
+    box("left:1128px;top:0;height:630px;border-left:1px solid #c026d3;", "", "#c026d3");
+    // The domain label X draws over the bottom-left corner of a large card (observed behaviour, not documented):
+    // a conservative estimate. Only the dedicated X card (?format=x) keeps the name out of it.
+    box("left:16px;top:515px;width:264px;height:85px;border:2px dashed #ea580c;background:rgba(234,88,12,.08);", "", "#ea580c").innerHTML = "<span style=\"position:absolute;left:4px;top:-16px;font:11px monospace;color:#ea580c;background:#fff;padding:1px 4px;white-space:nowrap\">X domain label zone (estimate)</span>";
+  }
+
+  // ?format=x&guides: the same label zone on the 1600x800 card, which the name stays clear of.
+  if (location.search.includes("guides") && isX) {
+    const zone = document.createElement("div");
+    zone.style.cssText = "position:absolute;pointer-events:none;left:24px;top:660px;width:376px;height:116px;border:2px dashed #ea580c;background:rgba(234,88,12,.08);";
+    zone.innerHTML = "<span style=\"position:absolute;left:4px;top:-16px;font:11px monospace;color:#ea580c;background:#fff;padding:1px 4px;white-space:nowrap\">X domain label zone (estimate)</span>";
+    document.querySelector(".card").appendChild(zone);
+  }
+
+  // Fit the name to the content width (72..1128) whatever the font metrics are.
+  document.fonts.ready.then(() => {
+    const el = document.getElementById("name");
+    el.style.fontSize = "100px";
+    const w = el.getBoundingClientRect().width;
+    const contentWidth = W - 2 * (isX ? 96 : 72);
+    el.style.fontSize = (100 * contentWidth / w).toFixed(2) + "px";
+    document.title = "ready:" + el.style.fontSize;
+  });
+</script>
+</body>
+</html>

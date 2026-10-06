@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Profile banners reference (light theme)</title>
+<!--
+  Reference renders of the social profile banners (docs/metadata-images/04-social-profile-kit.md), built from the real
+  logo, the AT Amiga display face, JetBrains Mono and the light palette.
+
+    profile-banners.html?kind=x           X header, 1500x500 (3:1)
+    profile-banners.html?kind=linkedin    LinkedIn banner, 1584x396 (4:1)
+    add &guides to draw the zones the apps cover (the profile photo, the desktop crop of LinkedIn); for people only
+-->
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: "AT Amiga"; src: url("../../../app/fonts/AtAmiga-Regular.woff2") format("woff2"); font-weight: 400; }
+  :root { --bg: #f5f5f4; --ink: #1c1917; --muted: #79716b; --line: #d7d3d1; --accent: #f97316; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { background: var(--bg); overflow: hidden; }
+  .card { position: relative; background: var(--bg); color: var(--ink); font-family: "JetBrains Mono", monospace; overflow: hidden; }
+  #topo { position: absolute; inset: 0; }
+  .frame { position: absolute; border: 1px solid var(--line); }
+  .corner { position: absolute; background: var(--accent); }
+  .logo, .domain, .chip, .name { position: absolute; }
+  .domain { font-weight: 500; letter-spacing: 0.04em; line-height: 1.2; color: var(--muted); }
+  .chip { display: flex; align-items: center; border: 1px solid var(--line); background: rgba(245,245,244,.9); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .name { font-family: "AT Amiga", sans-serif; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <svg id="topo" aria-hidden="true"></svg>
+  <div class="frame" id="frame"></div>
+  <img class="logo" id="logo" src="../../../public/ewzxyh-logo-black.svg" alt="">
+  <div class="name" id="name">Enzo Yoshida</div>
+  <div class="chip" id="chip">Product Engineer · Ewzxyh Labs</div>
+  <div class="domain" id="domain">ewzxyh.com</div>
+</div>
+<script>
+  const kind = new URLSearchParams(location.search).get("kind") === "linkedin" ? "linkedin" : "x";
+  // Every number is in px on the banner's own canvas. `column` is the left edge of the text column (the profile photo
+  // covers the bottom-left of both banners), `nameWidth` the width the name is fitted to.
+  const spec = {
+    x: { W: 1500, H: 500, frame: 20, corner: 8, cornerAt: 32, column: 560, logo: { top: 92, height: 56 }, name: { top: 184, width: 780 }, chip: { top: 296, height: 46, font: 22, pad: 18 }, domain: { right: 64, top: 436, font: 24 } },
+    linkedin: { W: 1584, H: 396, frame: 16, corner: 8, cornerAt: 26, column: 560, logo: { top: 86, height: 48 }, name: { top: 154, width: 760 }, chip: { top: 262, height: 40, font: 20, pad: 16 }, domain: { right: 64, top: 336, font: 22 } },
+  }[kind];
+  const { W, H } = spec;
+  document.documentElement.style.width = document.body.style.width = W + "px";
+  document.documentElement.style.height = document.body.style.height = H + "px";
+  const card = document.getElementById("card");
+  card.style.width = W + "px"; card.style.height = H + "px";
+  const topo = document.getElementById("topo");
+  topo.setAttribute("width", W); topo.setAttribute("height", H); topo.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  const frame = document.getElementById("frame");
+  Object.assign(frame.style, { inset: spec.frame + "px" });
+  for (const [x, y] of [[spec.cornerAt, spec.cornerAt], [W - spec.cornerAt - spec.corner, spec.cornerAt], [spec.cornerAt, H - spec.cornerAt - spec.corner], [W - spec.cornerAt - spec.corner, H - spec.cornerAt - spec.corner]]) {
+    const el = document.createElement("span");
+    el.className = "corner";
+    Object.assign(el.style, { left: x + "px", top: y + "px", width: spec.corner + "px", height: spec.corner + "px" });
+    card.appendChild(el);
+  }
+  Object.assign(document.getElementById("logo").style, { left: spec.column + "px", top: spec.logo.top + "px", height: spec.logo.height + "px" });
+  Object.assign(document.getElementById("name").style, { left: spec.column + "px", top: spec.name.top + "px", fontSize: "100px" });
+  Object.assign(document.getElementById("chip").style, { left: spec.column + "px", top: spec.chip.top + "px", height: spec.chip.height + "px", padding: `0 ${spec.chip.pad}px`, fontSize: spec.chip.font + "px" });
+  Object.assign(document.getElementById("domain").style, { right: spec.domain.right + "px", top: spec.domain.top + "px", fontSize: spec.domain.font + "px" });
+
+  // Same seeded contour lines as og-reference.html, drawn for this canvas.
+  const STEP = 10;
+  let seed = 20260105;
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  const grid = 6; const lattice = [];
+  for (let i = 0; i <= grid; i++) { lattice[i] = []; for (let j = 0; j <= grid; j++) lattice[i][j] = rnd(); }
+  const smooth = (t) => t * t * (3 - 2 * t);
+  function noise(x, y) {
+    const fx = (x / W) * (grid - 1), fy = (y / H) * (grid - 1);
+    const ix = Math.floor(fx), iy = Math.floor(fy), tx = smooth(fx - ix), ty = smooth(fy - iy);
+    const n = grid + 1, at = (i, j) => lattice[((i % n) + n) % n][((j % n) + n) % n];
+    const a = at(ix, iy), b = at(ix + 1, iy), c = at(ix, iy + 1), d = at(ix + 1, iy + 1);
+    return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
+  }
+  const cols = Math.ceil(W / STEP) + 1, rows = Math.ceil(H / STEP) + 1;
+  const field = [];
+  for (let i = 0; i < cols; i++) { field[i] = []; for (let j = 0; j < rows; j++) field[i][j] = noise(i * STEP, j * STEP) * 0.88 + noise(i * STEP * 2.3 + 40, j * STEP * 2.3 + 90) * 0.12; }
+  const levels = Array.from({ length: 9 }, (_, k) => 0.22 + k * 0.07);
+  let d = "";
+  const lerp = (p, q, v) => (v - p) / (q - p);
+  for (const level of levels) {
+    for (let i = 0; i < cols - 1; i++) for (let j = 0; j < rows - 1; j++) {
+      const v0 = field[i][j], v1 = field[i + 1][j], v2 = field[i + 1][j + 1], v3 = field[i][j + 1];
+      const idx = (v0 > level ? 8 : 0) | (v1 > level ? 4 : 0) | (v2 > level ? 2 : 0) | (v3 > level ? 1 : 0);
+      if (idx === 0 || idx === 15) continue;
+      const x = i * STEP, y = j * STEP;
+      const top = [x + lerp(v0, v1, level) * STEP, y], right = [x + STEP, y + lerp(v1, v2, level) * STEP];
+      const bottom = [x + lerp(v3, v2, level) * STEP, y + STEP], left = [x, y + lerp(v0, v3, level) * STEP];
+      const segs = { 1: [[left, bottom]], 2: [[bottom, right]], 3: [[left, right]], 4: [[top, right]], 5: [[left, top], [bottom, right]], 6: [[top, bottom]], 7: [[left, top]], 8: [[left, top]], 9: [[top, bottom]], 10: [[left, bottom], [top, right]], 11: [[top, right]], 12: [[left, right]], 13: [[bottom, right]], 14: [[left, bottom]] }[idx];
+      for (const [p, q] of segs) d += `M${p[0].toFixed(1)} ${p[1].toFixed(1)}L${q[0].toFixed(1)} ${q[1].toFixed(1)}`;
+    }
+  }
+  topo.innerHTML =
+    `<defs><linearGradient id="fade" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.18"/><stop offset="0.5" stop-color="#fff" stop-opacity="0.7"/><stop offset="1" stop-color="#fff" stop-opacity="0.95"/></linearGradient>
+     <mask id="m"><rect width="${W}" height="${H}" fill="url(#fade)"/></mask></defs>
+     <path d="${d}" fill="none" stroke="#d7d3d1" stroke-width="1.15" stroke-linecap="round" mask="url(#m)"/>`;
+
+  // Guides: the zones the apps cover. For people only.
+  if (location.search.includes("guides")) {
+    const zone = (css, label, color) => {
+      const el = document.createElement("div");
+      el.style.cssText = `position:absolute;pointer-events:none;border:2px dashed ${color};background:${color}14;${css}`;
+      el.innerHTML = `<span style="position:absolute;left:4px;top:-16px;font:11px monospace;color:${color};background:#fff;padding:1px 4px;white-space:nowrap">${label}</span>`;
+      card.appendChild(el);
+    };
+    if (kind === "x") zone(`left:0;top:${H - 190}px;width:420px;height:190px;`, "profile photo covers this (estimate)", "#ea580c");
+    else {
+      zone(`left:0;top:${H - 200}px;width:420px;height:200px;`, "profile photo covers this (estimate)", "#ea580c");
+      zone(`left:0;top:0;width:${W}px;height:64px;`, "cropped on desktop (estimate)", "#dc2626");
+      zone(`left:0;top:${H - 64}px;width:${W}px;height:64px;`, "cropped on desktop (estimate)", "#dc2626");
+    }
+  }
+
+  document.fonts.ready.then(() => {
+    const el = document.getElementById("name");
+    const w = el.getBoundingClientRect().width;
+    el.style.fontSize = (100 * spec.name.width / w).toFixed(2) + "px";
+    document.title = "ready:" + kind + ":" + el.style.fontSize;
+  });
+</script>
+</body>
+</html>
