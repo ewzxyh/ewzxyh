@@ -8,8 +8,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
 import { atAmiga } from "@/lib/fonts"
 import {
-  type CertificateItem,
-  certificates,
   type EducationItem,
   education,
   educationStatusKeys,
@@ -26,7 +24,7 @@ import {
   workplaces,
 } from "@/lib/profile"
 import { projectPath } from "@/lib/site"
-import { ArrowRightIcon, ArrowRightUpIcon, MedalRibbonStarIcon, SquareAcademicCapIcon } from "@/components/ui/icons"
+import { ArrowRightIcon, SquareAcademicCapIcon } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { SectionHeading } from "./section-heading"
 
@@ -134,15 +132,11 @@ function WorkItem({ job }: { job: ExperienceItem }) {
   )
 }
 
-// The credential grids draw their lines with a 1px gap over a border-colored background, so an odd card out would
-// leave a gray hole next to it; the last one takes the whole row instead.
-const fillsRow = (index: number, count: number) => count % 2 === 1 && index === count - 1
-
-function EducationCard({ item, wide }: { item: EducationItem; wide: boolean }) {
+function EducationCard({ item }: { item: EducationItem }) {
   const { t, locale } = useI18n()
   const status = item.status ? t(educationStatusKeys[item.status]) : null
   return (
-    <article className={`credential-card flex gap-4 p-5 sm:p-6 ${status ? "bg-card" : "bg-background"} ${wide ? "sm:col-span-2 xl:col-span-1" : ""}`}>
+    <article className={`credential-card flex gap-4 p-5 sm:p-6 ${status ? "bg-card" : "bg-background"}`}>
       <Logo src={item.logo} alt={item.institution} size="md" />
       <div className="min-w-0 flex-1">
         <h4 className="font-semibold text-pretty">{item.institution}</h4>
@@ -152,42 +146,6 @@ function EducationCard({ item, wide }: { item: EducationItem; wide: boolean }) {
           {status && <span className="text-foreground"> · {status}</span>}
         </p>
       </div>
-    </article>
-  )
-}
-
-function CertificateCard({ item, wide }: { item: CertificateItem; wide: boolean }) {
-  const { t, locale } = useI18n()
-  return (
-    <article className={`credential-card flex flex-col bg-background p-5 sm:p-6 ${wide ? "sm:col-span-2" : ""}`}>
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <Logo src={item.logo} alt={item.issuer} size="sm" />
-          <span className="truncate text-xs text-muted-foreground">
-            {item.issuer}
-            {item.detail && <span className="text-foreground/80"> · {localize(item.detail, locale)}</span>}
-          </span>
-        </div>
-        <span className="shrink-0 font-mono text-xs text-muted-foreground">{formatPeriod(item.period, locale)}</span>
-      </div>
-      <h4 className="mt-4 leading-snug font-semibold text-pretty">{localize(item.name, locale)}</h4>
-      {item.description && <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{localize(item.description, locale)}</p>}
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {item.tags.map((tag) => (
-          <TagChip key={tag} tag={tag} />
-        ))}
-      </div>
-      {item.credentialUrl && (
-        <a
-          href={item.credentialUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group/link mt-auto inline-flex items-center gap-1 pt-5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowRightUpIcon aria-hidden="true" strokeWidth={2} className="size-4 transition-transform group-hover/link:rotate-12" />
-          {t("experience.credential")}
-        </a>
-      )}
     </article>
   )
 }
@@ -287,36 +245,16 @@ export function Experience() {
           </ol>
         </div>
 
-        {/* Education and certificates */}
-        <div className="mt-20 grid gap-14 sm:mt-28 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] xl:gap-10">
-          <div>
-            <div ref={(el) => { headersRef.current[1] = el }} className="mb-6 flex items-center gap-2 px-(--inset) sm:mb-8">
-              <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
-              <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.education")}</h3>
-              <span className="ml-auto font-mono text-xs text-muted-foreground">{String(education.length).padStart(2, "0")}</span>
-            </div>
-            <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2 xl:grid-cols-1">
-              {education.map((item, index) => (
-                <EducationCard key={`${item.institution}-${item.period.from}`} item={item} wide={fillsRow(index, education.length)} />
-              ))}
-            </div>
+        {/* Higher education, lined up with the work grid */}
+        <div className="mt-20 grid gap-6 px-(--inset) sm:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
+          <div ref={(el) => { headersRef.current[1] = el }} className="flex items-center gap-2 lg:items-start lg:pt-5">
+            <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
+            <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.education")}</h3>
           </div>
-
-          <div>
-            <div ref={(el) => { headersRef.current[2] = el }} className="mb-6 flex items-center gap-2 px-(--inset) sm:mb-8">
-              <MedalRibbonStarIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
-              <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.certificates")}</h3>
-              <span className="ml-auto font-mono text-xs text-muted-foreground">{String(certificates.length).padStart(2, "0")}</span>
-            </div>
-            <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2">
-              {certificates.map((item, index) => (
-                <CertificateCard
-                  key={item.credentialUrl ?? localize(item.name, "en-US")}
-                  item={item}
-                  wide={fillsRow(index, certificates.length)}
-                />
-              ))}
-            </div>
+          <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2">
+            {education.map((item) => (
+              <EducationCard key={`${item.institution}-${item.period.from}`} item={item} />
+            ))}
           </div>
         </div>
       </div>

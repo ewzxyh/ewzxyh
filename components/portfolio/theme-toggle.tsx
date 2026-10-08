@@ -1,93 +1,49 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
 import { useTheme } from "next-themes"
-import Lottie, { type LottieRefCurrentProps } from "lottie-react"
+import { MoonIcon, SunIcon } from "@/components/ui/icons"
 import { useMounted } from "@/hooks/use-mounted"
-import toggleAnimation from "@/public/Toggle.json"
+import { useI18n } from "@/lib/i18n"
+import { isMotionReduced } from "@/lib/motion"
 
+// A square icon button like the pause and language buttons: the sun takes the page to the light theme, the moon to the
+// dark one. The new theme still spreads from the button as a growing circle (View Transitions) where supported.
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme()
+  const { t } = useI18n()
   const mounted = useMounted()
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const lottieRef = useRef<LottieRefCurrentProps>(null)
-  const isAnimatingRef = useRef(false)
 
-  const isDark = resolvedTheme === "dark"
-
-  // Define o frame inicial baseado no tema atual (apenas quando não está animando)
-  useEffect(() => {
-    if (!mounted || isAnimatingRef.current) return
-
-    const timer = setTimeout(() => {
-      if (!lottieRef.current || isAnimatingRef.current) return
-
-      // frame 24 = modo claro (sol), frame 122 = modo escuro (lua)
-      const targetFrame = isDark ? 122 : 24
-      lottieRef.current.goToAndStop(targetFrame, true)
-    }, 100)
-
-    return () => clearTimeout(timer)
-  }, [isDark, mounted])
+  // The theme is only known after mounting; until then the server render (dark, the default theme) is kept.
+  const isDark = !mounted || resolvedTheme !== "light"
+  const label = isDark ? t("theme.toLight") : t("theme.toDark")
 
   const toggleTheme = async () => {
-    if (!buttonRef.current || isAnimatingRef.current) return
-
+    const button = buttonRef.current
+    if (!button) return
     const newTheme = isDark ? "light" : "dark"
-    isAnimatingRef.current = true
 
-    // Configura a animação usando playSegments para controle preciso (desktop only)
-    if (lottieRef.current) {
-      const lottie = lottieRef.current
-      lottie.setSpeed(3.5)
-
-      if (isDark) {
-        lottie.playSegments([79, 24], true)
-      } else {
-        lottie.playSegments([24, 122], true)
-      }
-    }
-
-    setTimeout(() => {
-      isAnimatingRef.current = false
-    }, 800)
-
-    const supportsViewTransitions = "startViewTransition" in document
-
-    if (supportsViewTransitions) {
-      const transition = (document as unknown as { startViewTransition: (cb: () => void) => { ready: Promise<void> } }).startViewTransition(() => {
-        setTheme(newTheme)
-      })
-
-      await transition.ready
-
-      const { top, left, width, height } = buttonRef.current.getBoundingClientRect()
-      const x = left + width / 2
-      const y = top + height / 2
-      const maxRadius = Math.hypot(
-        Math.max(left, window.innerWidth - left),
-        Math.max(top, window.innerHeight - top)
-      )
-
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${x}px ${y}px)`,
-            `circle(${maxRadius}px at ${x}px ${y}px)`,
-          ],
-        },
-        {
-          duration: 1000,
-          easing: "ease-in-out",
-          pseudoElement: "::view-transition-new(root)",
-        }
-      )
-    } else {
+    if (!("startViewTransition" in document) || isMotionReduced()) {
       setTheme(newTheme)
+      return
     }
-  }
 
-  if (!mounted) return null
+    const transition = (document as unknown as { startViewTransition: (cb: () => void) => { ready: Promise<void> } }).startViewTransition(() => {
+      setTheme(newTheme)
+    })
+    await transition.ready
+
+    const { top, left, width, height } = button.getBoundingClientRect()
+    const x = left + width / 2
+    const y = top + height / 2
+    const maxRadius = Math.hypot(Math.max(left, window.innerWidth - left), Math.max(top, window.innerHeight - top))
+
+    document.documentElement.animate(
+      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${maxRadius}px at ${x}px ${y}px)`] },
+      { duration: 1000, easing: "ease-in-out", pseudoElement: "::view-transition-new(root)" },
+    )
+  }
 
   return (
     <button
@@ -95,16 +51,11 @@ export function ThemeToggle() {
       type="button"
       data-cuelume-toggle
       onClick={toggleTheme}
-      className="flex items-center justify-center flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 overflow-hidden"
-      aria-label="Alternar tema"
+      title={label}
+      className="flex size-9 flex-shrink-0 items-center justify-center border border-border bg-background text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background sm:size-10"
     >
-      <Lottie
-        lottieRef={lottieRef}
-        animationData={toggleAnimation}
-        autoplay={false}
-        loop={false}
-        className="w-[180%] h-[180%] sm:w-[200%] sm:h-[200%] pointer-events-none"
-      />
+      {isDark ? <SunIcon aria-hidden="true" className="size-[18px]" /> : <MoonIcon aria-hidden="true" className="size-[18px]" />}
+      <span className="sr-only">{label}</span>
     </button>
   )
 }

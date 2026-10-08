@@ -37,7 +37,7 @@ export function formatPeriod(period: Period, locale: Locale) {
   return `${start} – ${end}`
 }
 
-// ---------- Tags (chips under jobs and certificates, each with a one-line tooltip) ----------
+// ---------- Tags (chips under jobs, each with a one-line tooltip) ----------
 
 interface TagInfo {
   label: Text
@@ -51,26 +51,13 @@ const tagCatalog = {
   typescript: { label: "TypeScript", description: { "pt-BR": "JavaScript tipado para apps escaláveis", "en-US": "Typed JavaScript for scalable apps" } },
   javascript: { label: "JavaScript", description: { "pt-BR": "A linguagem de programação da web", "en-US": "The programming language of the web" } },
   laravel: { label: "Laravel", description: { "pt-BR": "Framework PHP para aplicações web", "en-US": "PHP framework for web applications" } },
-  php: { label: "PHP", description: { "pt-BR": "Linguagem server-side para a web", "en-US": "Server-side language for the web" } },
   go: { label: "Go", description: { "pt-BR": "Linguagem compilada para APIs e workers", "en-US": "Compiled language for APIs and workers" } },
-  java: { label: "Java", description: { "pt-BR": "Linguagem orientada a objetos", "en-US": "Object-oriented programming language" } },
-  vue: { label: "Vue.js", description: { "pt-BR": "Framework JavaScript progressivo", "en-US": "Progressive JavaScript framework" } },
-  vueRouter: { label: "Vue Router", description: { "pt-BR": "Roteamento oficial do Vue.js", "en-US": "Official router for Vue.js" } },
-  vuex: { label: "Vuex", description: { "pt-BR": "Gerenciamento de estado do Vue.js", "en-US": "State management for Vue.js" } },
-  springBoot: { label: "Spring Boot", description: { "pt-BR": "Framework Java para APIs e serviços", "en-US": "Java framework for APIs and services" } },
-  hibernate: { label: "Hibernate", description: { "pt-BR": "ORM para Java", "en-US": "Java ORM framework" } },
-  oop: { label: { "pt-BR": "Orientação a objetos", "en-US": "OOP" }, description: { "pt-BR": "Programação orientada a objetos", "en-US": "Object-oriented programming" } },
-  tailwind: { label: "Tailwind CSS", description: { "pt-BR": "CSS utilitário para estilizar rápido", "en-US": "Utility-first CSS framework" } },
   gsap: { label: "GSAP", description: { "pt-BR": "Biblioteca de animação profissional", "en-US": "Professional-grade animation library" } },
   webgl: { label: "WebGL", description: { "pt-BR": "Gráficos acelerados pela GPU no navegador", "en-US": "GPU-accelerated graphics in the browser" } },
 
   // Back end, data and infrastructure
   restApis: { label: { "pt-BR": "APIs REST", "en-US": "REST APIs" }, description: { "pt-BR": "Integração entre sistemas por HTTP", "en-US": "Connecting systems over HTTP" } },
   postgresql: { label: "PostgreSQL", description: { "pt-BR": "Banco de dados relacional open-source", "en-US": "Open-source relational database" } },
-  mysql: { label: "MySQL", description: { "pt-BR": "Banco de dados relacional popular", "en-US": "Popular relational database" } },
-  sql: { label: "SQL", description: { "pt-BR": "Linguagem de consulta a bancos relacionais", "en-US": "Query language for relational databases" } },
-  haproxy: { label: "HAProxy", description: { "pt-BR": "Balanceamento de carga e alta disponibilidade", "en-US": "Load balancing and high availability" } },
-  linux: { label: "Linux", description: { "pt-BR": "Sistema operacional de servidores", "en-US": "Server operating system" } },
   appSecurity: { label: { "pt-BR": "Segurança de aplicações", "en-US": "Application security" }, description: { "pt-BR": "Boas práticas de segurança em aplicações web", "en-US": "Security practices for web applications" } },
 
   // Payments, WhatsApp and marketing
@@ -103,7 +90,6 @@ const tagCatalog = {
   uxDesign: { label: { "pt-BR": "Design de UX", "en-US": "UX design" }, description: { "pt-BR": "Experiência do usuário", "en-US": "User experience" } },
   graphicDesign: { label: { "pt-BR": "Design gráfico", "en-US": "Graphic design" }, description: { "pt-BR": "Comunicação visual", "en-US": "Visual communication" } },
   webDesign: { label: "Web design", description: { "pt-BR": "Layout e visual de sites", "en-US": "Website layout and visuals" } },
-  english: { label: { "pt-BR": "Inglês", "en-US": "English" }, description: { "pt-BR": "Proficiência em inglês", "en-US": "English proficiency" } },
 } satisfies Record<string, TagInfo>
 
 export type TagId = keyof typeof tagCatalog
@@ -116,7 +102,7 @@ export function tagDescription(id: TagId, locale: Locale) {
   return tagCatalog[id].description[locale]
 }
 
-// ---------- Experience, education and certificates ----------
+// ---------- Experience and education ----------
 
 export const employmentTypes = {
   "self-employed": { "pt-BR": "Autônomo", "en-US": "Self-employed" },
@@ -155,19 +141,6 @@ export interface EducationItem {
   period: Period
   location: Text
   status?: EducationStatus
-  logo?: string
-}
-
-export interface CertificateItem {
-  name: Text
-  issuer: string
-  period: Period
-  // Printed after the issuer: the course length or the score.
-  detail?: Text
-  // Shown when the item is opened.
-  description?: Text
-  tags: TagId[]
-  credentialUrl?: string
   logo?: string
 }
 
@@ -252,6 +225,8 @@ export const workExperience: ExperienceItem[] = [
   },
 ]
 
+// Higher education only. A portfolio is not a résumé: schools and online course certificates stay on LinkedIn, where
+// recruiters look for them, and the page stays about the work.
 export const education: EducationItem[] = [
   {
     institution: "New Brunswick Community College (NBCC)",
@@ -267,96 +242,6 @@ export const education: EducationItem[] = [
     period: { from: "2021-02", to: "2024-12" },
     location: { "pt-BR": "Brasil", "en-US": "Brazil" },
     logo: "/estudo/pucgoias_logo.jpeg",
-  },
-  {
-    institution: "Colégio WR",
-    degreeKey: "experience.edu.colegio",
-    period: { from: "2019-01", to: "2021-12" },
-    location: { "pt-BR": "Brasil", "en-US": "Brazil" },
-    logo: "/estudo/wr.png",
-  },
-  {
-    institution: "Escola Interamérica",
-    degreeKey: "experience.edu.escola",
-    period: { from: "2011-01", to: "2018-12" },
-    location: { "pt-BR": "Brasil", "en-US": "Brazil" },
-    logo: "/estudo/interamerica.jpg",
-  },
-]
-
-// Newest first. Course titles, lengths, instructors and dates come from the public credential pages.
-export const certificates: CertificateItem[] = [
-  {
-    name: { "pt-BR": "Curso de React JS 19 e Next.js 15", "en-US": "React JS 19 and Next.js 15 Course" },
-    issuer: "Udemy",
-    period: { from: "2025-10" },
-    detail: { "pt-BR": "83,5 h", "en-US": "83.5 h" },
-    description: {
-      "pt-BR": "Instrutores: Luiz Otávio Miranda e Tales Calogi Malaquias.",
-      "en-US": "Instructors: Luiz Otávio Miranda and Tales Calogi Malaquias.",
-    },
-    tags: ["nextjs", "react", "typescript", "tailwind", "restApis"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-b627ea8a-f5cf-4546-b57d-96303228436d/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    name: "Duolingo English Test",
-    issuer: "Duolingo",
-    period: { from: "2025-09" },
-    detail: "110/160 · CEFR B2",
-    description: {
-      "pt-BR": "Inglês intermediário superior (B2): entende textos técnicos complexos e conversa com fluência.",
-      "en-US": "Upper intermediate English (B2): understands complex technical texts and converses fluently.",
-    },
-    tags: ["english"],
-    logo: "/certificados/duolingo_english_test__logo.jpeg",
-  },
-  {
-    name: { "pt-BR": "Curso de inglês por imersão (programa de 1 ano)", "en-US": "English Immersion Course (1-year program)" },
-    issuer: "Believer Inglês por Imersão",
-    period: { from: "2025-03" },
-    tags: ["english"],
-    logo: "/certificados/believer.png",
-  },
-  {
-    name: { "pt-BR": "Java COMPLETO: Programação Orientada a Objetos + Projetos", "en-US": "Complete Java: Object-Oriented Programming + Projects" },
-    issuer: "Udemy",
-    period: { from: "2024-11" },
-    detail: "54 h",
-    description: { "pt-BR": "Instrutor: Nelio Alves.", "en-US": "Instructor: Nelio Alves." },
-    tags: ["java", "oop", "springBoot", "hibernate", "postgresql"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-fef74280-d7e8-44c2-b3ce-ca4ec4a8796e/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    name: { "pt-BR": "Curso completo de PostgreSQL: do básico ao avançado", "en-US": "Complete PostgreSQL Course: From Beginner to Advanced" },
-    issuer: "Udemy",
-    period: { from: "2024-11" },
-    detail: { "pt-BR": "48,5 h", "en-US": "48.5 h" },
-    description: { "pt-BR": "Instrutor: Vitor Mazuco.", "en-US": "Instructor: Vitor Mazuco." },
-    tags: ["postgresql", "sql", "haproxy", "linux"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-4896293f-c9bd-4b86-812e-6932927d2a01/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    name: { "pt-BR": "Curso Vue JS 2: O Guia Completo (incl. Vue Router e Vuex)", "en-US": "Vue JS 2: The Complete Guide (incl. Vue Router & Vuex)" },
-    issuer: "Udemy",
-    period: { from: "2024-04" },
-    detail: "43 h",
-    description: {
-      "pt-BR": "Instrutores: Leonardo Moura Leitão, Cod3r e Maximilian Schwarzmüller.",
-      "en-US": "Instructors: Leonardo Moura Leitão, Cod3r and Maximilian Schwarzmüller.",
-    },
-    tags: ["vue", "javascript", "vueRouter", "vuex"],
-    credentialUrl: "https://www.udemy.com/certificate/UC-7aa963e5-e616-4bf9-b4ab-3aea7a3e5a0a/",
-    logo: "/certificados/udemy_logo.jpeg",
-  },
-  {
-    name: { "pt-BR": "Curso de inglês", "en-US": "English Course" },
-    issuer: "Cultura Inglesa",
-    period: { from: "2016-01", to: "2019-10" },
-    tags: ["english"],
-    logo: "/certificados/cultura_inglesa_logo.jpeg",
   },
 ]
 

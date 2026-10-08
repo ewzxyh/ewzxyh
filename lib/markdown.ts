@@ -5,7 +5,6 @@
 
 import { caseStudySlugs, getCaseStudy } from "./case-studies"
 import {
-  certificates,
   education,
   educationStatusKeys,
   employmentTypes,
@@ -90,11 +89,9 @@ const text = {
     about: "Sobre",
     services: "Serviços",
     skills: "Habilidades",
-    experienceTitle: "Experiência, educação e certificados",
+    experienceTitle: "Experiência e formação",
     work: "Experiência profissional",
-    education: "Educação",
-    certificates: "Certificados",
-    credential: "credencial",
+    education: "Formação",
     link: "Link",
     caseStudy: "Estudo de caso",
     projectsTitle: "Projetos em destaque",
@@ -132,11 +129,9 @@ const text = {
     about: "About",
     services: "Services",
     skills: "Skills",
-    experienceTitle: "Experience, education and certificates",
+    experienceTitle: "Experience and education",
     work: "Work experience",
     education: "Education",
-    certificates: "Certificates",
-    credential: "credential",
     link: "Link",
     caseStudy: "Case study",
     projectsTitle: "Featured projects",
@@ -247,12 +242,6 @@ function experienceSection(locale: Locale, level: number) {
     return `**${item.institution}**, ${localize(item.location, locale)}: ${tr(locale, item.degreeKey)} (${formatPeriod(item.period, locale)}${status})`
   })
 
-  const certs = certificates.map((item) => {
-    const detail = item.detail ? `, ${localize(item.detail, locale)}` : ""
-    const link = item.credentialUrl ? ` ([${t.credential}](${item.credentialUrl}))` : ""
-    return `**${localize(item.name, locale)}**: ${item.issuer}${detail}, ${formatPeriod(item.period, locale)}${link}`
-  })
-
   return [
     h(level, t.experienceTitle),
     "",
@@ -262,10 +251,6 @@ function experienceSection(locale: Locale, level: number) {
     h(level + 1, t.education),
     "",
     bullet(schools),
-    "",
-    h(level + 1, t.certificates),
-    "",
-    bullet(certs),
     "",
   ].join("\n")
 }
@@ -446,8 +431,8 @@ const docSummaries: Record<DocId, Record<Locale, string>> = {
     "en-US": "Front-end, back-end, payments and integrations, infrastructure and AI technologies, each with a short description.",
   },
   experience: {
-    "pt-BR": "Experiência profissional, educação e certificados, com períodos e tecnologias.",
-    "en-US": "Work experience, education and certificates, with periods and technologies.",
+    "pt-BR": "Experiência profissional e formação acadêmica, com períodos e tecnologias.",
+    "en-US": "Work experience and education, with periods and technologies.",
   },
   projects: {
     "pt-BR": `${leadProjects("pt-BR")} e mais ${projects.length - 4} projetos: o que cada um faz, o papel de Enzo, tecnologias e links.`,

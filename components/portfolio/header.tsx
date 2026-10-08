@@ -5,38 +5,17 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { CaseIcon, FolderKanbanIcon, LetterIcon, UserIcon, type Icon } from "@/components/ui/icons"
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Logo } from "./logo"
 import { LanguageToggle } from "./language-toggle"
 import { MotionToggle } from "./motion-toggle"
+import { ThemeToggle } from "./theme-toggle"
 import { useLoading } from "./loading-context"
-import { onIdle } from "@/lib/idle"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
 import { isHomePath, localePaths } from "@/lib/site"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
-
-// The theme switch is a Lottie animation (a heavy library plus a large JSON): it loads after the page settles.
-const ThemeToggle = dynamic(() => import("./theme-toggle").then((mod) => mod.ThemeToggle), { ssr: false })
-
-function useAfterIdle(delay: number) {
-  const [ready, setReady] = useState(false)
-
-  useEffect(() => {
-    let cancelIdle: (() => void) | undefined
-    const timer = window.setTimeout(() => {
-      cancelIdle = onIdle(() => setReady(true), 2000)
-    }, delay)
-    return () => {
-      window.clearTimeout(timer)
-      cancelIdle?.()
-    }
-  }, [delay])
-
-  return ready
-}
 
 interface NavItemConfig {
   id: string
@@ -71,7 +50,6 @@ export function Header() {
   const isHiddenRef = useRef(false)
   const hasAnimatedRef = useRef(false)
   const { isRevealing } = useLoading()
-  const togglesReady = useAfterIdle(600)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const scrollToSection = (sectionId: string) => {
@@ -259,11 +237,7 @@ export function Header() {
               </span>
             </div>
 
-            {togglesReady ? (
-              <ThemeToggle />
-            ) : (
-              <div aria-hidden="true" className="h-8 w-8 flex-shrink-0 sm:h-10 sm:w-10 md:h-12 md:w-12" />
-            )}
+            <ThemeToggle />
             <MotionToggle />
             <LanguageToggle />
 

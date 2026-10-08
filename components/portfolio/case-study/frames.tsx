@@ -22,11 +22,42 @@ export function BrowserFrame({ address, children, className = "" }: { address?: 
   )
 }
 
-// A phone outline for the mobile capture.
+// The side buttons of an iPhone (action button and volume on the left, side button and camera control on the right),
+// as fractions of the body height, drawn as outlined tabs like the body.
+const PHONE_BUTTONS = [
+  { side: "left", top: "13%", height: "6%" },
+  { side: "left", top: "23%", height: "8%" },
+  { side: "left", top: "36%", height: "8%" },
+  { side: "right", top: "27%", height: "6%" },
+  { side: "right", top: "35%", height: "7%" },
+] as const
+
+// A line drawing of a current iPhone around the mobile capture: a thin frame, the black screen border, the Dynamic
+// Island and the side buttons. Lines follow the text color, so it works on both themes; radii are percentages so the
+// shape holds at any width.
 export function PhoneFrame({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`overflow-hidden rounded-[1.75rem] border-[5px] border-neutral-900 bg-neutral-900 shadow-2xl shadow-black/30 dark:border-neutral-700 ${className}`}>
-      <div className="overflow-hidden rounded-[1.35rem]">{children}</div>
+    <div className={`relative ${className}`}>
+      {PHONE_BUTTONS.map((button) => (
+        <span
+          key={`${button.side}-${button.top}`}
+          aria-hidden="true"
+          style={{ top: button.top, height: button.height }}
+          className={`absolute w-[3px] border border-foreground/55 bg-background ${
+            button.side === "left" ? "-left-[2px] rounded-l-[2px] border-r-0" : "-right-[2px] rounded-r-[2px] border-l-0"
+          }`}
+        />
+      ))}
+      <div className="relative rounded-[13%/6.2%] border border-foreground/55 bg-background p-[1.6%] shadow-xl shadow-black/15">
+        <div className="relative overflow-hidden rounded-[11.5%/5.4%] border-[3px] border-neutral-950 bg-neutral-950">
+          {/* The status bar above the page (the captures are the page alone), with the Dynamic Island in it. Padding
+              percentages follow the width, like the 54 of 390 points on the device. */}
+          <div aria-hidden="true" className="relative pt-[13.8%]">
+            <span className="absolute top-[20%] left-1/2 h-[68%] w-[32%] -translate-x-1/2 rounded-full bg-black ring-1 ring-white/10" />
+          </div>
+          {children}
+        </div>
+      </div>
     </div>
   )
 }

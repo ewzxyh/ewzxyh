@@ -85,6 +85,8 @@ interface ShaderImageProps {
   preload?: boolean
   // Upper bound for the canvas backing store (device pixels), so big tiles never get expensive.
   maxPixels?: number
+  // How strong the wave and color split get at full effect (1 = the gallery's look).
+  intensity?: number
   // Custom markup holding the <img> to use as the base layer and texture source (e.g. a <picture>).
   children?: ReactNode
 }
@@ -99,6 +101,7 @@ export function ShaderImage({
   grain = 0,
   preload = false,
   maxPixels = 1.6e6,
+  intensity = 1,
   children,
 }: ShaderImageProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -162,7 +165,7 @@ export function ShaderImage({
       const animating = source.s > 0.001
       if (animating || lastStrength > 0.001) {
         time += dt
-        draw({ time, velocity: source.v, strength: animating ? source.s : 0 })
+        draw({ time, velocity: source.v, strength: animating ? source.s * intensity : 0 })
       }
       lastStrength = animating ? source.s : 0
       if (!animating) lastNow = 0
@@ -238,7 +241,7 @@ export function ShaderImage({
       fx?.dispose()
       canvas.style.opacity = "0"
     }
-  }, [grayscale, grain, hoverOnly, maxPixels, position, reducedMotion])
+  }, [grayscale, grain, hoverOnly, intensity, maxPixels, position, reducedMotion])
 
   return (
     <div

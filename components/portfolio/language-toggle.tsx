@@ -29,7 +29,7 @@ export function LanguageToggle() {
         type="button"
         data-cuelume-toggle
         onClick={toggleLocale}
-        className="px-2.5 py-2 text-xs sm:text-sm font-medium tracking-wide border border-border bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300 flex-shrink-0"
+        className="inline-flex h-9 flex-shrink-0 items-center border border-border bg-background px-2.5 text-xs font-medium tracking-wide text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background sm:h-10 sm:text-sm"
       >
         {locale === "pt-BR" ? "EN-US" : "PT-BR"}
         <span className="sr-only">, {t("nav.language")}</span>

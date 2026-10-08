@@ -18,6 +18,8 @@ export const translations = {
     "nav.language": "mudar o idioma para inglês",
     "motion.pause": "Pausar animações",
     "motion.play": "Retomar animações",
+    "theme.toLight": "Mudar para o tema claro",
+    "theme.toDark": "Mudar para o tema escuro",
     "skip.content": "Pular para o conteúdo",
 
     // Hero
@@ -127,9 +129,7 @@ export const translations = {
     "experience.roles": "frentes em andamento",
     "experience.since": "atuando desde",
     "experience.moreTags": "tecnologias: mostrar todas",
-    "experience.education": "Educação",
-    "experience.certificates": "Certificados",
-    "experience.credential": "Ver credencial",
+    "experience.education": "Formação",
     "experience.status.inProgress": "Em andamento",
     "experience.status.upcoming": "Em breve",
 
@@ -158,8 +158,6 @@ export const translations = {
     // Education
     "experience.edu.nbcc": "Pós-graduação em Cibersegurança",
     "experience.edu.puc": "Tecnólogo em Análise e Desenvolvimento de Sistemas",
-    "experience.edu.colegio": "Ensino médio",
-    "experience.edu.escola": "Ensino fundamental",
 
     // Projects
     "projects.label": "TRABALHOS",
@@ -227,6 +225,8 @@ export const translations = {
     "nav.language": "switch the language to Portuguese",
     "motion.pause": "Pause animations",
     "motion.play": "Play animations",
+    "theme.toLight": "Switch to the light theme",
+    "theme.toDark": "Switch to the dark theme",
     "skip.content": "Skip to content",
 
     // Hero
@@ -336,8 +336,6 @@ export const translations = {
     "experience.since": "working since",
     "experience.moreTags": "technologies: show all",
     "experience.education": "Education",
-    "experience.certificates": "Certificates",
-    "experience.credential": "View credential",
     "experience.status.inProgress": "In progress",
     "experience.status.upcoming": "Upcoming",
 
@@ -366,8 +364,6 @@ export const translations = {
     // Education
     "experience.edu.nbcc": "Postgraduate program in Cybersecurity",
     "experience.edu.puc": "Technologist degree in Systems Analysis and Development",
-    "experience.edu.colegio": "High school diploma",
-    "experience.edu.escola": "Elementary and middle school",
 
     // Projects
     "projects.label": "WORK",
