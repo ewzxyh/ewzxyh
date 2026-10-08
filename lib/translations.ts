@@ -35,8 +35,16 @@ export const translations = {
     "services.automation.desc": "Fluxos que substituem tarefas manuais por processos rápidos, rastreáveis e escaláveis.",
 
     // About
-    "about.section": "01 // SOBRE",
+    "about.label": "SOBRE",
     "about.title": "Quem sou eu",
+    "about.now": "Agora",
+    "about.now.studio": "Fundador e Product Engineer da Ewzxyh Labs",
+    "about.now.study": "Pós-graduação em Cibersegurança na NBCC, Canadá",
+    "about.fact.years": "anos de experiência",
+    "about.fact.projects": "projetos entregues",
+    "about.fact.retailers": "lotéricas atendidas pela automação da SELOESGO",
+    "about.fact.languages": "idiomas: português e inglês",
+    "about.principles": "Como trabalho",
     // Names between ** are highlighted on the page and printed in bold in the markdown twins.
     "about.p1": "Sou **Enzo Hideki Yoshida**, Product Engineer e fundador da **Ewzxyh Labs**. Há mais de 5 anos transformo operações manuais em produtos digitais: entendo o processo, desenho a solução e escrevo o código, do banco de dados à interface.",
     "about.p2": "Boa parte do meu trabalho está no varejo lotérico e no WhatsApp. O **LotoHub** cria o site de uma lotérica em minutos, a **CasePay** junta PIX, CRM e aviso ao cliente, e a automação da **SELOESGO** gera as artes de mais de 630 lotéricas em segundos. Já a **Grapnel** distribui os contatos de cada campanha entre os vendedores no WhatsApp e mostra quais viraram conversa.",
@@ -51,6 +59,11 @@ export const translations = {
 
     // Skills
     "skills.title": "Habilidades",
+    "skills.label": "HABILIDADES",
+    "skills.description": "As ferramentas que uso para levar um produto da ideia à operação.",
+    "skills.hint": "Passe o mouse ou toque em uma tecnologia para ver como a uso.",
+    "skills.learning": "Agora estudando",
+    "skills.learning.desc": "Pós-graduação em Cibersegurança na NBCC, no Canadá (2026–2028).",
     "skills.frontend": "Front-end",
     "skills.backend": "Back-end e dados",
     "skills.integrations": "Pagamentos e integrações",
@@ -100,6 +113,12 @@ export const translations = {
 
     // Experience Section Headers
     "experience.work": "Experiência",
+    "experience.label": "EXPERIÊNCIA",
+    "experience.description": "Meu estúdio, os produtos que fundei e os times que lidero, em paralelo desde 2021.",
+    "experience.related": "Projetos",
+    "experience.roles": "frentes em andamento",
+    "experience.since": "atuando desde",
+    "experience.moreTags": "mostrar todas",
     "experience.education": "Educação",
     "experience.certificates": "Certificados",
     "experience.credential": "Ver credencial",
@@ -135,10 +154,13 @@ export const translations = {
     "experience.edu.escola": "Ensino fundamental",
 
     // Projects
-    "projects.section": "02 // TRABALHOS",
+    "projects.label": "TRABALHOS",
     "projects.title": "Projetos em destaque",
+    "projects.count": "projetos",
+    "projects.live": "No ar",
     "projects.description": "Produtos próprios, de sócios e de clientes: o que cada um faz e qual foi a minha parte.",
     "projects.newTab": "abre em nova aba",
+    "projects.caseStudy": "Ver estudo de caso",
 
     // Project pages
     "case.back": "Todos os projetos",
@@ -166,7 +188,7 @@ export const translations = {
     "case.next": "Próximo projeto",
     "case.internal": "Sistema interno: sem capturas públicas.",
     // Contact
-    "contact.section": "03 // CONTATO",
+    "contact.section": "04 // CONTATO",
     "contact.title": "O que você precisa lançar, integrar ou automatizar?",
     "contact.description": "Conte brevemente o contexto. O contato é direto com Enzo Yoshida para projetos da Ewzxyh Labs ou oportunidades profissionais.",
     "contact.cta": "FALAR SOBRE MEU PROJETO",
@@ -214,8 +236,16 @@ export const translations = {
     "services.automation.desc": "Workflows that replace manual tasks with fast, traceable, and scalable processes.",
 
     // About
-    "about.section": "01 // ABOUT",
+    "about.label": "ABOUT",
     "about.title": "About me",
+    "about.now": "Now",
+    "about.now.studio": "Founder and Product Engineer at Ewzxyh Labs",
+    "about.now.study": "Postgraduate program in Cybersecurity at NBCC, Canada",
+    "about.fact.years": "years of experience",
+    "about.fact.projects": "projects delivered",
+    "about.fact.retailers": "lottery retailers served by the SELOESGO automation",
+    "about.fact.languages": "languages: Portuguese and English",
+    "about.principles": "How I work",
     "about.p1": "I'm **Enzo Hideki Yoshida**, a Product Engineer and the founder of **Ewzxyh Labs**. For more than 5 years I have been turning manual operations into digital products: I learn the process, design the solution and write the code, from the database to the interface.",
     "about.p2": "Much of my work is in Brazilian lottery retail and on WhatsApp. **LotoHub** builds a lottery retailer's website in minutes, **CasePay** brings PIX payments, a CRM and customer notices together, and the **SELOESGO** automation generates artwork for more than 630 lottery retailers in seconds. **Grapnel** spreads each campaign's contacts across a sales team on WhatsApp and shows which ones turned into conversations.",
     "about.p3": "I build almost everything with **Next.js**, and I also own what sits behind the interface: APIs, databases, payments, integrations and deployment. Since September 2026 I have been in a postgraduate program in Cybersecurity at NBCC in Canada, and I keep taking on remote projects.",
@@ -229,6 +259,11 @@ export const translations = {
 
     // Skills
     "skills.title": "Skills",
+    "skills.label": "SKILLS",
+    "skills.description": "The tools I use to take a product from idea to operation.",
+    "skills.hint": "Hover or tap a technology to see how I use it.",
+    "skills.learning": "Currently studying",
+    "skills.learning.desc": "Postgraduate program in Cybersecurity at NBCC, Canada (2026–2028).",
     "skills.frontend": "Front-end",
     "skills.backend": "Back-end and data",
     "skills.integrations": "Payments and integrations",
@@ -278,6 +313,12 @@ export const translations = {
 
     // Experience Section Headers
     "experience.work": "Work Experience",
+    "experience.label": "EXPERIENCE",
+    "experience.description": "My studio, the products I founded and the teams I lead, running in parallel since 2021.",
+    "experience.related": "Projects",
+    "experience.roles": "roles running now",
+    "experience.since": "working since",
+    "experience.moreTags": "show all",
     "experience.education": "Education",
     "experience.certificates": "Certificates",
     "experience.credential": "View credential",
@@ -313,10 +354,13 @@ export const translations = {
     "experience.edu.escola": "Elementary and middle school",
 
     // Projects
-    "projects.section": "02 // WORK",
+    "projects.label": "WORK",
     "projects.title": "Featured Projects",
+    "projects.count": "projects",
+    "projects.live": "Live",
     "projects.description": "My own products, partner products and client work: what each one does and what my part was.",
     "projects.newTab": "opens in a new tab",
+    "projects.caseStudy": "View case study",
 
     // Project pages
     "case.back": "All projects",
@@ -344,7 +388,7 @@ export const translations = {
     "case.next": "Next project",
     "case.internal": "Internal system: no public screenshots.",
     // Contact
-    "contact.section": "03 // CONTACT",
+    "contact.section": "04 // CONTACT",
     "contact.title": "What do you need to launch, integrate, or automate?",
     "contact.description": "Share the context briefly. You will speak directly with Enzo Yoshida about Ewzxyh Labs projects or professional opportunities.",
     "contact.cta": "DISCUSS MY PROJECT",

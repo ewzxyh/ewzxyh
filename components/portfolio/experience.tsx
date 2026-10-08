@@ -2,321 +2,215 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
+import { atAmiga } from "@/lib/fonts"
 import {
+  type CertificateItem,
   certificates,
+  type EducationItem,
   education,
   educationStatusKeys,
   employmentTypes,
+  type ExperienceItem,
   formatPeriod,
   localize,
+  type Project,
+  projects,
   type TagId,
   tagDescription,
   tagLabel,
   workExperience,
   workplaces,
 } from "@/lib/profile"
-import {
-  AltArrowDownIcon,
-  ArrowRightUpIcon,
-  CaseIcon,
-  CloseIcon,
-  MedalRibbonStarIcon,
-  SquareAcademicCapIcon,
-  type Icon as SolarIcon,
-} from "@/components/ui/icons"
+import { projectPath } from "@/lib/site"
+import { ArrowRightIcon, ArrowRightUpIcon, MedalRibbonStarIcon, SquareAcademicCapIcon } from "@/components/ui/icons"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { SectionHeading } from "./section-heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const EXPERIENCE_SECTION_ID = "experience"
+const VISIBLE_TAGS = 6
 
-function CertificateModal({
-  url,
-  onClose,
-}: {
-  url: string
-  onClose: () => void
-}) {
-  const overlayRef = useRef<HTMLDivElement>(null)
-  const modalRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
-    }
-    document.addEventListener("keydown", handleEscape)
-    document.body.style.overflow = "hidden"
-
-    gsap.fromTo(
-      overlayRef.current,
-      { opacity: 0 },
-      { opacity: 1, duration: 0.3, ease: "power2.out" }
-    )
-    gsap.fromTo(
-      modalRef.current,
-      { opacity: 0, scale: 0.95, y: 20 },
-      { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(1.7)" }
-    )
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape)
-      document.body.style.overflow = ""
-    }
-  }, [onClose])
-
-  const handleClose = () => {
-    gsap.to(overlayRef.current, { opacity: 0, duration: 0.2 })
-    gsap.to(modalRef.current, {
-      opacity: 0,
-      scale: 0.95,
-      y: 20,
-      duration: 0.2,
-      onComplete: onClose,
-    })
-  }
-
+// A chip with its one-line explanation on hover or focus.
+function TagChip({ tag }: { tag: TagId }) {
+  const { locale } = useI18n()
   return (
-    <div
-      ref={overlayRef}
-      className="fixed inset-0 z-[200] flex items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm"
-    >
-      <button
-        type="button"
-        className="absolute inset-0 cursor-default"
-        onClick={handleClose}
-        aria-label="Close certificate preview"
-      />
-      <div
-        ref={modalRef}
-        className="relative z-10 w-full h-full sm:w-[70vw] sm:h-[90vh] border-0 sm:border border-border bg-background"
-      >
-        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-3 border-b border-border bg-background z-10">
-          <span className="text-xs text-muted-foreground font-mono truncate max-w-[calc(100%-3rem)]">
-            {url}
-          </span>
-          <button
-            type="button"
-            onClick={handleClose}
-            aria-label="Close certificate preview"
-            className="p-1 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <CloseIcon aria-hidden="true" className="w-6 h-6" />
-          </button>
-        </div>
-        <iframe
-          src={url}
-          className="w-full h-full pt-12"
-          title="Certificate"
-          allow="fullscreen"
-          sandbox="allow-scripts allow-popups"
-        />
-      </div>
-    </div>
+    <Tooltip>
+      <TooltipTrigger className="skill-tag cursor-help border border-border px-1.5 py-0.5 text-[11px] text-foreground/80 transition-colors duration-200 hover:border-foreground/50 hover:bg-foreground/5 sm:px-2 sm:py-1 sm:text-xs">
+        {tagLabel(tag, locale)}
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[220px] text-center">
+        <p className="text-xs">{tagDescription(tag, locale)}</p>
+      </TooltipContent>
+    </Tooltip>
   )
 }
 
-function isUdemyUrl(url: string): boolean {
-  return url.includes("udemy.com")
-}
-
-function ExpandableItem({
-  title,
-  subtitle,
-  period,
-  description,
-  skills,
-  logo,
-  location,
-  type,
-  icon: Icon,
-  credentialUrl,
-  onOpenCertificate,
-  status,
-  invertLogoInDark,
-}: {
-  title: string
-  subtitle: string
-  period: string
-  description?: string
-  skills?: TagId[]
-  logo?: string
-  location?: string
-  type?: string
-  icon: SolarIcon
-  credentialUrl?: string
-  onOpenCertificate?: (url: string) => void
-  // A running course: the row is tinted and the label shows next to the title.
-  status?: string
-  invertLogoInDark?: boolean
-}) {
-  const { locale, t } = useI18n()
-  const [isExpanded, setIsExpanded] = useState(false)
-  // The details (skill tags with tooltips) are only mounted once an item is opened for the first time.
-  const [hasOpened, setHasOpened] = useState(false)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const skillsRef = useRef<HTMLDivElement>(null)
-  const itemRef = useRef<HTMLDivElement>(null)
-
-  const toggleExpanded = () => {
-    if (hasOpened) {
-      setIsExpanded((current) => !current)
-      return
-    }
-    // Mount collapsed, wait for a painted frame, then expand so the height transition still plays.
-    setHasOpened(true)
-    requestAnimationFrame(() => requestAnimationFrame(() => setIsExpanded(true)))
-  }
-
-  useEffect(() => {
-    if (isExpanded && skillsRef.current) {
-      const skills = skillsRef.current.querySelectorAll(".skill-tag")
-      gsap.fromTo(
-        skills,
-        { opacity: 0, y: 10, scale: 0.9 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.3, stagger: 0.03, ease: "back.out(1.7)" }
-      )
-    }
-  }, [isExpanded])
-
+function Logo({ src, alt, size, invertInDark }: { src?: string; alt: string; size: "sm" | "md"; invertInDark?: boolean }) {
+  const box = size === "md" ? "size-10 sm:size-12" : "size-8"
+  const image = size === "md" ? "size-6 sm:size-7" : "size-5"
   return (
-    <div
-      ref={itemRef}
-      className={`experience-item border-b border-border last:border-b-0 group relative ${
-        status ? 'bg-foreground/[0.025] dark:bg-foreground/[0.04] border-l-2 border-l-foreground/20' : ''
-      }`}
-    >
-      <button
-        type="button"
-        onClick={toggleExpanded}
-        className="w-full flex flex-col min-[400px]:flex-row min-[400px]:items-center gap-2 min-[400px]:gap-3 sm:gap-4 p-2.5 min-[320px]:p-3 sm:p-4 transition-all duration-300 text-left hover:bg-foreground/[0.02]"
-      >
-        <div className="flex items-center gap-2 min-[400px]:gap-3 sm:gap-4 flex-1 min-w-0">
-          <div className="relative flex-shrink-0 w-7 h-7 min-[320px]:w-8 min-[320px]:h-8 sm:w-10 sm:h-10 border border-border bg-card flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-foreground/30 group-hover:scale-105">
-            {logo ? (
-              <Image
-                src={logo}
-                alt={title}
-                width={24}
-                height={24}
-                className={`w-4 h-4 min-[320px]:w-5 min-[320px]:h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110 ${
-                  invertLogoInDark ? "dark:invert" : ""
-                }`}
-              />
-            ) : (
-              <Icon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
-            )}
-          </div>
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 min-[320px]:gap-2 flex-wrap">
-              <h4 className="font-medium text-xs min-[320px]:text-[13px] sm:text-base transition-colors duration-300 group-hover:text-foreground">
-                {title}
-              </h4>
-              {status && (
-                <span className="text-[8px] min-[320px]:text-[9px] sm:text-[11px] px-1 min-[320px]:px-1.5 py-0.5 bg-foreground/10 dark:bg-foreground/15 text-foreground/70 uppercase tracking-wider font-medium">
-                  {status}
-                </span>
-              )}
-              {location && (
-                <span className="text-[9px] min-[320px]:text-[10px] sm:text-[11px] px-1 py-0.5 border border-border text-muted-foreground uppercase tracking-wider transition-all duration-300 group-hover:border-foreground/30 group-hover:text-foreground/70">
-                  {location}
-                </span>
-              )}
-            </div>
-            <p className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground text-pretty transition-colors duration-300">
-              {subtitle}
-              {type && <span className="ml-1 opacity-70">· {type}</span>}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between min-[400px]:justify-end gap-2 pl-9 min-[320px]:pl-10 min-[400px]:pl-0">
-          <span className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground font-mono transition-colors duration-300 group-hover:text-foreground/70">
-            {period}
-          </span>
-          {(description || skills) && (
-            <AltArrowDownIcon
-              className={`w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-5 sm:h-5 text-muted-foreground transition-all duration-300 group-hover:text-foreground flex-shrink-0 ${isExpanded ? 'rotate-180' : ''}`}
-            />
-          )}
-        </div>
-      </button>
-
-      {(description || skills) && hasOpened && (
-        <div
-          ref={contentRef}
-          className={`grid transition-all duration-500 ease-out ${
-            isExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
-          }`}
-        >
-          <div className="overflow-hidden">
-            <div className="px-2.5 min-[320px]:px-3 sm:px-4 pb-3 min-[320px]:pb-4 sm:pb-5 pl-9 min-[320px]:pl-10 min-[400px]:pl-14 sm:pl-[4.5rem]">
-              {description && (
-                <p className="max-w-[88ch] text-[11px] min-[320px]:text-xs sm:text-sm text-muted-foreground leading-relaxed mb-3 min-[320px]:mb-4">
-                  {description}
-                </p>
-              )}
-
-              {skills && skills.length > 0 && (
-                <div ref={skillsRef} className="flex flex-wrap gap-1 min-[320px]:gap-1.5">
-                  {skills.map((skill) => (
-                    <Tooltip key={skill}>
-                      <TooltipTrigger className="skill-tag text-[9px] min-[320px]:text-[10px] sm:text-xs px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
-                        {tagLabel(skill, locale)}
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[200px] text-center">
-                        <p className="text-xs">{tagDescription(skill, locale)}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
-              )}
-
-              {credentialUrl && (
-                isUdemyUrl(credentialUrl) ? (
-                  <a
-                    href={credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
-                  >
-                    <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
-                    {t("experience.credential")}
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onOpenCertificate?.(credentialUrl)
-                    }}
-                    className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
-                  >
-                    <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
-                    {t("experience.credential")}
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-        </div>
+    <div className={`flex shrink-0 items-center justify-center overflow-hidden border border-border bg-card ${box}`}>
+      {src && (
+        <Image src={src} alt={alt} width={28} height={28} className={`object-contain ${image} ${invertInDark ? "dark:invert" : ""}`} />
       )}
     </div>
   )
 }
 
-export function Experience() {
+// One role on the timeline: who, what, when, the story, the stack, and the project pages it produced.
+function WorkItem({ job }: { job: ExperienceItem }) {
   const { t, locale } = useI18n()
+  const [showAllTags, setShowAllTags] = useState(false)
+  const tags = showAllTags ? job.tags : job.tags.slice(0, VISIBLE_TAGS)
+  const hidden = job.tags.length - tags.length
+  const related = (job.projects ?? [])
+    .map((id) => projects.find((project) => project.id === id))
+    .filter((project): project is Project => Boolean(project))
+
+  return (
+    <li className="experience-item relative pb-12 pl-9 last:pb-0 sm:pl-12">
+      <span
+        aria-hidden="true"
+        className="timeline-dot absolute top-3 left-0 grid size-[15px] place-items-center border border-border bg-background"
+      >
+        <span className="size-[7px] bg-orange-500" />
+      </span>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <Logo src={job.logo} alt={job.company} size="md" invertInDark={job.invertLogoInDark} />
+          <div className="min-w-0">
+            <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{job.company}</h3>
+            <p className="text-sm text-pretty text-muted-foreground">
+              {t(job.roleKey)} <span className="opacity-70">· {employmentTypes[job.type][locale]}</span>
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center gap-2 pl-[3.25rem] sm:flex-col sm:items-end sm:gap-1.5 sm:pl-0">
+          <span className="font-mono text-xs whitespace-nowrap text-foreground/80 sm:text-sm">{formatPeriod(job.period, locale)}</span>
+          <span className="border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted-foreground uppercase sm:text-[11px]">
+            {workplaces[job.workplace][locale]}
+          </span>
+        </div>
+      </div>
+
+      <p className="mt-4 max-w-[72ch] text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{t(job.descKey)}</p>
+
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {tags.map((tag) => (
+          <TagChip key={tag} tag={tag} />
+        ))}
+        {hidden > 0 && (
+          <button
+            type="button"
+            onClick={() => setShowAllTags(true)}
+            aria-label={`${t("experience.moreTags")} (+${hidden})`}
+            className="border border-dashed border-border px-2 py-0.5 text-[11px] text-muted-foreground transition-colors hover:border-foreground/50 hover:text-foreground sm:py-1 sm:text-xs"
+          >
+            +{hidden}
+          </button>
+        )}
+      </div>
+
+      {related.length > 0 && (
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+          <span className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{t("experience.related")}</span>
+          {related.map((project) => (
+            <Link
+              key={project.id}
+              href={projectPath(locale, project.id)}
+              prefetch={true}
+              className="group inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+            >
+              {localize(project.title, locale)}
+              <ArrowRightIcon aria-hidden="true" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          ))}
+        </div>
+      )}
+    </li>
+  )
+}
+
+// The credential grids draw their lines with a 1px gap over a border-colored background, so an odd card out would
+// leave a gray hole next to it; the last one takes the whole row instead.
+const fillsRow = (index: number, count: number) => count % 2 === 1 && index === count - 1
+
+function EducationCard({ item, wide }: { item: EducationItem; wide: boolean }) {
+  const { t, locale } = useI18n()
+  const status = item.status ? t(educationStatusKeys[item.status]) : null
+  return (
+    <article className={`credential-card flex gap-4 p-5 sm:p-6 ${status ? "bg-card" : "bg-background"} ${wide ? "sm:col-span-2 xl:col-span-1" : ""}`}>
+      <Logo src={item.logo} alt={item.institution} size="md" />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          {status && (
+            <span className="inline-flex items-center gap-1.5 bg-foreground/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wider text-foreground uppercase sm:text-[11px]">
+              <span className="relative flex size-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                <span className="relative inline-flex size-1.5 rounded-full bg-green-500" />
+              </span>
+              {status}
+            </span>
+          )}
+          <span className="border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted-foreground uppercase sm:text-[11px]">
+            {localize(item.location, locale)}
+          </span>
+        </div>
+        <h4 className="mt-2.5 font-semibold text-pretty">{item.institution}</h4>
+        <p className="mt-0.5 text-sm text-pretty text-muted-foreground">{t(item.degreeKey)}</p>
+        <p className="mt-2 font-mono text-xs text-muted-foreground">{formatPeriod(item.period, locale)}</p>
+      </div>
+    </article>
+  )
+}
+
+function CertificateCard({ item, wide }: { item: CertificateItem; wide: boolean }) {
+  const { t, locale } = useI18n()
+  return (
+    <article className={`credential-card flex flex-col bg-background p-5 sm:p-6 ${wide ? "sm:col-span-2" : ""}`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <Logo src={item.logo} alt={item.issuer} size="sm" />
+          <span className="truncate text-xs text-muted-foreground">
+            {item.issuer}
+            {item.detail && <span className="text-foreground/80"> · {localize(item.detail, locale)}</span>}
+          </span>
+        </div>
+        <span className="shrink-0 font-mono text-xs text-muted-foreground">{formatPeriod(item.period, locale)}</span>
+      </div>
+      <h4 className="mt-4 leading-snug font-semibold text-pretty">{localize(item.name, locale)}</h4>
+      {item.description && <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{localize(item.description, locale)}</p>}
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        {item.tags.map((tag) => (
+          <TagChip key={tag} tag={tag} />
+        ))}
+      </div>
+      {item.credentialUrl && (
+        <a
+          href={item.credentialUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group/link mt-auto inline-flex items-center gap-1 pt-5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowRightUpIcon aria-hidden="true" strokeWidth={2} className="size-4 transition-transform group-hover/link:rotate-12" />
+          {t("experience.credential")}
+        </a>
+      )}
+    </article>
+  )
+}
+
+export function Experience() {
+  const { t } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
-  const workRef = useRef<HTMLDivElement>(null)
-  const eduRef = useRef<HTMLDivElement>(null)
-  const certRef = useRef<HTMLDivElement>(null)
+  const workRef = useRef<HTMLOListElement>(null)
   const headersRef = useRef<(HTMLDivElement | null)[]>([])
-  const [certificateUrl, setCertificateUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -335,138 +229,111 @@ export function Experience() {
         })
       })
 
-      const animateSection = (ref: React.RefObject<HTMLDivElement | null>) => {
-        if (!ref.current) return
-        const items = ref.current.querySelectorAll(".experience-item")
-        gsap.from(items, {
+      // The timeline draws itself down the roles as they scroll by.
+      gsap.fromTo(
+        ".timeline-line",
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: { trigger: workRef.current, start: "top 75%", end: "bottom 60%", scrub: true },
+        },
+      )
+
+      gsap.from(".experience-item", {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: workRef.current,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      })
+
+      for (const grid of gsap.utils.toArray<HTMLElement>(".credential-grid")) {
+        gsap.from(grid.querySelectorAll(".credential-card"), {
           opacity: 0,
           y: 30,
           duration: 0.6,
-          stagger: 0.08,
+          stagger: 0.06,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: ref.current,
+            trigger: grid,
             start: "top 85%",
             toggleActions: "play none none reverse",
           },
         })
       }
-
-      animateSection(workRef)
-      animateSection(eduRef)
-      animateSection(certRef)
     }, sectionRef)
 
     return () => ctx.revert()
   }, [])
 
+  const firstYear = Math.min(...workExperience.map((job) => Number(job.period.from.slice(0, 4))))
+
   return (
-    <>
-      <section ref={sectionRef} id={EXPERIENCE_SECTION_ID} className="relative z-10">
-        <div className="w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)] py-8 min-[320px]:py-10 sm:py-16 md:py-24">
-          <div className="grid lg:grid-cols-2 gap-6 min-[320px]:gap-8 sm:gap-12 lg:gap-16">
-            {/* Work Experience */}
-            <div ref={workRef} className="lg:col-span-2">
-              <div
-                ref={(el) => { headersRef.current[0] = el }}
-                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
-              >
-                <CaseIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
-                  {t("experience.work")}
-                </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
+    <section ref={sectionRef} id={EXPERIENCE_SECTION_ID} className="relative z-10 border-t border-border">
+      <div className="mx-auto w-full max-w-screen-2xl px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24 md:py-32">
+        {/* Work */}
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
+          <div ref={(el) => { headersRef.current[0] = el }} className="lg:sticky lg:top-28 lg:self-start">
+            <SectionHeading index="02" label={t("experience.label")} title={t("experience.work")} description={t("experience.description")} />
+            <dl className="mt-8 grid grid-cols-2 border-t border-l border-border">
+              <div className="border-r border-b border-border p-4 sm:p-5">
+                <dd className={`${atAmiga.className} text-[clamp(2rem,4vw,3rem)] leading-none`}>{workExperience.length}</dd>
+                <dt className="mt-2 text-xs text-muted-foreground sm:text-sm">{t("experience.roles")}</dt>
               </div>
+              <div className="border-r border-b border-border p-4 sm:p-5">
+                <dd className={`${atAmiga.className} text-[clamp(2rem,4vw,3rem)] leading-none`}>{firstYear}</dd>
+                <dt className="mt-2 text-xs text-muted-foreground sm:text-sm">{t("experience.since")}</dt>
+              </div>
+            </dl>
+          </div>
 
-              <div className="border border-border bg-card/50">
-                {workExperience.map((item) => (
-                  <ExpandableItem
-                    key={`${item.company}-${item.period.from}`}
-                    title={item.company}
-                    subtitle={t(item.roleKey)}
-                    period={formatPeriod(item.period, locale)}
-                    description={t(item.descKey)}
-                    skills={item.tags}
-                    logo={item.logo}
-                    location={workplaces[item.workplace][locale]}
-                    type={employmentTypes[item.type][locale]}
-                    icon={CaseIcon}
-                    invertLogoInDark={item.invertLogoInDark}
-                  />
-                ))}
-              </div>
+          <ol ref={workRef} className="relative">
+            <span aria-hidden="true" className="timeline-line absolute top-3 bottom-3 left-[7px] w-px origin-top bg-border" />
+            {workExperience.map((job) => (
+              <WorkItem key={`${job.company}-${job.period.from}`} job={job} />
+            ))}
+          </ol>
+        </div>
+
+        {/* Education and certificates */}
+        <div className="mt-20 grid gap-14 sm:mt-28 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] xl:gap-10">
+          <div>
+            <div ref={(el) => { headersRef.current[1] = el }} className="mb-6 flex items-center gap-2 sm:mb-8">
+              <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
+              <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.education")}</h3>
+              <span className="ml-auto font-mono text-xs text-muted-foreground">{String(education.length).padStart(2, "0")}</span>
             </div>
-
-            {/* Education */}
-            <div ref={eduRef}>
-              <div
-                ref={(el) => { headersRef.current[1] = el }}
-                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
-              >
-                <SquareAcademicCapIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
-                  {t("experience.education")}
-                </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
-              </div>
-
-              <div className="border border-border bg-card/50">
-                {education.map((item) => (
-                  <ExpandableItem
-                    key={`${item.institution}-${item.period.from}`}
-                    title={item.institution}
-                    subtitle={t(item.degreeKey)}
-                    period={formatPeriod(item.period, locale)}
-                    location={localize(item.location, locale)}
-                    logo={item.logo}
-                    icon={SquareAcademicCapIcon}
-                    status={item.status ? t(educationStatusKeys[item.status]) : undefined}
-                  />
-                ))}
-              </div>
+            <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2 xl:grid-cols-1">
+              {education.map((item, index) => (
+                <EducationCard key={`${item.institution}-${item.period.from}`} item={item} wide={fillsRow(index, education.length)} />
+              ))}
             </div>
+          </div>
 
-            {/* Certificates */}
-            <div ref={certRef}>
-              <div
-                ref={(el) => { headersRef.current[2] = el }}
-                className="flex items-center gap-1.5 min-[320px]:gap-2 mb-3 min-[320px]:mb-4 sm:mb-6 group cursor-default"
-              >
-                <MedalRibbonStarIcon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110 flex-shrink-0" />
-                <h3 className="text-sm min-[320px]:text-base sm:text-xl font-semibold tracking-tight transition-colors duration-300 group-hover:text-foreground">
-                  {t("experience.certificates")}
-                </h3>
-                <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent ml-2 min-[320px]:ml-4 transition-all duration-500 group-hover:from-foreground/30" />
-              </div>
-
-              <div className="border border-border bg-card/50">
-                {certificates.map((item) => (
-                  <ExpandableItem
-                    key={item.credentialUrl ?? localize(item.name, "en-US")}
-                    title={localize(item.name, locale)}
-                    subtitle={item.issuer}
-                    type={item.detail ? localize(item.detail, locale) : undefined}
-                    period={formatPeriod(item.period, locale)}
-                    description={item.description ? localize(item.description, locale) : undefined}
-                    skills={item.tags}
-                    credentialUrl={item.credentialUrl}
-                    logo={item.logo}
-                    icon={MedalRibbonStarIcon}
-                    onOpenCertificate={setCertificateUrl}
-                  />
-                ))}
-              </div>
+          <div>
+            <div ref={(el) => { headersRef.current[2] = el }} className="mb-6 flex items-center gap-2 sm:mb-8">
+              <MedalRibbonStarIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
+              <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.certificates")}</h3>
+              <span className="ml-auto font-mono text-xs text-muted-foreground">{String(certificates.length).padStart(2, "0")}</span>
+            </div>
+            <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2">
+              {certificates.map((item, index) => (
+                <CertificateCard
+                  key={item.credentialUrl ?? localize(item.name, "en-US")}
+                  item={item}
+                  wide={fillsRow(index, certificates.length)}
+                />
+              ))}
             </div>
           </div>
         </div>
-      </section>
-
-      {certificateUrl && (
-        <CertificateModal
-          url={certificateUrl}
-          onClose={() => setCertificateUrl(null)}
-        />
-      )}
-    </>
+      </div>
+    </section>
   )
 }

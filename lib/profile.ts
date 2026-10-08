@@ -138,6 +138,8 @@ export interface ExperienceItem {
   logo?: string
   // A black logo on a transparent background, drawn white in the dark theme.
   invertLogoInDark?: boolean
+  // Project pages (ids in `projects`) that came out of this role.
+  projects?: string[]
 }
 
 export type EducationStatus = "in-progress" | "upcoming"
@@ -181,6 +183,7 @@ export const workExperience: ExperienceItem[] = [
     tags: ["productDevelopment", "softwareDevelopment", "fullStack", "nextjs", "react", "javascript", "postgresql", "restApis", "webApps", "webgl", "design", "uxDesign", "webDesign", "itConsulting"],
     logo: "/empresas/ewzxyh-logo-black.png",
     invertLogoInDark: true,
+    projects: ["grapnel", "loteria-amazonas", "lorenzpay"],
   },
   {
     company: "CasePay",
@@ -191,6 +194,7 @@ export const workExperience: ExperienceItem[] = [
     type: "self-employed",
     tags: ["nextjs", "pix", "payments", "crm", "restApis", "appSecurity", "laravel", "entrepreneurship"],
     logo: "/empresas/casepay.png",
+    projects: ["casepay"],
   },
   {
     company: "Case Agência Digital",
@@ -201,6 +205,7 @@ export const workExperience: ExperienceItem[] = [
     type: "freelance",
     tags: ["nextjs", "typescript", "react", "laravel", "restApis", "whatsappApi", "googleAds", "saas", "fullStack", "teamLeadership", "webgl", "gsap", "postgresql", "productDevelopment"],
     logo: "/empresas/caselogoicon.png",
+    projects: ["casezap", "chatcase", "loteria-caseshop", "caseshop"],
   },
   {
     company: "LotoHub",
@@ -211,6 +216,7 @@ export const workExperience: ExperienceItem[] = [
     type: "self-employed",
     tags: ["saas", "productEngineering", "productDevelopment", "nextjs", "typescript", "go", "restApis", "ecommerce", "softwareDevelopment"],
     logo: "/empresas/lotohublogo.webp",
+    projects: ["lotohub", "marketplace-api"],
   },
   {
     company: "SELOESGO",
@@ -221,6 +227,7 @@ export const workExperience: ExperienceItem[] = [
     type: "freelance",
     tags: ["productEngineering", "processAutomation", "imageGeneration", "imageProcessing", "nextjs", "restApis", "whatsappApi", "postgresql", "design"],
     logo: "/empresas/seloesgologo.jpeg",
+    projects: ["seloesgo"],
   },
   {
     company: "Loteria Amazonas",
@@ -231,6 +238,7 @@ export const workExperience: ExperienceItem[] = [
     type: "freelance",
     tags: ["nextjs", "ecommerce", "automation", "googleAds", "techManagement"],
     logo: "/empresas/rainhalogo.png",
+    projects: ["loteria-amazonas"],
   },
   {
     company: "Lovtok",
