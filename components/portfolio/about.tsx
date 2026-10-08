@@ -31,6 +31,24 @@ const highlightsData = [
 const ABOUT_SECTION_ID = "about"
 const ABOUT_CONTENT_ID = "about-content"
 
+// The bio marks names with **double asterisks** (the markdown twins print them in bold); here they stand out in the
+// foreground color.
+function Emphasis({ text }: { text: string }) {
+  return (
+    <>
+      {text.split("**").map((part, index) =>
+        index % 2 === 1 ? (
+          <span key={part} className="text-foreground font-medium">
+            {part}
+          </span>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  )
+}
+
 export function About() {
   const { t } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
@@ -103,18 +121,13 @@ export function About() {
         {/* Bio */}
         <div ref={bioRef} className="space-y-4 sm:space-y-6 max-w-3xl mx-auto">
           <p className="text-sm sm:text-lg leading-relaxed text-muted-foreground">
-            {t("about.intro")} <span className="text-foreground font-medium">Enzo Hideki Yoshida</span>,{" "}
-            {t("about.description1")}
+            <Emphasis text={t("about.p1")} />
           </p>
           <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
-            {t("about.description2")}{" "}
-            <span className="text-foreground">Next.js</span>{" "}
-            {t("about.description2.suffix")}
+            <Emphasis text={t("about.p2")} />
           </p>
           <p className="text-sm sm:text-base leading-relaxed text-muted-foreground">
-            {t("about.description3")}{" "}
-            <span className="text-foreground font-medium">Ewzxyh Labs</span>{" "}
-            {t("about.description3.suffix")}
+            <Emphasis text={t("about.p3")} />
           </p>
 
           {/* Highlights */}

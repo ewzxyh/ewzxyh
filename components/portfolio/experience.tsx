@@ -5,7 +5,19 @@ import Image from "next/image"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
-import { certificates, education, workExperience } from "@/lib/profile"
+import {
+  certificates,
+  education,
+  educationStatusKeys,
+  employmentTypes,
+  formatPeriod,
+  localize,
+  type TagId,
+  tagDescription,
+  tagLabel,
+  workExperience,
+  workplaces,
+} from "@/lib/profile"
 import {
   AltArrowDownIcon,
   ArrowRightUpIcon,
@@ -20,92 +32,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 gsap.registerPlugin(ScrollTrigger)
 
 const EXPERIENCE_SECTION_ID = "experience"
-
-const skillDescriptions: Record<string, { "pt-BR": string; "en-US": string }> = {
-  // Frameworks & Languages
-  "Laravel": { "pt-BR": "Framework PHP para desenvolvimento web elegante", "en-US": "PHP framework for elegant web application development" },
-  "PHP": { "pt-BR": "Linguagem de script server-side para web", "en-US": "Server-side scripting language for web development" },
-  "Next.js": { "pt-BR": "Framework React para aplicações de produção", "en-US": "React framework for production-grade applications" },
-  "React.js": { "pt-BR": "Biblioteca JavaScript para interfaces de usuário", "en-US": "JavaScript library for building user interfaces" },
-  "TypeScript": { "pt-BR": "Superset tipado de JavaScript para apps escaláveis", "en-US": "Typed superset of JavaScript for scalable apps" },
-  "JavaScript": { "pt-BR": "Linguagem de programação dinâmica para web", "en-US": "Dynamic programming language for web development" },
-  "Vue.js": { "pt-BR": "Framework JavaScript progressivo para UIs", "en-US": "Progressive JavaScript framework for UIs" },
-  "Java": { "pt-BR": "Linguagem de programação orientada a objetos", "en-US": "Object-oriented programming language" },
-  "Python": { "pt-BR": "Linguagem de programação versátil", "en-US": "Versatile programming language" },
-  "Node.js": { "pt-BR": "Runtime JavaScript para desenvolvimento server-side", "en-US": "JavaScript runtime for server-side development" },
-
-  // APIs & Backend
-  "REST APIs": { "pt-BR": "Estilo arquitetural para sistemas distribuídos", "en-US": "Architectural style for distributed systems" },
-  "API REST": { "pt-BR": "Estilo arquitetural para sistemas distribuídos", "en-US": "Architectural style for distributed systems" },
-  "WhatsApp Business API": { "pt-BR": "API oficial para automação do WhatsApp", "en-US": "Official API for WhatsApp automation" },
-  "PostgreSQL": { "pt-BR": "Banco de dados relacional open-source avançado", "en-US": "Advanced open-source relational database" },
-  "MySQL": { "pt-BR": "Banco de dados relacional open-source popular", "en-US": "Popular open-source relational database" },
-  "SQL": { "pt-BR": "Linguagem para gerenciar bancos relacionais", "en-US": "Language for managing relational databases" },
-
-  // Frontend & Design
-  "Tailwind CSS": { "pt-BR": "Framework CSS utility-first", "en-US": "Utility-first CSS framework" },
-  "WebGL": { "pt-BR": "API JavaScript para gráficos 3D no navegador", "en-US": "JavaScript API for 3D graphics in browser" },
-  "GSAP": { "pt-BR": "Biblioteca de animação profissional", "en-US": "Professional-grade animation library" },
-  "Web design": { "pt-BR": "Criação de layouts visuais para websites", "en-US": "Creating visual layouts for websites" },
-  "Design": { "pt-BR": "Design visual e experiência do usuário", "en-US": "Visual and user experience design" },
-  "Design gráfico": { "pt-BR": "Comunicação visual através de gráficos", "en-US": "Visual communication through graphics" },
-  "UX Design": { "pt-BR": "Design para experiência do usuário ideal", "en-US": "Designing for optimal user experience" },
-  "Design de experiência do usuário (UX)": { "pt-BR": "Design para experiência do usuário ideal", "en-US": "Designing for optimal user experience" },
-
-  // Product & Business
-  "Product Development": { "pt-BR": "Processo de criação de produto end-to-end", "en-US": "End-to-end product creation process" },
-  "Desenvolvimento de produtos": { "pt-BR": "Processo de criação de produto end-to-end", "en-US": "End-to-end product creation process" },
-  "Product Engineer": { "pt-BR": "Engenharia com mentalidade de produto", "en-US": "Engineering with product mindset" },
-  "SaaS": { "pt-BR": "Modelo de negócio Software as a Service", "en-US": "Software as a Service business model" },
-  "Empreendedorismo": { "pt-BR": "Construir e escalar negócios", "en-US": "Building and scaling businesses" },
-  "Gestão de projetos": { "pt-BR": "Planejamento e execução de projetos", "en-US": "Planning and executing projects" },
-  "Gestão de vendas": { "pt-BR": "Estratégia e gestão de vendas", "en-US": "Sales strategy and management" },
-  "Ideias de negócios": { "pt-BR": "Ideação e estratégia de negócios", "en-US": "Business ideation and strategy" },
-
-  // Development
-  "Full-Stack Development": { "pt-BR": "Desenvolvimento web end-to-end", "en-US": "End-to-end web development" },
-  "Desenvolvimento full stack": { "pt-BR": "Desenvolvimento web end-to-end", "en-US": "End-to-end web development" },
-  "Desenvolvimento de software": { "pt-BR": "Construção de soluções de software", "en-US": "Building software solutions" },
-  "Desenvolvimento web": { "pt-BR": "Criação de aplicações web", "en-US": "Creating web applications" },
-  "Desenvolvimento WordPress": { "pt-BR": "Construção de sites WordPress", "en-US": "Building WordPress sites" },
-  "Aplicativos web": { "pt-BR": "Aplicações baseadas em web", "en-US": "Web-based applications" },
-
-  // Automation & Tools
-  "Automação": { "pt-BR": "Automatização de processos repetitivos", "en-US": "Automating repetitive processes" },
-  "Automação de processos": { "pt-BR": "Otimização de fluxos de trabalho", "en-US": "Streamlining business workflows" },
-  "Process Automation": { "pt-BR": "Automatização de fluxos de trabalho", "en-US": "Automating business workflows" },
-  "Google Ads": { "pt-BR": "Plataforma de publicidade digital", "en-US": "Digital advertising platform" },
-  "Team Leadership": { "pt-BR": "Liderança e gestão de equipes dev", "en-US": "Leading and managing dev teams" },
-  "Consultoria de TI": { "pt-BR": "Consultoria e assessoria em TI", "en-US": "IT consulting and advisory" },
-
-  // Security & Infrastructure
-  "Payment Processing": { "pt-BR": "Processamento seguro de transações", "en-US": "Handling financial transactions securely" },
-  "Segurança de aplicativos web": { "pt-BR": "Práticas de segurança para aplicações web", "en-US": "Web application security practices" },
-  "Application Security": { "pt-BR": "Proteção de aplicações contra ameaças", "en-US": "Securing applications against threats" },
-  "Infraestrutura de tecnologia da informação": { "pt-BR": "Gestão de infraestrutura de TI", "en-US": "IT infrastructure management" },
-  "Suporte técnico": { "pt-BR": "Suporte técnico e troubleshooting", "en-US": "Technical support and troubleshooting" },
-
-  // E-commerce & Marketing
-  "Comércio eletrônico": { "pt-BR": "Comércio e vendas online", "en-US": "Online commerce and sales" },
-  "E-commerce": { "pt-BR": "Comércio e vendas online", "en-US": "Online commerce and sales" },
-  "Marketing": { "pt-BR": "Promoção de produtos e serviços", "en-US": "Promoting products and services" },
-  "Apresentação de ideias": { "pt-BR": "Pitch e apresentação de conceitos", "en-US": "Pitching and presenting concepts" },
-
-  // Media & Image
-  "Processamento de imagem": { "pt-BR": "Manipulação e processamento de imagens", "en-US": "Image manipulation and processing" },
-  "Geração de Imagem": { "pt-BR": "Geração automatizada de imagens", "en-US": "Automated image generation" },
-  "Gestão de tecnologias": { "pt-BR": "Gestão de stack e decisões técnicas", "en-US": "Managing tech stack and decisions" },
-
-  // Certificates
-  "English": { "pt-BR": "Proficiência em inglês", "en-US": "English language proficiency" },
-  "OOP": { "pt-BR": "Paradigma de Programação Orientada a Objetos", "en-US": "Object-Oriented Programming paradigm" },
-  "Spring Boot": { "pt-BR": "Framework Java para microserviços", "en-US": "Java framework for microservices" },
-  "Hibernate": { "pt-BR": "Framework ORM para Java", "en-US": "Java ORM framework" },
-  "HAProxy": { "pt-BR": "Load balancer de alta disponibilidade", "en-US": "High availability load balancer" },
-  "Linux": { "pt-BR": "Sistema operacional open-source", "en-US": "Open-source operating system" },
-  "Vue Router": { "pt-BR": "Router oficial para Vue.js", "en-US": "Official router for Vue.js" },
-  "Vuex": { "pt-BR": "Gerenciamento de estado para Vue.js", "en-US": "State management for Vue.js" },
-}
 
 function CertificateModal({
   url,
@@ -208,22 +134,25 @@ function ExpandableItem({
   icon: Icon,
   credentialUrl,
   onOpenCertificate,
-  highlighted,
+  status,
+  invertLogoInDark,
 }: {
   title: string
   subtitle: string
   period: string
   description?: string
-  skills?: string[]
+  skills?: TagId[]
   logo?: string
   location?: string
   type?: string
   icon: SolarIcon
   credentialUrl?: string
   onOpenCertificate?: (url: string) => void
-  highlighted?: boolean
+  // A running course: the row is tinted and the label shows next to the title.
+  status?: string
+  invertLogoInDark?: boolean
 }) {
-  const { locale } = useI18n()
+  const { locale, t } = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
   // The details (skill tags with tooltips) are only mounted once an item is opened for the first time.
   const [hasOpened, setHasOpened] = useState(false)
@@ -256,7 +185,7 @@ function ExpandableItem({
     <div
       ref={itemRef}
       className={`experience-item border-b border-border last:border-b-0 group relative ${
-        highlighted ? 'bg-foreground/[0.025] dark:bg-foreground/[0.04] border-l-2 border-l-foreground/20' : ''
+        status ? 'bg-foreground/[0.025] dark:bg-foreground/[0.04] border-l-2 border-l-foreground/20' : ''
       }`}
     >
       <button
@@ -272,7 +201,9 @@ function ExpandableItem({
                 alt={title}
                 width={24}
                 height={24}
-                className="w-4 h-4 min-[320px]:w-5 min-[320px]:h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110"
+                className={`w-4 h-4 min-[320px]:w-5 min-[320px]:h-5 sm:w-6 sm:h-6 object-contain transition-transform duration-300 group-hover:scale-110 ${
+                  invertLogoInDark ? "dark:invert" : ""
+                }`}
               />
             ) : (
               <Icon className="w-3.5 h-3.5 min-[320px]:w-4 min-[320px]:h-4 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
@@ -284,9 +215,9 @@ function ExpandableItem({
               <h4 className="font-medium text-xs min-[320px]:text-[13px] sm:text-base transition-colors duration-300 group-hover:text-foreground">
                 {title}
               </h4>
-              {highlighted && (
+              {status && (
                 <span className="text-[8px] min-[320px]:text-[9px] sm:text-[11px] px-1 min-[320px]:px-1.5 py-0.5 bg-foreground/10 dark:bg-foreground/15 text-foreground/70 uppercase tracking-wider font-medium">
-                  Upcoming
+                  {status}
                 </span>
               )}
               {location && (
@@ -295,7 +226,7 @@ function ExpandableItem({
                 </span>
               )}
             </div>
-            <p className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground truncate transition-colors duration-300">
+            <p className="text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground text-pretty transition-colors duration-300">
               {subtitle}
               {type && <span className="ml-1 opacity-70">· {type}</span>}
             </p>
@@ -331,22 +262,16 @@ function ExpandableItem({
 
               {skills && skills.length > 0 && (
                 <div ref={skillsRef} className="flex flex-wrap gap-1 min-[320px]:gap-1.5">
-                  {skills.map((skill) => {
-                    const skillData = skillDescriptions[skill]
-                    const description = skillData?.[locale]
-                    return (
-                      <Tooltip key={skill}>
-                        <TooltipTrigger className="skill-tag text-[9px] min-[320px]:text-[10px] sm:text-xs px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
-                          {skill}
-                        </TooltipTrigger>
-                        {description && (
-                          <TooltipContent side="top" className="max-w-[200px] text-center">
-                            <p className="text-xs">{description}</p>
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    )
-                  })}
+                  {skills.map((skill) => (
+                    <Tooltip key={skill}>
+                      <TooltipTrigger className="skill-tag text-[9px] min-[320px]:text-[10px] sm:text-xs px-1 min-[320px]:px-1.5 sm:px-2 py-0.5 sm:py-1 border border-border text-foreground/80 transition-all duration-200 hover:border-foreground/50 hover:bg-foreground/5 cursor-help">
+                        {tagLabel(skill, locale)}
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[200px] text-center">
+                        <p className="text-xs">{tagDescription(skill, locale)}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
                 </div>
               )}
 
@@ -360,7 +285,7 @@ function ExpandableItem({
                     className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
                     <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
-                    Ver credencial
+                    {t("experience.credential")}
                   </a>
                 ) : (
                   <button
@@ -372,7 +297,7 @@ function ExpandableItem({
                     className="inline-flex items-center gap-1 mt-3 min-[320px]:mt-4 text-[10px] min-[320px]:text-[11px] sm:text-sm text-muted-foreground transition-all duration-300 hover:text-foreground hover:gap-2 group/link"
                   >
                     <ArrowRightUpIcon strokeWidth={2} className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform duration-300 group-hover/link:rotate-12" />
-                    Ver credencial
+                    {t("experience.credential")}
                   </button>
                 )
               )}
@@ -385,7 +310,7 @@ function ExpandableItem({
 }
 
 export function Experience() {
-  const { t } = useI18n()
+  const { t, locale } = useI18n()
   const sectionRef = useRef<HTMLElement>(null)
   const workRef = useRef<HTMLDivElement>(null)
   const eduRef = useRef<HTMLDivElement>(null)
@@ -456,16 +381,17 @@ export function Experience() {
               <div className="border border-border bg-card/50">
                 {workExperience.map((item) => (
                   <ExpandableItem
-                    key={`${item.company}-${item.period}`}
+                    key={`${item.company}-${item.period.from}`}
                     title={item.company}
                     subtitle={t(item.roleKey)}
-                    period={item.period}
+                    period={formatPeriod(item.period, locale)}
                     description={t(item.descKey)}
-                    skills={item.skills}
+                    skills={item.tags}
                     logo={item.logo}
-                    location={item.location}
-                    type={item.type}
+                    location={workplaces[item.workplace][locale]}
+                    type={employmentTypes[item.type][locale]}
                     icon={CaseIcon}
+                    invertLogoInDark={item.invertLogoInDark}
                   />
                 ))}
               </div>
@@ -487,14 +413,14 @@ export function Experience() {
               <div className="border border-border bg-card/50">
                 {education.map((item) => (
                   <ExpandableItem
-                    key={`${item.institution}-${item.period}`}
+                    key={`${item.institution}-${item.period.from}`}
                     title={item.institution}
                     subtitle={t(item.degreeKey)}
-                    period={item.period}
-                    location={item.locationKey ? t(item.locationKey) : undefined}
+                    period={formatPeriod(item.period, locale)}
+                    location={localize(item.location, locale)}
                     logo={item.logo}
                     icon={SquareAcademicCapIcon}
-                    highlighted={item.highlighted}
+                    status={item.status ? t(educationStatusKeys[item.status]) : undefined}
                   />
                 ))}
               </div>
@@ -516,11 +442,13 @@ export function Experience() {
               <div className="border border-border bg-card/50">
                 {certificates.map((item) => (
                   <ExpandableItem
-                    key={item.credentialUrl ?? item.nameKey}
-                    title={t(item.nameKey)}
+                    key={item.credentialUrl ?? localize(item.name, "en-US")}
+                    title={localize(item.name, locale)}
                     subtitle={item.issuer}
-                    period={item.date}
-                    skills={item.skills}
+                    type={item.detail ? localize(item.detail, locale) : undefined}
+                    period={formatPeriod(item.period, locale)}
+                    description={item.description ? localize(item.description, locale) : undefined}
+                    skills={item.tags}
                     credentialUrl={item.credentialUrl}
                     logo={item.logo}
                     icon={MedalRibbonStarIcon}

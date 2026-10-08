@@ -3,7 +3,19 @@
 // Every sentence here comes from the same data the page renders (lib/translations.ts and lib/profile.ts), so the
 // markdown twins (/index.md, /about.md, ...), /llms.txt and /llms-full.txt can never drift from the site.
 
-import { certificates, education, projectsByLocale, skillCategories, workExperience } from "./profile"
+import {
+  certificates,
+  education,
+  educationStatusKeys,
+  employmentTypes,
+  formatPeriod,
+  localize,
+  projects,
+  skillCategories,
+  tagLabel,
+  workExperience,
+  workplaces,
+} from "./profile"
 import {
   brandName,
   contactEmail,
@@ -38,66 +50,12 @@ export function docUrl(id: DocId, locale: Locale) {
 
 // ---------- small helpers ----------
 
-const monthsEn: Record<string, string> = {
-  jan: "Jan",
-  fev: "Feb",
-  mar: "Mar",
-  abr: "Apr",
-  mai: "May",
-  jun: "Jun",
-  jul: "Jul",
-  ago: "Aug",
-  set: "Sep",
-  out: "Oct",
-  nov: "Nov",
-  dez: "Dec",
-}
-
-// Periods are stored the way the page prints them ("nov 2025 - Present"); each language gets its own spelling.
-function formatPeriod(period: string, locale: Locale) {
-  return period
-    .split(/\s+-\s+/)
-    .map((part) => {
-      const [first, ...rest] = part.trim().split(/\s+/)
-      const month = first.toLowerCase()
-      if (month === "present") return locale === "pt-BR" ? "presente" : "Present"
-      if (month in monthsEn) return [locale === "pt-BR" ? month : monthsEn[month], ...rest].join(" ")
-      return part.trim()
-    })
-    .join(" – ")
-}
-
 function whatsappLink(locale: Locale) {
   const text = locale === "pt-BR" ? "Olá, vim pelo seu portfólio!" : "Hello, I came from your portfolio!"
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`
 }
 
 const tr = (locale: Locale, key: TranslationKey) => translations[locale][key]
-
-// The page prints some chips and labels in Portuguese in both languages; the English markdown spells them out.
-const enLabels: Record<string, string> = {
-  Remota: "Remote",
-  Autônomo: "Self-employed",
-  "Segurança de aplicativos web": "Web application security",
-  Empreendedorismo: "Entrepreneurship",
-  "Automação de processos": "Process automation",
-  Automação: "Automation",
-  "Processamento de imagem": "Image processing",
-  "Geração de Imagem": "Image generation",
-  "Comércio eletrônico": "E-commerce",
-  "Gestão de tecnologias": "Technology management",
-  "Desenvolvimento de software": "Software development",
-  "Desenvolvimento de produtos": "Product development",
-  "Consultoria de TI": "IT consulting",
-  "Design gráfico": "Graphic design",
-  "Design de experiência do usuário (UX)": "User experience (UX) design",
-  "Desenvolvimento WordPress": "WordPress development",
-  "Gestão de vendas": "Sales management",
-  "Gestão de projetos": "Project management",
-  Marketing: "Marketing",
-  "Aplicativo web": "Web application",
-}
-const label = (value: string, locale: Locale) => (locale === "en-US" ? (enLabels[value] ?? value) : value)
 
 const bullet = (items: string[]) => items.map((item) => `- ${item}`).join("\n")
 
@@ -135,6 +93,7 @@ const text = {
     education: "Educação",
     certificates: "Certificados",
     credential: "credencial",
+    link: "Link",
     projectsTitle: "Projetos em destaque",
     contact: "Contato",
     faq: "Perguntas frequentes",
@@ -175,6 +134,7 @@ const text = {
     education: "Education",
     certificates: "Certificates",
     credential: "credential",
+    link: "Link",
     projectsTitle: "Featured projects",
     contact: "Contact",
     faq: "Frequently asked questions",
@@ -237,13 +197,12 @@ function factsBlock(locale: Locale, level: number) {
 
 function aboutSection(locale: Locale, level: number) {
   const t = text[locale]
-  const intro = `${tr(locale, "about.intro")} **${personName}**, ${tr(locale, "about.description1")}`
-  const second = `${tr(locale, "about.description2")} **Next.js** ${tr(locale, "about.description2.suffix")}`
-  const third = `${tr(locale, "about.description3")} **${brandName}** ${tr(locale, "about.description3.suffix")}`
+  // The bio already marks names with **, which is markdown bold.
+  const paragraphs = (["about.p1", "about.p2", "about.p3"] as const).flatMap((key) => [tr(locale, key), ""])
   const highlights = (["product", "design", "fullstack"] as const).map(
     (key) => `**${tr(locale, `about.${key}`)}:** ${tr(locale, `about.${key}.desc`)}`,
   )
-  return [h(level, t.about), "", intro, "", second, "", third, "", bullet(highlights), "", `*${tr(locale, "about.status")}*`, ""].join("\n")
+  return [h(level, t.about), "", ...paragraphs, bullet(highlights), "", `*${tr(locale, "about.status")}*`, ""].join("\n")
 }
 
 function servicesSection(locale: Locale, level: number) {
@@ -270,23 +229,24 @@ function experienceSection(locale: Locale, level: number) {
     [
       h(level + 2, `${job.company}: ${tr(locale, job.roleKey)}`),
       "",
-      `*${formatPeriod(job.period, locale)} · ${label(job.type, locale)} · ${label(job.location, locale)}*`,
+      `*${formatPeriod(job.period, locale)} · ${employmentTypes[job.type][locale]} · ${workplaces[job.workplace][locale]}*`,
       "",
       tr(locale, job.descKey),
       "",
-      `**${t.tags}:** ${job.skills.join(", ")}`,
+      `**${t.tags}:** ${job.tags.map((tag) => tagLabel(tag, locale)).join(", ")}`,
       "",
     ].join("\n"),
   )
 
   const schools = education.map((item) => {
-    const place = item.locationKey ? `, ${tr(locale, item.locationKey)}` : ""
-    return `**${item.institution}**${place}: ${tr(locale, item.degreeKey)} (${formatPeriod(item.period, locale)})`
+    const status = item.status ? `, ${tr(locale, educationStatusKeys[item.status]).toLowerCase()}` : ""
+    return `**${item.institution}**, ${localize(item.location, locale)}: ${tr(locale, item.degreeKey)} (${formatPeriod(item.period, locale)}${status})`
   })
 
   const certs = certificates.map((item) => {
+    const detail = item.detail ? `, ${localize(item.detail, locale)}` : ""
     const link = item.credentialUrl ? ` ([${t.credential}](${item.credentialUrl}))` : ""
-    return `**${tr(locale, item.nameKey)}**: ${item.issuer}, ${formatPeriod(item.date, locale)}${link}`
+    return `**${localize(item.name, locale)}**: ${item.issuer}${detail}, ${formatPeriod(item.period, locale)}${link}`
   })
 
   return [
@@ -308,10 +268,21 @@ function experienceSection(locale: Locale, level: number) {
 
 function projectsSection(locale: Locale, level: number) {
   const t = text[locale]
-  const items = projectsByLocale[locale].map((project) =>
-    [h(level + 1, project.title), "", project.description, "", `**${t.tags}:** ${project.tags.join(", ")}`, ""].join("\n"),
-  )
-  return [h(level, t.projectsTitle), "", ...items].join("\n")
+  const items = projects.map((project) => {
+    const access = project.url ? `**${t.link}:** ${project.url}` : project.note ? `*${localize(project.note, locale)}*` : ""
+    return [
+      h(level + 1, localize(project.title, locale)),
+      "",
+      `*${localize(project.kind, locale)} · ${localize(project.context, locale)}*`,
+      "",
+      localize(project.description, locale),
+      "",
+      `**${t.tags}:** ${project.tags.map((tag) => localize(tag, locale)).join(", ")}`,
+      ...(access ? ["", access] : []),
+      "",
+    ].join("\n")
+  })
+  return [h(level, t.projectsTitle), "", tr(locale, "projects.description"), "", ...items].join("\n")
 }
 
 function profileLinks(locale: Locale) {
@@ -342,8 +313,8 @@ function contactSection(locale: Locale, level: number) {
 // facts that are visible on the page.
 function faqSection(locale: Locale, level: number) {
   const t = text[locale]
-  const stack = ["Next.js", "React", "TypeScript", "Laravel", "PHP", "REST APIs", "PostgreSQL", "MySQL", "Supabase", "Tailwind CSS", "GSAP", "WebGL", "Docker", "n8n"]
-  const featured = projectsByLocale[locale].map((project) => project.title).join(", ")
+  const stack = ["Next.js", "React", "TypeScript", "Go", "Laravel", "PHP", "REST APIs", "PostgreSQL", "MySQL", "Supabase", "PIX", "Stripe", "WhatsApp Business API", "Tailwind CSS", "GSAP", "WebGL", "Docker", "n8n"]
+  const featured = projects.map((project) => localize(project.title, locale)).join(", ")
 
   const qa =
     locale === "pt-BR"
@@ -445,6 +416,12 @@ export function renderDoc(id: DocId, locale: Locale, options: { frontMatter?: bo
   return `${withFront ? frontMatter(id, locale) : ""}${content.trim()}\n${footer}`
 }
 
+const leadProjects = (locale: Locale) =>
+  projects
+    .slice(0, 4)
+    .map((project) => localize(project.title, locale))
+    .join(", ")
+
 const docSummaries: Record<DocId, Record<Locale, string>> = {
   index: {
     "pt-BR": "Portfólio completo em uma página: fatos rápidos, sobre, serviços, habilidades, experiência, projetos, contato e perguntas frequentes.",
@@ -459,16 +436,16 @@ const docSummaries: Record<DocId, Record<Locale, string>> = {
     "en-US": "What Ewzxyh Labs delivers: MVPs and SaaS, dashboards and integrations, operational automation.",
   },
   skills: {
-    "pt-BR": "Tecnologias de front-end, back-end, automação e DevOps, com descrição de cada uma.",
-    "en-US": "Front-end, back-end, automation and DevOps technologies, each with a short description.",
+    "pt-BR": "Tecnologias de front-end, back-end, pagamentos e integrações, infra e IA, com descrição de cada uma.",
+    "en-US": "Front-end, back-end, payments and integrations, infrastructure and AI technologies, each with a short description.",
   },
   experience: {
     "pt-BR": "Experiência profissional, educação e certificados, com períodos e tecnologias.",
     "en-US": "Work experience, education and certificates, with periods and technologies.",
   },
   projects: {
-    "pt-BR": "CasePay, LotoHub e SELOESGO Automação: problema, solução e tecnologias.",
-    "en-US": "CasePay, LotoHub and SELOESGO Automation: problem, solution and technologies.",
+    "pt-BR": `${leadProjects("pt-BR")} e mais ${projects.length - 4} projetos: o que cada um faz, o papel de Enzo, tecnologias e links.`,
+    "en-US": `${leadProjects("en-US")} and ${projects.length - 4} more projects: what each one does, Enzo's role, technologies and links.`,
   },
   contact: {
     "pt-BR": "E-mail, WhatsApp, LinkedIn, GitHub, X e Instagram oficiais.",

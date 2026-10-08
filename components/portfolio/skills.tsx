@@ -19,6 +19,12 @@ function getIconUrl(iconName: string): string {
     openai: "/openai.svg",
     claude: "/claude.svg",
     gemini: "/gemini.svg",
+    // Simple Icons (CC0), in each brand's color.
+    pix: "/pix.svg",
+    stripe: "/stripe.svg",
+    whatsapp: "/whatsapp.svg",
+    meta: "/meta.svg",
+    googleads: "/google-ads.svg",
   }
 
   if (localIcons[iconName]) {
@@ -36,6 +42,8 @@ function getIconUrl(iconName: string): string {
     threejs: "threejs/threejs-original.svg",
     nodejs: "nodejs/nodejs-original.svg",
     bun: "bun/bun-original.svg",
+    // The "GO" wordmark reads better than the gopher at 18px.
+    go: "go/go-original-wordmark.svg",
     php: "php/php-original.svg",
     laravel: "laravel/laravel-original.svg",
     openapi: "openapi/openapi-original.svg",
@@ -59,6 +67,9 @@ function getIconUrl(iconName: string): string {
   return `https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${deviconMap[iconName] || `${iconName}/${iconName}-original.svg`}`
 }
 
+// Logos drawn in black (or nearly black) disappear on the dark theme, so they are inverted there.
+const darkLogos = new Set(["nextjs", "threejs", "expo", "vercel", "prisma", "bash"])
+
 function SkillBadge({ skill }: { skill: Skill }) {
   const { t } = useI18n()
 
@@ -71,7 +82,7 @@ function SkillBadge({ skill }: { skill: Skill }) {
         alt={skill.name}
         width={18}
         height={18}
-        className="w-[18px] h-[18px] object-contain"
+        className={`w-[18px] h-[18px] object-contain ${darkLogos.has(skill.icon) ? "dark:invert" : ""}`}
         unoptimized
       />
       <span className="text-sm text-foreground">{skill.name}</span>

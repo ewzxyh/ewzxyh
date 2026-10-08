@@ -18,7 +18,7 @@ export const siteDescriptionEn =
   "Product Engineer and founder of Ewzxyh Labs, with 5+ years building MVPs, SaaS products, dashboards, integrations and custom automations with Next.js."
 
 // Bump when the content of the page really changes: it feeds sitemap lastmod, JSON-LD dateModified and llms.txt.
-export const siteLastModified = "2026-10-06"
+export const siteLastModified = "2026-10-08"
 
 export const contactEmail = "yoshidaenzo@hotmail.com"
 export const whatsappNumber = "5562984268492"
