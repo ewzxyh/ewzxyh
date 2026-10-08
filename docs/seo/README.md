@@ -80,6 +80,12 @@ Todo o texto vem de uma única fonte: `lib/translations.ts` (copy), `lib/profile
 - `robots` por página: `index, follow`; `max-image-preview:large`, `max-snippet:-1`, `max-video-preview:-1` para o Google
   (sem limitar trechos nos recursos de IA; `nosnippet` ou `max-snippet` baixo os bloqueariam).
 - Removido: `meta keywords` (o Google não as usa).
+- **Apresentação em três camadas** (`lib/site.ts`): o título leva a identidade e uma só tecnologia ("Enzo Yoshida |
+  Product Engineer Next.js e SaaS", 46 caracteres: o Google pede títulos curtos, sem palavras repetidas e coerentes com a
+  página); a descrição leva o que é entregue (MVPs, SaaS, dashboards, integrações, automações sob medida) e, em pt-BR,
+  "desenvolvedor full-stack", o termo que o público brasileiro busca; a stack completa (React, TypeScript, Laravel,
+  PostgreSQL...) fica nas habilidades do site e em `knowsAbout` do JSON-LD, sem poluir o título. Não há dados de volume
+  de busca aqui: depois de 4 a 8 semanas, confira no Search Console por quais consultas a página aparece e ajuste.
 - Imagens: `lib/share-images.ts` (ver `docs/metadata-images`).
 
 ### 3.3 JSON-LD (`lib/structured-data.ts`)

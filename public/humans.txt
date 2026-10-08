@@ -9,7 +9,7 @@ X: https://x.com/ewzxyh
 Instagram: https://www.instagram.com/ewzxyh
 
 /* SITE */
-Last update: 2026/10/05
+Last update: 2026/10/06
 Language: Portuguese (Brazil), English
 Standards: HTML5, CSS3, JSON-LD (schema.org), llms.txt
 Components: Next.js, React, TypeScript, Tailwind CSS, GSAP, Lenis, WebGL

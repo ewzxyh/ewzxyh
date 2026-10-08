@@ -25,10 +25,10 @@ Textos sugeridos (todos dentro dos limites; contagem de caracteres entre parênt
 
 | Rede | pt-BR | en |
 | --- | --- | --- |
-| X (160) | `Product Engineer. Fundador da Ewzxyh Labs. Transformo ideias e operações manuais em produtos digitais prontos para operar. ewzxyh.com` (133) | `Product Engineer. Founder of Ewzxyh Labs. I turn ideas and manual operations into digital products ready to run. ewzxyh.com` (123) |
-| LinkedIn, título (220) | `Product Engineer \| Fundador da Ewzxyh Labs \| MVPs, SaaS, dashboards e automações com Next.js, React, TypeScript e Laravel` (121) | `Product Engineer \| Founder, Ewzxyh Labs \| MVPs, SaaS, dashboards and automations with Next.js, React, TypeScript and Laravel` (124) |
+| X (160) | `Product Engineer e desenvolvedor full-stack. Fundador da Ewzxyh Labs. Transformo ideias e operações manuais em produtos digitais prontos para operar. ewzxyh.com` (160) | `Product Engineer. Founder of Ewzxyh Labs. I turn ideas and manual operations into digital products ready to run. ewzxyh.com` (123) |
+| LinkedIn, título (220) | `Product Engineer e desenvolvedor full-stack \| Fundador da Ewzxyh Labs \| MVPs, SaaS, dashboards e automações com Next.js` (119) | `Product Engineer \| Founder, Ewzxyh Labs \| MVPs, SaaS, dashboards and automations with Next.js` (93) |
 | Instagram (150) | `Product Engineer · Ewzxyh Labs` + quebra + `MVPs, SaaS e automações sob medida` + quebra + `ewzxyh.com` (76) | `Product Engineer · Ewzxyh Labs` + line break + `Custom MVPs, SaaS and automations` + line break + `ewzxyh.com` (75) |
-| GitHub (160) | `Product Engineer · Founder of Ewzxyh Labs · Next.js, React, TypeScript, Laravel` (79) | idem |
+| GitHub (160) | `Product Engineer · Founder of Ewzxyh Labs · Next.js and SaaS` (60) | idem |
 
 ## 2. Tamanhos
 

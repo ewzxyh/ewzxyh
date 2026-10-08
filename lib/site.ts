@@ -3,20 +3,22 @@
 
 // The production host. `www.ewzxyh.com` answers with a 301 to this apex, so the apex is the canonical one.
 export const siteUrl = "https://ewzxyh.com"
-export const siteTitle = "Enzo Yoshida | Product Engineer Next.js, React e SaaS"
-export const siteTitleEn = "Enzo Yoshida | Product Engineer Next.js, React & SaaS"
+// Role + one technical anchor (Next.js) + the product type. The full stack is listed where it fits (skills, JSON-LD).
+export const siteTitle = "Enzo Yoshida | Product Engineer Next.js e SaaS"
+export const siteTitleEn = "Enzo Yoshida | Product Engineer Next.js & SaaS"
 export const siteName = "Enzo Yoshida"
 export const personName = "Enzo Hideki Yoshida"
 export const brandName = "Ewzxyh Labs"
 export const handle = "ewzxyh"
 
+// "Desenvolvedor full-stack" is how Portuguese speakers search for the role; "Product Engineer" is the identity.
 export const siteDescription =
-  "Enzo Yoshida é Product Engineer e fundador da Ewzxyh Labs, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida."
+  "Product Engineer e desenvolvedor full-stack, fundador da Ewzxyh Labs. 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida com Next.js."
 export const siteDescriptionEn =
-  "Enzo Yoshida is a Product Engineer and founder of Ewzxyh Labs, with 5+ years building MVPs, SaaS products, dashboards, integrations and custom automations."
+  "Product Engineer and founder of Ewzxyh Labs, with 5+ years building MVPs, SaaS products, dashboards, integrations and custom automations with Next.js."
 
 // Bump when the content of the page really changes: it feeds sitemap lastmod, JSON-LD dateModified and llms.txt.
-export const siteLastModified = "2026-10-05"
+export const siteLastModified = "2026-10-06"
 
 export const contactEmail = "yoshidaenzo@hotmail.com"
 export const whatsappNumber = "5562984268492"

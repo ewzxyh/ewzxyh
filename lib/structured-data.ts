@@ -110,7 +110,7 @@ export function getProfileJsonLd(locale: SiteLocale) {
         mainEntityOfPage: { "@id": profilePageId },
         image: { "@id": ids.portrait },
         email: contactEmail,
-        jobTitle: "Product Engineer",
+        jobTitle: locale === "pt-BR" ? "Product Engineer e desenvolvedor full-stack" : "Product Engineer",
         description,
         worksFor: { "@id": ids.organization },
         alumniOf: { "@type": "CollegeOrUniversity", name: "PUC-GO" },

@@ -105,7 +105,7 @@ const bullet = (items: string[]) => items.map((item) => `- ${item}`).join("\n")
 
 const text = {
   "pt-BR": {
-    pageTitle: `${personName} (${siteName}): Product Engineer`,
+    pageTitle: `${personName} (${siteName}): Product Engineer e desenvolvedor full-stack`,
     summary: siteDescription,
     updated: "Atualizado em",
     language: "Idioma do conteúdo",
@@ -223,7 +223,7 @@ function factsBlock(locale: Locale, level: number) {
     "",
     bullet([
       `**${t.name}:** ${personName} (${t.alsoKnownAs} ${siteName}, ${handle})`,
-      `**${t.role}:** Product Engineer`,
+      `**${t.role}:** ${locale === "pt-BR" ? "Product Engineer e desenvolvedor full-stack" : "Product Engineer"}`,
       `**${t.studio}:** ${brandName} (${t.founder}: ${personName})`,
       `**${t.trackRecord}:** 5+ ${t.years}; 50+ ${t.projects}; 630+ ${t.operators} (${t.operatorsNote})`,
       `**${t.languages}:** ${t.languagesValue}`,
@@ -350,7 +350,7 @@ function faqSection(locale: Locale, level: number) {
       ? [
           [
             "Quem é Enzo Yoshida?",
-            `${personName} (${siteName}, @${handle}) é Product Engineer e fundador da ${brandName}. Combina visão de produto com execução técnica para entregar MVPs, SaaS, dashboards, integrações e automações sob medida, com mais de 5 anos de experiência.`,
+            `${personName} (${siteName}, @${handle}) é Product Engineer e desenvolvedor full-stack, fundador da ${brandName}. Combina visão de produto com execução técnica para entregar MVPs, SaaS, dashboards, integrações e automações sob medida, com mais de 5 anos de experiência.`,
           ],
           ["O que a Ewzxyh Labs faz?", `${tr(locale, "services.description")} Os serviços são: ${(["products", "systems", "automation"] as const).map((key) => tr(locale, `services.${key}`)).join("; ")}.`],
           ["Quais tecnologias ele usa?", `${stack.join(", ")}.`],
@@ -492,7 +492,7 @@ export function renderLlmsTxt() {
   const lines: string[] = [
     `# ${siteName}`,
     "",
-    `> ${personName} (${siteName}, @${handle}) is a Brazilian Product Engineer and the founder of ${brandName}. He builds MVPs, SaaS products, dashboards, integrations and operational automations with Next.js, React, TypeScript and Laravel. Português: Product Engineer e fundador da ${brandName}, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida.`,
+    `> ${personName} (${siteName}, @${handle}) is a Brazilian Product Engineer and the founder of ${brandName}. He builds MVPs, SaaS products, dashboards, integrations and operational automations with Next.js. Português: Product Engineer e desenvolvedor full-stack, fundador da ${brandName}, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida com Next.js.`,
     "",
     "This site is a bilingual (pt-BR and en) one-page portfolio, one URL per language. The Markdown pages below contain the same content as the HTML pages, one topic per file, in both languages.",
     "",
