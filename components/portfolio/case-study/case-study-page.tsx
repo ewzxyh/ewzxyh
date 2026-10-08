@@ -129,7 +129,12 @@ export function CaseStudyPage({ slug }: { slug: string }) {
   const live = study.links[0]
   const address = live ? projectHost(live.url) : undefined
   const title = L(project.title)
-  const { desktop, mobile, full, extra } = study.media
+  const { desktop, mobile, full, extra, phones } = study.media
+  // The phone capture of the home screen, then any other phone screens, each with its caption.
+  const phoneShots = [
+    ...(mobile ? [{ shot: mobile, caption: t("case.mobile") }] : []),
+    ...(phones ?? []).map((shot) => ({ shot, caption: L(shot.caption ?? shot.alt) })),
+  ]
   // AT Amiga is wide: the size follows the longest word so a name like MARKETPLACE never breaks mid-word.
   const longestWord = Math.max(...title.split(/\s+/).map((word) => word.length))
   const titleSize =
@@ -368,7 +373,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         </section>
 
         {/* The whole page, and more screens */}
-        {(full || extra?.length || mobile) && (
+        {(full || extra?.length || phoneShots.length > 0) && (
           <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
             {full && (
               <>
@@ -377,25 +382,36 @@ export function CaseStudyPage({ slug }: { slug: string }) {
               </>
             )}
 
-            {(extra?.length || mobile) && (
+            {(extra?.length || phoneShots.length > 0) && (
               <div className={full ? "mt-16 sm:mt-24" : ""}>
-                {!full && <SectionHeading index="05" label={t("case.moreScreens")} title={t("case.moreScreens")} className="mb-10 sm:mb-14" />}
-                <div className="grid items-start gap-6 md:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)]">
+                {full ? (
+                  <h3 className="mb-8 text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mb-10 sm:text-sm">{t("case.moreScreens")}</h3>
+                ) : (
+                  <SectionHeading index="05" label={t("case.moreScreens")} title={t("case.moreScreens")} className="mb-10 sm:mb-14" />
+                )}
+                <div className="space-y-12 sm:space-y-16">
+                  {/* Each desktop screen with what it shows beside it */}
                   {extra?.map((shot) => (
-                    <figure key={shot.src} data-reveal="">
-                      <BrowserFrame address={shot.src.includes("loteria-marketplace") ? "loteriamarketplace.com.br" : address}>
-                        <Image src={shot.src} alt={L(shot.alt)} width={shot.width} height={shot.height} sizes="(min-width: 768px) 65vw, 100vw" className="block h-auto w-full" />
+                    <figure key={shot.src} data-reveal="" className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.4fr)] lg:gap-12">
+                      <BrowserFrame address={shot.address ?? address} className="lg:order-2">
+                        <Image src={shot.src} alt={L(shot.alt)} width={shot.width} height={shot.height} sizes="(min-width: 1024px) 64vw, 100vw" className="block h-auto w-full" />
                       </BrowserFrame>
-                      {shot.caption && <figcaption className="mt-3 text-sm text-muted-foreground">{L(shot.caption)}</figcaption>}
+                      {shot.caption && (
+                        <figcaption className="max-w-[46ch] text-base leading-relaxed text-pretty text-muted-foreground lg:order-1 lg:pt-10">{L(shot.caption)}</figcaption>
+                      )}
                     </figure>
                   ))}
-                  {mobile && (
-                    <figure data-reveal="" className={`mx-auto w-full max-w-[18rem] ${extra?.length ? "" : "md:col-start-2"}`}>
-                      <PhoneFrame>
-                        <Image src={mobile.src} alt={L(mobile.alt)} width={mobile.width} height={mobile.height} sizes="(min-width: 768px) 20vw, 70vw" className="block h-auto w-full" />
-                      </PhoneFrame>
-                      <figcaption className="mt-3 text-center text-sm text-muted-foreground">{t("case.mobile")}</figcaption>
-                    </figure>
+                  {phoneShots.length > 0 && (
+                    <div className="flex flex-wrap items-start justify-center gap-10 sm:gap-16">
+                      {phoneShots.map(({ shot, caption }) => (
+                        <figure key={shot.src} data-reveal="" className="w-full max-w-[16rem]">
+                          <PhoneFrame>
+                            <Image src={shot.src} alt={L(shot.alt)} width={shot.width} height={shot.height} sizes="(min-width: 768px) 16rem, 70vw" className="block h-auto w-full" />
+                          </PhoneFrame>
+                          <figcaption className="mt-3 text-center text-sm text-muted-foreground">{caption}</figcaption>
+                        </figure>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>

@@ -7,6 +7,8 @@ export interface Shot {
   height: number
   alt: Text
   caption?: Text
+  // The address shown in the browser frame, when it is not the project's own (a sign-in page, a sister site).
+  address?: string
 }
 
 export interface CaseStudyMedia {
@@ -18,8 +20,10 @@ export interface CaseStudyMedia {
   full?: Shot
   // Social card (1200x630), cropped from the desktop capture.
   og?: string
-  // Other screens worth showing (a second product surface, docs).
+  // Other desktop screens worth showing (a second product surface, a sign-in page), each with a caption.
   extra?: Shot[]
+  // Other phone screens, shown next to `mobile`.
+  phones?: Shot[]
 }
 
 // A project page. Every statement comes from the live product, its public documentation or what Enzo confirmed;

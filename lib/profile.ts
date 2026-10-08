@@ -438,18 +438,19 @@ export const projects: Project[] = [
     note: { "pt-BR": "Sistema interno", "en-US": "Internal system" },
   },
   {
+    // The agency product at api.loteriamarketplace.com.br/agencia (the Loteria Marketplace API with its panel).
     id: "marketplace-api",
-    title: { "pt-BR": "API Loteria Marketplace", "en-US": "Loteria Marketplace API" },
-    kind: "API",
+    title: { "pt-BR": "LotoHub Agências", "en-US": "LotoHub Agencies" },
+    kind: { "pt-BR": "Painel e API", "en-US": "Panel and API" },
     context: "LotoHub",
     description: {
       "pt-BR":
-        "Mantém sincronizado o catálogo de bolões do Marketplace CAIXA e alimenta o LotoHub: coleta agendada, histórico de bolões, resultados e premiações oficiais, chaves de API com escopo e validade, limite de 600 leituras por minuto e auditoria das consultas à CAIXA.",
+        "Painel e API para agências lotéricas acompanharem os bolões das suas ULs no marketplace da CAIXA, do registro ao resultado oficial: entrada por código no e-mail, UL conferida no catálogo nacional, chaves de API com validade e cobrança por UL na Stripe.",
       "en-US":
-        "Keeps the CAIXA Marketplace lottery pool catalog in sync and feeds LotoHub: scheduled collection, pool history, official results and prizes, scoped API keys with expiry, a 600 reads per minute limit and an audit trail of every request to CAIXA.",
+        "A panel and API for lottery agencies to follow their units' pools on CAIXA's marketplace, from the first record to the official result: e-mail code sign-in, units checked against the national catalog, API keys with expiry and per-unit billing on Stripe.",
     },
-    tags: ["Go", "OpenAPI", "Worker", "Rate limiting"],
-    url: "https://api.loteriamarketplace.com.br/docs",
+    tags: ["Go", "React", { "pt-BR": "API REST", "en-US": "REST API" }, "Stripe"],
+    url: "https://api.loteriamarketplace.com.br/agencia/",
   },
   {
     id: "casezap",
