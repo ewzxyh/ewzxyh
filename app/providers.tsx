@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes"
 import { CustomCursor } from "@/components/portfolio/custom-cursor"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { PageLoader } from "@/components/portfolio/page-loader"
+import { SkipLink } from "@/components/portfolio/skip-link"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { onIdle } from "@/lib/idle"
 import { I18nProvider } from "@/lib/i18n"
@@ -79,6 +80,7 @@ export function Providers({
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
       <I18nProvider locale={locale} restoreChoice={restoreChoice}>
+        <SkipLink />
         <LoadingProvider>
           <InteractionSounds />
           <PageLoader />

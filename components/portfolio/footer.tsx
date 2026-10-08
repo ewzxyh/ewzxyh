@@ -28,7 +28,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border py-6 sm:py-8 z-10 relative">
-      <div className="w-full px-[clamp(1.25rem,3vw,4rem)]">
+      <div className="w-full px-(--gutter)">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Logo/Name */}
           <div className="flex items-center gap-2">
@@ -57,17 +57,17 @@ export function Footer() {
           </div>
 
           {/* Social Links */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
+                className="p-1 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={link.label}
               >
-                <link.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                <link.icon aria-hidden="true" className="w-4 h-4 sm:w-5 sm:h-5" />
               </a>
             ))}
           </div>

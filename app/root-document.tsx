@@ -1,6 +1,8 @@
 import { JetBrains_Mono } from "next/font/google"
+import Script from "next/script"
 import type { ReactNode } from "react"
 import { preload } from "react-dom"
+import { motionBootScript } from "@/lib/motion"
 import { htmlLangs, type SiteLocale } from "@/lib/site"
 import { Providers } from "./providers"
 import "./globals.css"
@@ -28,7 +30,12 @@ export function RootDocument({
 
   return (
     <html lang={htmlLangs[locale]} className={jetbrainsMono.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased overflow-x-hidden">
+      {/* overflow-x: clip (not hidden) keeps the body from becoming a scroll container, so position: sticky works. */}
+      <body className="font-sans antialiased overflow-x-clip">
+        {/* A visitor who paused the animations on an earlier visit gets a still page from the first paint. */}
+        <Script id="motion-preference" strategy="beforeInteractive">
+          {motionBootScript}
+        </Script>
         <Providers locale={locale} restoreChoice={restoreChoice}>
           {children}
         </Providers>

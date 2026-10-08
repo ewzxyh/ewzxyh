@@ -10,7 +10,7 @@ const loadBatOverlay = () => import("./bat-overlay")
 const BatOverlay = dynamic(loadBatOverlay, { ssr: false })
 
 export function LanguageToggle() {
-  const { locale, setLocale, isTransitioning } = useI18n()
+  const { locale, setLocale, isTransitioning, t } = useI18n()
   const mounted = useMounted()
 
   // Warm the overlay chunk so the first language switch does not wait for the network.
@@ -24,15 +24,15 @@ export function LanguageToggle() {
 
   return (
     <>
-      {/* Language Toggle Button */}
+      {/* Language Toggle Button. Its name starts with the code it shows (WCAG 2.5.3) and says what pressing it does. */}
       <button
         type="button"
         data-cuelume-toggle
         onClick={toggleLocale}
         className="px-2.5 py-2 text-xs sm:text-sm font-medium tracking-wide border border-border bg-background text-foreground hover:bg-foreground hover:text-background transition-all duration-300 flex-shrink-0"
-        aria-label={locale === "pt-BR" ? "Alternar idioma" : "Switch language"}
       >
         {locale === "pt-BR" ? "EN-US" : "PT-BR"}
+        <span className="sr-only">, {t("nav.language")}</span>
       </button>
 
       {/* Bat Animation Overlay */}

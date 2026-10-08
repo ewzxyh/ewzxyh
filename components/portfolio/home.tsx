@@ -19,7 +19,7 @@ export function Home({ locale }: { locale: SiteLocale }) {
       <script type="application/ld+json">{JSON.stringify(getProfileJsonLd(locale)).replace(/</g, "\\u003c")}</script>
       <LateralPinIndicator />
       <HashScroll />
-      <main className="relative z-10 min-h-screen overflow-x-hidden before:pointer-events-none before:fixed before:inset-y-0 before:left-[clamp(1.25rem,3vw,4rem)] before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-[clamp(1.25rem,3vw,4rem)] after:z-30 after:w-px after:bg-border/70">
+      <main className="relative z-10 min-h-screen overflow-x-clip before:pointer-events-none before:fixed before:inset-y-0 before:left-(--gutter) before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-(--gutter) after:z-30 after:w-px after:bg-border/70">
         <Header />
         <Hero />
         <Services />

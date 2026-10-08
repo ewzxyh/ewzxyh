@@ -21,7 +21,7 @@ export function Contact() {
 
   return (
     <section id={CONTACT_SECTION_ID} className="relative py-16 sm:py-24 md:py-32 border-t border-border z-10">
-      <div className="w-full px-[clamp(1.25rem,3vw,4rem)] text-center">
+      <div className="w-full px-[calc(var(--gutter)+var(--inset))] text-center">
         {/* Section Header */}
         <span className="text-xs sm:text-sm text-muted-foreground tracking-[0.2em] sm:tracking-[0.3em] mb-2 block">
           {t("contact.section")}
@@ -62,7 +62,7 @@ export function Contact() {
             href={linkedinUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-foreground hover:underline underline-offset-4"
+            className="text-foreground underline underline-offset-4 transition-colors hover:text-muted-foreground"
           >
             LinkedIn
           </a>

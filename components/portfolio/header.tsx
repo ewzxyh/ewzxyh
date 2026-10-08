@@ -10,6 +10,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Logo } from "./logo"
 import { LanguageToggle } from "./language-toggle"
+import { MotionToggle } from "./motion-toggle"
 import { useLoading } from "./loading-context"
 import { onIdle } from "@/lib/idle"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
@@ -201,7 +202,11 @@ export function Header() {
       },
     })
 
+    // A hidden header comes back when the keyboard reaches one of its links (WCAG 2.4.11).
+    header.addEventListener("focusin", showHeader)
+
     return () => {
+      header.removeEventListener("focusin", showHeader)
       trigger.kill()
     }
   }, [isMenuOpen])
@@ -209,7 +214,7 @@ export function Header() {
   return (
     <header
       ref={headerRef}
-      className="fixed top-0 left-0 right-0 z-40 opacity-0 px-[clamp(1.25rem,3vw,4rem)] pt-2 sm:pt-3 md:pt-4"
+      className="fixed top-0 left-0 right-0 z-40 opacity-0 px-(--gutter) pt-2 sm:pt-3 md:pt-4"
     >
       <div className="relative w-full overflow-hidden border border-border bg-card/50 backdrop-blur-md">
         {/* Overlay during language transition */}
@@ -228,7 +233,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav aria-label={t("nav.main")} className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.id}
@@ -244,7 +249,7 @@ export function Header() {
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* Open to Work Badge - Desktop only */}
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-2 border border-green-500/30 bg-green-500/10 text-green-600 dark:text-green-400">
+            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-2 border border-green-500/30 bg-green-500/10 text-green-800 dark:text-green-400">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
@@ -259,6 +264,7 @@ export function Header() {
             ) : (
               <div aria-hidden="true" className="h-8 w-8 flex-shrink-0 sm:h-10 sm:w-10 md:h-12 md:w-12" />
             )}
+            <MotionToggle />
             <LanguageToggle />
 
             {/* Mobile Menu Toggle */}
@@ -266,8 +272,9 @@ export function Header() {
               type="button"
               onClick={toggleMenu}
               className="md:hidden flex h-11 w-11 items-center justify-center flex-shrink-0 border border-border bg-background"
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
               aria-expanded={isMenuOpen}
+              aria-controls="mobile-menu"
             >
               <span aria-hidden="true" className="relative block h-3.5 w-5">
                 <span
@@ -291,12 +298,15 @@ export function Header() {
         </div>
 
         {/* Mobile Navigation Menu */}
+        {/* Closed, the menu is inert: its links can not take the keyboard focus while they are invisible. */}
         <div
           ref={menuRef}
+          id="mobile-menu"
+          inert={!isMenuOpen}
           className="md:hidden overflow-hidden border-t border-border/50"
           style={{ height: 0, opacity: 0 }}
         >
-          <nav className="px-3 py-4 flex flex-col">
+          <nav aria-label={t("nav.mobile")} className="px-3 py-4 flex flex-col">
             {navItems.map((item, index) => (
               <Link
                 key={item.id}
@@ -323,7 +333,7 @@ export function Header() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
-              <span className="text-sm font-medium text-green-600 dark:text-green-400">
+              <span className="text-sm font-medium text-green-800 dark:text-green-400">
                 {t("nav.openToWork")}
               </span>
             </div>

@@ -131,7 +131,7 @@ export function About() {
 
       {/* About Content - rolls over the gallery */}
       <div id={ABOUT_CONTENT_ID} className="relative z-10 py-16 sm:py-24 md:py-32">
-        <div className="w-full max-w-screen-2xl mx-auto px-[clamp(1.25rem,3vw,4rem)]">
+        <div className="w-full max-w-screen-2xl mx-auto px-(--gutter)">
           <div className="grid border border-border lg:grid-cols-[minmax(0,1fr)_minmax(0,1.45fr)]">
             {/* Who, in numbers, and what is going on now */}
             <div ref={panelRef} className="flex flex-col gap-10 border-b border-border p-6 sm:p-10 lg:border-b-0 lg:border-r">

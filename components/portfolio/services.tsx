@@ -14,7 +14,7 @@ export function Services() {
 
   return (
     <section className="relative z-10 border-y border-border">
-      <div className="w-full px-[clamp(1.25rem,3vw,4rem)]">
+      <div className="w-full px-(--gutter)">
         <div className="grid lg:grid-cols-[1.05fr_1.95fr]">
           <div className="border-b border-border bg-card px-6 py-12 sm:px-8 sm:py-16 lg:border-b-0 lg:border-r lg:px-10 lg:py-20">
             <span className="mb-3 block text-xs tracking-[0.2em] text-muted-foreground sm:text-sm sm:tracking-[0.3em]">
@@ -30,7 +30,7 @@ export function Services() {
             {services.map(({ icon: Icon, title, description }) => (
               <article
                 key={title}
-                className="border-b border-border px-0 py-10 last:border-b-0 sm:border-b-0 sm:border-r sm:px-6 sm:py-16 sm:last:border-r-0 lg:px-8 lg:py-20"
+                className="border-b border-border px-6 py-10 last:border-b-0 sm:border-b-0 sm:border-r sm:py-16 sm:last:border-r-0 lg:px-8 lg:py-20"
               >
                 <Icon className="mb-8 size-6 text-muted-foreground" aria-hidden="true" />
                 <h3 className="text-lg font-medium">{t(title)}</h3>

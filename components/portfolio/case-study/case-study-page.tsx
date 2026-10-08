@@ -153,12 +153,12 @@ export function CaseStudyPage({ slug }: { slug: string }) {
   ]
 
   return (
-    <main className="relative z-10 min-h-screen overflow-x-hidden before:pointer-events-none before:fixed before:inset-y-0 before:left-[clamp(1.25rem,3vw,4rem)] before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-[clamp(1.25rem,3vw,4rem)] after:z-30 after:w-px after:bg-border/70">
+    <main className="relative z-10 min-h-screen overflow-x-clip before:pointer-events-none before:fixed before:inset-y-0 before:left-(--gutter) before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-(--gutter) after:z-30 after:w-px after:bg-border/70">
       <Header />
 
-      <article ref={rootRef} aria-labelledby="case-title">
+      <article ref={rootRef} id="content" tabIndex={-1} aria-labelledby="case-title" className="focus-visible:outline-none">
         {/* Opening: what it is, for whom, Enzo's part */}
-        <section className="px-[clamp(1.25rem,3vw,4rem)] pt-24 sm:pt-28 md:pt-32">
+        <section className="px-(--gutter) pt-24 sm:pt-28 md:pt-32">
           <div className="relative border border-border">
             {CORNERS.map((position) => (
               <span
@@ -237,7 +237,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
 
         {/* Proof before the story: the numbers printed on the product */}
         {study.highlights && study.highlights.length > 0 && (
-          <section className="px-[clamp(1.25rem,3vw,4rem)] pt-6 sm:pt-8" aria-label={t("case.highlights")}>
+          <section className="px-(--gutter) pt-6 sm:pt-8" aria-label={t("case.highlights")}>
             <dl className={`grid border border-border ${study.highlights.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
               {study.highlights.map((item) => (
                 <div key={L(item.label)} data-reveal="" className="border-b border-border p-5 last:border-b-0 sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0">
@@ -250,7 +250,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         )}
 
         {/* The product */}
-        <section className="case-showcase px-[clamp(1.25rem,3vw,4rem)] pt-8 pb-16 sm:pt-10 sm:pb-24 md:pb-32">
+        <section className="case-showcase px-(--gutter) pt-8 pb-16 sm:pt-10 sm:pb-24 md:pb-32">
           {desktop ? (
             <div className="relative md:pr-[6%]">
               <BrowserFrame address={address} className="case-shot opacity-0">
@@ -290,8 +290,8 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         </section>
 
         {/* The challenge */}
-        <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
+        <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
+          <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
             <SectionHeading index="01" label={t("case.challenge")} title={t("case.challenge")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="max-w-[68ch] space-y-5" data-reveal="">
               {study.challenge.map((paragraph) => (
@@ -304,9 +304,9 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         </section>
 
         {/* What Enzo did: his own part, before the product it produced */}
-        <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
-          <SectionHeading index="02" label={t("case.contributions")} title={t("case.contributions")} className="mb-10 sm:mb-14" />
-          <ol className="grid border-t border-border md:grid-cols-2">
+        <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
+          <SectionHeading index="02" label={t("case.contributions")} title={t("case.contributions")} className="mb-10 px-(--inset) sm:mb-14" />
+          <ol className="mx-(--inset) grid border-t border-border md:grid-cols-2">
             {study.contributions.map((item, index) => (
               <li
                 key={L(item)}
@@ -321,8 +321,8 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         </section>
 
         {/* The solution and its features */}
-        <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
+        <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
+          <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
             <SectionHeading index="03" label={t("case.solution")} title={t("case.solution")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="max-w-[68ch] space-y-5" data-reveal="">
               {study.solution.map((paragraph) => (
@@ -332,7 +332,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-          <h3 className="mt-14 mb-6 text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mt-20 sm:text-sm">{t("case.features")}</h3>
+          <h3 className="mt-14 mb-6 px-(--inset) text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mt-20 sm:text-sm">{t("case.features")}</h3>
           <div className="grid border-t border-l border-border sm:grid-cols-2 lg:grid-cols-3">
             {study.features.map((feature, index) => (
               <article
@@ -349,18 +349,9 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         </section>
 
         {/* Engineering */}
-        <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <SectionHeading index="04" label={t("case.engineering")} title={t("case.engineering")} />
-              <div data-reveal="" className="mt-8 flex flex-wrap gap-1.5">
-                {study.stack.map((item) => (
-                  <span key={item} className="border border-border bg-card/50 px-2.5 py-1.5 text-xs text-foreground/80">
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </div>
+        <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
+          <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
+            <SectionHeading index="04" label={t("case.engineering")} title={t("case.engineering")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="border-t border-border">
               {study.engineering.map((item) => (
                 <div key={L(item.title)} data-reveal="" className="grid gap-2 border-b border-border py-6 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] sm:gap-8">
@@ -374,16 +365,16 @@ export function CaseStudyPage({ slug }: { slug: string }) {
 
         {/* The whole page, and more screens */}
         {(full || extra?.length || phoneShots.length > 0) && (
-          <section className="border-t border-border px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24">
+          <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
             {full && (
               <>
-                <SectionHeading index="05" label={t("case.fullPage")} title={t("case.fullPage")} description={t("case.fullPageHint")} className="mb-10 sm:mb-14" />
+                <SectionHeading index="05" label={t("case.fullPage")} title={t("case.fullPage")} description={t("case.fullPageHint")} className="mb-10 px-(--inset) sm:mb-14" />
                 <ScrollThrough src={full.src} width={full.width} height={full.height} alt={L(full.alt)} address={address} />
               </>
             )}
 
             {(extra?.length || phoneShots.length > 0) && (
-              <div className={full ? "mt-16 sm:mt-24" : ""}>
+              <div className={full ? "mt-16 px-(--inset) sm:mt-24" : "px-(--inset)"}>
                 {full ? (
                   <h3 className="mb-8 text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mb-10 sm:text-sm">{t("case.moreScreens")}</h3>
                 ) : (
@@ -420,7 +411,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         )}
 
         {/* Previous and next */}
-        <nav aria-label={t("case.back")} className="border-t border-border px-[clamp(1.25rem,3vw,4rem)]">
+        <nav aria-label={t("case.back")} className="border-t border-border px-(--gutter)">
           <div className="grid divide-y divide-border border-x border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0">
             {previous && <ProjectLink project={previous} label={`← ${t("case.previous")}`} align="start" />}
             {next && <ProjectLink project={next} label={`${t("case.next")} →`} align="end" />}

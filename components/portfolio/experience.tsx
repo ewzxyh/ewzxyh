@@ -40,7 +40,7 @@ function TagChip({ tag }: { tag: TagId }) {
   const { locale } = useI18n()
   return (
     <Tooltip>
-      <TooltipTrigger className="skill-tag cursor-help border border-border px-1.5 py-0.5 text-[11px] text-foreground/80 transition-colors duration-200 hover:border-foreground/50 hover:bg-foreground/5 sm:px-2 sm:py-1 sm:text-xs">
+      <TooltipTrigger className="skill-tag inline-flex min-h-6 cursor-help items-center border border-border px-2 text-[11px] text-foreground/80 transition-colors duration-200 hover:border-foreground/50 hover:bg-foreground/5 sm:text-xs">
         {tagLabel(tag, locale)}
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-[220px] text-center">
@@ -87,16 +87,13 @@ function WorkItem({ job }: { job: ExperienceItem }) {
           <div className="min-w-0">
             <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{job.company}</h3>
             <p className="text-sm text-pretty text-muted-foreground">
-              {t(job.roleKey)} <span className="opacity-70">· {employmentTypes[job.type][locale]}</span>
+              {t(job.roleKey)} · {employmentTypes[job.type][locale]} · {workplaces[job.workplace][locale]}
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 pl-[3.25rem] sm:flex-col sm:items-end sm:gap-1.5 sm:pl-0">
-          <span className="font-mono text-xs whitespace-nowrap text-foreground/80 sm:text-sm">{formatPeriod(job.period, locale)}</span>
-          <span className="border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted-foreground uppercase sm:text-[11px]">
-            {workplaces[job.workplace][locale]}
-          </span>
-        </div>
+        <p className="shrink-0 pl-[3.25rem] font-mono text-xs whitespace-nowrap text-foreground/80 sm:pt-1 sm:pl-0 sm:text-sm">
+          {formatPeriod(job.period, locale)}
+        </p>
       </div>
 
       <p className="mt-4 max-w-[72ch] text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{t(job.descKey)}</p>
@@ -109,10 +106,10 @@ function WorkItem({ job }: { job: ExperienceItem }) {
           <button
             type="button"
             onClick={() => setShowAllTags(true)}
-            aria-label={`${t("experience.moreTags")} (+${hidden})`}
-            className="border border-dashed border-border px-2 py-0.5 text-[11px] text-muted-foreground transition-colors hover:border-foreground/50 hover:text-foreground sm:py-1 sm:text-xs"
+            className="inline-flex min-h-6 items-center border border-dashed border-border px-2 text-[11px] text-muted-foreground transition-colors hover:border-foreground/50 hover:text-foreground sm:text-xs"
           >
             +{hidden}
+            <span className="sr-only"> {t("experience.moreTags")}</span>
           </button>
         )}
       </div>
@@ -148,23 +145,12 @@ function EducationCard({ item, wide }: { item: EducationItem; wide: boolean }) {
     <article className={`credential-card flex gap-4 p-5 sm:p-6 ${status ? "bg-card" : "bg-background"} ${wide ? "sm:col-span-2 xl:col-span-1" : ""}`}>
       <Logo src={item.logo} alt={item.institution} size="md" />
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          {status && (
-            <span className="inline-flex items-center gap-1.5 bg-foreground/10 px-1.5 py-0.5 text-[10px] font-medium tracking-wider text-foreground uppercase sm:text-[11px]">
-              <span className="relative flex size-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-                <span className="relative inline-flex size-1.5 rounded-full bg-green-500" />
-              </span>
-              {status}
-            </span>
-          )}
-          <span className="border border-border px-1.5 py-0.5 text-[10px] tracking-wider text-muted-foreground uppercase sm:text-[11px]">
-            {localize(item.location, locale)}
-          </span>
-        </div>
-        <h4 className="mt-2.5 font-semibold text-pretty">{item.institution}</h4>
+        <h4 className="font-semibold text-pretty">{item.institution}</h4>
         <p className="mt-0.5 text-sm text-pretty text-muted-foreground">{t(item.degreeKey)}</p>
-        <p className="mt-2 font-mono text-xs text-muted-foreground">{formatPeriod(item.period, locale)}</p>
+        <p className="mt-2 font-mono text-xs text-muted-foreground">
+          {formatPeriod(item.period, locale)} · {localize(item.location, locale)}
+          {status && <span className="text-foreground"> · {status}</span>}
+        </p>
       </div>
     </article>
   )
@@ -276,9 +262,9 @@ export function Experience() {
 
   return (
     <section ref={sectionRef} id={EXPERIENCE_SECTION_ID} className="relative z-10 border-t border-border">
-      <div className="mx-auto w-full max-w-screen-2xl px-[clamp(1.25rem,3vw,4rem)] py-16 sm:py-24 md:py-32">
+      <div className="mx-auto w-full max-w-screen-2xl px-(--gutter) py-16 sm:py-24 md:py-32">
         {/* Work */}
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
+        <div className="grid gap-12 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[0] = el }} className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeading index="02" label={t("experience.label")} title={t("experience.work")} description={t("experience.description")} />
             <dl className="mt-8 grid grid-cols-2 border-t border-l border-border">
@@ -304,7 +290,7 @@ export function Experience() {
         {/* Education and certificates */}
         <div className="mt-20 grid gap-14 sm:mt-28 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] xl:gap-10">
           <div>
-            <div ref={(el) => { headersRef.current[1] = el }} className="mb-6 flex items-center gap-2 sm:mb-8">
+            <div ref={(el) => { headersRef.current[1] = el }} className="mb-6 flex items-center gap-2 px-(--inset) sm:mb-8">
               <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
               <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.education")}</h3>
               <span className="ml-auto font-mono text-xs text-muted-foreground">{String(education.length).padStart(2, "0")}</span>
@@ -317,7 +303,7 @@ export function Experience() {
           </div>
 
           <div>
-            <div ref={(el) => { headersRef.current[2] = el }} className="mb-6 flex items-center gap-2 sm:mb-8">
+            <div ref={(el) => { headersRef.current[2] = el }} className="mb-6 flex items-center gap-2 px-(--inset) sm:mb-8">
               <MedalRibbonStarIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
               <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.certificates")}</h3>
               <span className="ml-auto font-mono text-xs text-muted-foreground">{String(certificates.length).padStart(2, "0")}</span>

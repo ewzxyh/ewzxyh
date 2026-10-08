@@ -25,7 +25,7 @@ async function ProjectBody({ params, locale }: { params: Params; locale: SiteLoc
 
 function ProjectShell() {
   return (
-    <main className="relative z-10 min-h-screen px-[clamp(1.25rem,3vw,4rem)] pt-24 sm:pt-28 md:pt-32">
+    <main className="relative z-10 min-h-screen px-(--gutter) pt-24 sm:pt-28 md:pt-32">
       <div className="h-[70svh] border border-border" />
     </main>
   )

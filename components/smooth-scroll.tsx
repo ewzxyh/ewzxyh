@@ -5,6 +5,7 @@ import Lenis from "lenis"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { usePathname } from "next/navigation"
+import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { pathInLocale } from "@/lib/site"
 import { useLoading } from "./portfolio/loading-context"
 
@@ -13,10 +14,16 @@ gsap.registerPlugin(ScrollTrigger)
 export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
   const { isLoadingComplete } = useLoading()
+  const reducedMotion = useReducedMotion()
+  const loadingCompleteRef = useRef(isLoadingComplete)
 
   useEffect(() => {
-    // Smoothed wheel scrolling is motion the user can opt out of.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    loadingCompleteRef.current = isLoadingComplete
+  }, [isLoadingComplete])
+
+  useEffect(() => {
+    // Smoothed wheel scrolling is motion the visitor can opt out of (system setting or the pause button).
+    if (reducedMotion) return
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -26,8 +33,9 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       smoothWheel: true,
       touchMultiplier: 2,
     })
-    // The page must not scroll underneath the loader; it is released when the loader is gone.
-    lenis.stop()
+    // The page must not scroll underneath the loader; it is released when the loader is gone (or right away when
+    // smooth scrolling comes back after a pause).
+    if (!loadingCompleteRef.current) lenis.stop()
     lenisRef.current = lenis
 
     lenis.on("scroll", ScrollTrigger.update)
@@ -41,7 +49,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
       lenis.destroy()
       lenisRef.current = null
     }
-  }, [])
+  }, [reducedMotion])
 
   useEffect(() => {
     if (isLoadingComplete) lenisRef.current?.start()

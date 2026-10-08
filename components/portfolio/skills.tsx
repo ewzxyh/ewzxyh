@@ -96,7 +96,6 @@ function SkillGroup({ category, index }: { category: SkillCategory; index: numbe
               onMouseEnter={() => setActive(itemIndex)}
               onFocus={() => setActive(itemIndex)}
               onClick={() => setActive(itemIndex)}
-              aria-pressed={active === itemIndex}
               className={`skill-badge flex items-center gap-2 border px-2.5 py-2 text-sm transition-[background-color,border-color,translate] duration-200 hover:-translate-y-0.5 ${
                 active === itemIndex ? "border-foreground/50 bg-card" : "border-border bg-card/40 hover:border-foreground/30"
               }`}
@@ -122,7 +121,7 @@ function SkillGroup({ category, index }: { category: SkillCategory; index: numbe
               <span className="text-foreground">&gt; {skill.name}</span> · {t(skill.descriptionKey)}
             </>
           ) : (
-            <span className="opacity-70">&gt; {t("skills.hint")}</span>
+            <>&gt; {t("skills.hint")}</>
           )}
         </p>
       </div>
@@ -188,7 +187,7 @@ export function Skills() {
 
   return (
     <div ref={sectionRef} className="pt-16 sm:pt-24">
-      <div ref={titleRef} className="mb-8 sm:mb-12">
+      <div ref={titleRef} className="mb-8 px-(--inset) sm:mb-12">
         <SectionHeading as="h3" label={t("skills.label")} title={t("skills.title")} description={t("skills.description")} />
       </div>
 

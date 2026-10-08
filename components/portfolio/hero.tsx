@@ -111,12 +111,20 @@ function useStillOnScreen(ref: RefObject<HTMLElement | null>) {
       update()
     })
 
+    // The pinned hero is covered by the next section once the page scrolls: keyboard focus inside it brings the page
+    // back to the top so the focused control is visible (WCAG 2.4.11).
+    const onFocusIn = () => {
+      if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "instant" })
+    }
+
     resizeObserver.observe(element)
     window.addEventListener("scroll", update, { passive: true })
+    element.addEventListener("focusin", onFocusIn)
     update()
     return () => {
       resizeObserver.disconnect()
       window.removeEventListener("scroll", update)
+      element.removeEventListener("focusin", onFocusIn)
     }
   }, [ref])
 
@@ -238,8 +246,10 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
+      id="content"
+      tabIndex={-1}
       aria-labelledby={titleId}
-      className="relative isolate flex min-h-svh flex-col overflow-hidden px-[clamp(1.25rem,3vw,4rem)] pb-4 pt-20 sm:pb-5 sm:pt-24 md:pb-6 md:pt-28"
+      className="relative isolate flex min-h-svh flex-col overflow-hidden px-(--gutter) pb-4 pt-20 focus-visible:outline-none sm:pb-5 sm:pt-24 md:pb-6 md:pt-28"
     >
       {/* The animated contour background and its pointer trail exist only here. They draw nothing while the loader
           covers them or once the next section has covered the hero. */}
@@ -335,7 +345,7 @@ export function Hero() {
           <SocialRail locale={locale} label={t("hero.social")} />
         </div>
 
-        <div className="hero-name-fit">
+        <div className="hero-name-fit px-(--inset)">
           <h1
             id={titleId}
             aria-label="Enzo Yoshida"

@@ -1,17 +1,8 @@
 import { useSyncExternalStore } from "react"
+import { isMotionReduced, subscribeMotion } from "@/lib/motion"
 
-const QUERY = "(prefers-reduced-motion: reduce)"
-
-function subscribe(callback: () => void) {
-  const query = window.matchMedia(QUERY)
-  query.addEventListener("change", callback)
-  return () => query.removeEventListener("change", callback)
-}
-
-function getSnapshot() {
-  return window.matchMedia(QUERY).matches
-}
-
+// True when the visitor asked for less motion: in the system settings or with the pause button in the header
+// (see lib/motion.ts). The server render assumes full motion; the first client render corrects it.
 export function useReducedMotion(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, () => false)
+  return useSyncExternalStore(subscribeMotion, isMotionReduced, () => false)
 }

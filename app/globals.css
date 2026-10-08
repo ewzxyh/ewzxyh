@@ -52,6 +52,11 @@
 }
 
 :root {
+  /* Where the two fixed guide lines sit (main::before/::after) and the padding of every section. */
+  --gutter: clamp(1.25rem, 3vw, 4rem);
+  /* Inner margin of content that is not inside a bordered box, so text never touches the guide lines. */
+  --inset: clamp(1.25rem, 2.4vw, 2.5rem);
+
   --background: oklch(0.970 0.001 106);
   --foreground: oklch(0.216 0.006 56);
   --card: oklch(0.923 0.003 49);
@@ -63,7 +68,8 @@
   --secondary: oklch(0.923 0.003 49);
   --secondary-foreground: oklch(0.216 0.006 56);
   --muted: oklch(0.923 0.003 49);
-  --muted-foreground: oklch(0.553 0.013 58);
+  /* 5.5:1 on the background and 4.8:1 on cards (WCAG 1.4.3 asks for 4.5:1). */
+  --muted-foreground: oklch(0.5 0.013 58);
   --accent: oklch(0.216 0.006 56);
   --accent-foreground: oklch(0.970 0.001 106);
   --destructive: oklch(0.55 0.2 25);
@@ -132,8 +138,20 @@
   }
   html,
   body {
-    @apply bg-background text-foreground overflow-x-hidden;
+    /* clip, not hidden: hidden would turn the body into a scroll container and break position: sticky. */
+    @apply bg-background text-foreground overflow-x-clip;
     max-width: 100vw;
+  }
+
+  /* Keyboard and in-page jumps stop below the fixed header (WCAG 2.4.11, focus not obscured). */
+  html {
+    scroll-padding-top: 6rem;
+  }
+
+  /* One clear focus ring for every control reached by keyboard: the text color, 2px, offset from the element. */
+  :focus-visible {
+    outline: 2px solid var(--foreground);
+    outline-offset: 2px;
   }
   /* Interactive elements - cursor pointer */
   button,
@@ -307,6 +325,19 @@ html.lenis body {
   animation: typewriter 2s steps(40) forwards;
 }
 
+/* Animations that loop forever (status dots, the blinking cursor, the hero name flicker) stand still when motion is
+   reduced: by the system setting until the visitor chooses otherwise, or by the pause button in the header
+   (html[data-motion], see lib/motion.ts). WCAG 2.2.2 and 2.3.3. */
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) :is(.animate-ping, .animate-pulse, .animate-flicker, .animate-glow-pulse, .animate-scan-line) {
+    animation: none;
+  }
+}
+
+html[data-motion="reduce"] :is(.animate-ping, .animate-pulse, .animate-flicker, .animate-glow-pulse, .animate-scan-line) {
+  animation: none;
+}
+
 /* Cyberpunk Utilities */
 .cyber-glow {
   text-shadow: 0 0 10px var(--glow), 0 0 20px var(--glow), 0 0 40px var(--glow);
@@ -390,6 +421,18 @@ html.lenis body {
 @media (min-width: 768px) {
   .hero-name {
     font-size: min(calc(100cqw / 8.62), 27svh);
+  }
+}
+
+/* Featured projects: full-width cards that stick below the header and stack (components/portfolio/projects.tsx keeps
+   STACK_TOP_REM in sync with these values). */
+.project-stack {
+  --stack-top: 4.75rem;
+}
+
+@media (min-width: 768px) {
+  .project-stack {
+    --stack-top: 6rem;
   }
 }
 

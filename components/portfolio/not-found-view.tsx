@@ -20,7 +20,7 @@ export function NotFoundView() {
   const isDark = mounted && resolvedTheme === "dark"
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6">
+    <main id="content" tabIndex={-1} className="min-h-screen flex flex-col items-center justify-center px-6 focus-visible:outline-none">
       <HeaderActions />
       <div className="max-w-md w-full text-center">
         {mounted && animationData && (
