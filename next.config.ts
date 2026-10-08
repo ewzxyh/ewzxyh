@@ -1,4 +1,5 @@
 import type { NextConfig } from "next"
+import { PHASE_DEVELOPMENT_SERVER } from "next/constants"
 
 const isTurbopack = process.argv.includes("--turbopack") || process.env.TURBOPACK === "1"
 const isWindows = process.platform === "win32"
@@ -16,11 +17,13 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactCompiler: true,
   experimental: {
+    // `next dev` and `next build` remind about new stable releases (the default only reminds about security fixes).
+    agentUpgrade: "latest",
     // One root layout per language (app/(pt) and app/en) leaves no single layout to build the 404 from, so the 404 is
     // rendered by app/global-not-found.tsx, which has its own <html>.
     globalNotFound: true,
+    // The dev cache is on by default since 16.1; the build cache (default since 16.3) stays off on Windows.
     turbopackFileSystemCacheForBuild: !isWindows,
-    turbopackFileSystemCacheForDev: true,
     turbopackLocalPostcssConfig: true,
     turbopackMemoryEviction: "full",
     ...(isTurbopack ? { turbopackRustReactCompiler: true } : {}),
@@ -66,4 +69,13 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+// Development only: drop unreachable work from Turbopack's memory and disk cache during long `next dev` sessions, and
+// compile client-side dynamic imports (toggles, bat overlay, Lottie, fluid engine, sounds) when first requested.
+// Production builds keep the stable path. The phase is how Next.js tells them apart, also after a config restart.
+export default function config(phase: string): NextConfig {
+  if (phase !== PHASE_DEVELOPMENT_SERVER) return nextConfig
+  return {
+    ...nextConfig,
+    experimental: { ...nextConfig.experimental, turbopackGc: true },
+  }
+}
