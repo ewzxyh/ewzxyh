@@ -1,8 +1,9 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { createContext, use, useEffect, useState, type ReactNode } from "react"
 import { useMounted } from "@/hooks/use-mounted"
-import { htmlLangs, localePaths, pageTitle } from "./site"
+import { htmlLangs, isHomePath, pageTitle, pathInLocale } from "./site"
 import { translations, type Locale, type TranslationKey } from "./translations"
 
 export type { Locale, TranslationKey }
@@ -49,18 +50,17 @@ function storedLocale(): Locale | null {
   return value === "pt-BR" || value === "en-US" ? value : null
 }
 
-const isHomePath = (pathname: string) => Object.values(localePaths).includes(pathname)
-
-// Both home pages render the same tree, so switching language does not navigate: it swaps the text and rewrites the
-// address bar, which keeps the page, the animations and the scroll position. A reload or a shared link then opens
-// the language that was on screen (each language has its own server-rendered page). Other pages (the 404) keep
-// their address.
+// Both language versions of a page render the same tree (the home pages, each project page), so switching language
+// does not navigate: it swaps the text and rewrites the address bar, which keeps the page, the animations and the
+// scroll position. A reload or a shared link then opens the language that was on screen (each language has its own
+// server-rendered page). Pages without a counterpart (the 404) keep their address. Project pages update their own
+// title (see components/portfolio/case-study).
 function showLanguageInAddressBar(locale: Locale) {
   const { pathname, search, hash } = window.location
-  const target = localePaths[locale]
-  if (!isHomePath(pathname) || pathname === target) return
+  const target = pathInLocale(pathname, locale)
+  if (!target || pathname === target) return
   window.history.replaceState(null, "", `${target}${search}${hash}`)
-  document.title = pageTitle(locale)
+  if (isHomePath(pathname)) document.title = pageTitle(locale)
 }
 
 interface I18nContextType {
@@ -94,6 +94,13 @@ export function I18nProvider({
   useEffect(() => {
     document.documentElement.lang = htmlLangs[locale]
   }, [locale])
+
+  // The rewrite replaces the current history entry only, so going back (or following a link inside the same
+  // language tree) lands on an address of the page's own language: the address follows the language on screen again.
+  const pathname = usePathname()
+  useEffect(() => {
+    if (choice && pathname) showLanguageInAddressBar(choice)
+  }, [choice, pathname])
 
   function setLocale(newLocale: Locale) {
     if (newLocale === locale) return

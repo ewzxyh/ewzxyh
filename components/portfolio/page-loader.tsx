@@ -2,9 +2,11 @@
 
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { atAmiga } from "@/lib/fonts";
+import { isHomePath } from "@/lib/site";
 import { useLoading } from "./loading-context";
 
 gsap.registerPlugin(MorphSVGPlugin);
@@ -152,6 +154,9 @@ const counterColumns: CounterColumn[] = [
 
 export function PageLoader() {
 	const reducedMotion = useReducedMotion();
+	// A project page opened directly (a shared link, a search result) gets the short replay of the intro: the visitor
+	// came for the project, the full intro belongs to the home page.
+	const openedOnHome = useRef(isHomePath(usePathname()));
 	const [showLogoScreen, setShowLogoScreen] = useState(true);
 	const [ascii, setAscii] = useState<AsciiArt | null>(null);
 	const { setLoadingComplete, setAlmostComplete, setRevealing } = useLoading();
@@ -192,7 +197,7 @@ export function PageLoader() {
 	useEffect(() => {
 		if (!containerRef.current) return;
 
-		const quick = !reducedMotion && hasSeenIntro();
+		const quick = !reducedMotion && (hasSeenIntro() || !openedOnHome.current);
 		const speed = quick ? QUICK_REPLAY_SPEED : 1;
 		const minScreenMs = MIN_LOGO_SCREEN_MS / speed;
 		const startedAt = performance.now();

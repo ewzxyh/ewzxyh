@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { pathInLocale } from "./lib/site"
 
-// Where "/" opens. Portuguese lives at "/" and English at "/en"; both are plain, server-rendered pages that every
-// crawler can fetch. Only people are ever sent from one to the other, never crawlers, link-preview fetchers or tools:
-// they always get the page they asked for, so what search engines index and what social cards show is predictable.
+// Where "/" (and each Portuguese project page) opens. Portuguese lives at "/" and "/projetos/<slug>", English at "/en"
+// and "/en/projects/<slug>"; all are plain, server-rendered pages that every crawler can fetch. Only people are ever
+// sent from one to the other, never crawlers, link-preview fetchers or tools: they always get the page they asked for,
+// so what search engines index and what social cards show is predictable.
 // (Locale redirects in a proxy are the pattern of https://nextjs.org/docs/app/guides/internationalization.)
 
 const LOCALE_COOKIE = "locale-choice"
@@ -29,8 +31,11 @@ export function proxy(request: NextRequest) {
   const wantsEnglish = choice ? choice === "en-US" : isForeign(request)
   if (!wantsEnglish) return NextResponse.next()
 
+  const englishPath = pathInLocale(request.nextUrl.pathname, "en-US")
+  if (!englishPath) return NextResponse.next()
+
   const target = request.nextUrl.clone()
-  target.pathname = "/en"
+  target.pathname = englishPath
   const response = NextResponse.redirect(target, 307)
   response.headers.set("Cache-Control", "private, no-store")
   response.headers.set("Vary", "Cookie")
@@ -38,5 +43,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/"],
+  matcher: ["/", "/projetos/:slug"],
 }

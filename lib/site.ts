@@ -48,6 +48,27 @@ export function pageUrl(locale: SiteLocale) {
   return `${siteUrl}${localePaths[locale]}`
 }
 
+// One page per project and language: /projetos/grapnel and /en/projects/grapnel.
+export const projectBasePaths: Record<SiteLocale, string> = { "pt-BR": "/projetos", "en-US": "/en/projects" }
+
+export function projectPath(locale: SiteLocale, slug: string) {
+  return `${projectBasePaths[locale]}/${slug}`
+}
+
+const projectPathPattern = /^\/(?:projetos|en\/projects)\/([a-z0-9-]+)\/?$/
+
+// The same page in another language: what the language switch, hreflang and proxy.ts use. Pages without a
+// counterpart (the 404) return null and keep their address.
+export function pathInLocale(pathname: string, locale: SiteLocale): string | null {
+  if (Object.values(localePaths).includes(pathname)) return localePaths[locale]
+  const project = pathname.match(projectPathPattern)
+  return project ? projectPath(locale, project[1]) : null
+}
+
+export function isHomePath(pathname: string) {
+  return Object.values(localePaths).includes(pathname)
+}
+
 export function localeFromPath(pathname: string): SiteLocale {
   return pathname === "/en" || pathname.startsWith("/en/") ? "en-US" : "pt-BR"
 }
@@ -60,11 +81,12 @@ export function pageDescription(locale: SiteLocale) {
   return locale === "en-US" ? siteDescriptionEn : siteDescription
 }
 
-// Every language version of the page, plus the one search engines should pick when nothing matches the visitor.
-export function alternateLanguages(): Record<string, string> {
+// Every language version of a page, plus the one search engines should pick when nothing matches the visitor.
+// Defaults to the home page; project pages pass their own path builder.
+export function alternateLanguages(pathFor: (locale: SiteLocale) => string = (locale) => localePaths[locale]): Record<string, string> {
   return {
-    "pt-BR": localePaths["pt-BR"],
-    en: localePaths["en-US"],
-    "x-default": localePaths["en-US"],
+    "pt-BR": pathFor("pt-BR"),
+    en: pathFor("en-US"),
+    "x-default": pathFor("en-US"),
   }
 }

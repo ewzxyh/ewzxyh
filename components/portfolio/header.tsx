@@ -7,11 +7,13 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { CaseIcon, FolderKanbanIcon, LetterIcon, UserIcon, type Icon } from "@/components/ui/icons"
 import dynamic from "next/dynamic"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Logo } from "./logo"
 import { LanguageToggle } from "./language-toggle"
 import { useLoading } from "./loading-context"
 import { onIdle } from "@/lib/idle"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
+import { isHomePath, localePaths } from "@/lib/site"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin)
 
@@ -49,7 +51,19 @@ const navItems: NavItemConfig[] = [
 ]
 
 export function Header() {
-  const { t, isTransitioning } = useI18n()
+  const { t, locale, isTransitioning } = useI18n()
+  // On the home page the menu scrolls to its sections; elsewhere (project pages) it links to them.
+  const onHome = isHomePath(usePathname())
+  const homeHref = localePaths[locale]
+  const sectionHref = (id: string) => (onHome ? `#${id}` : `${homeHref}#${id}`)
+  const handleNavClick = (event: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (!onHome) {
+      setIsMenuOpen(false)
+      return
+    }
+    event.preventDefault()
+    scrollToSection(id)
+  }
   const headerRef = useRef<HTMLElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const navItemsRef = useRef<(HTMLAnchorElement | null)[]>([])
@@ -205,25 +219,26 @@ export function Header() {
 
         {/* Main header bar */}
         <div className="px-2 sm:px-3 md:px-5 py-1.5 sm:py-2 flex items-center justify-between gap-2">
-          <Link href="/" className="block flex-shrink-0" aria-label="Enzo Yoshida - página inicial">
+          <Link
+            href={homeHref}
+            className="block flex-shrink-0"
+            aria-label={locale === "en-US" ? "Enzo Yoshida - home page" : "Enzo Yoshida - página inicial"}
+          >
             <Logo className="h-6 sm:h-6 md:h-8 w-auto" />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <a
+              <Link
                 key={item.id}
-                href={`#${item.id}`}
-                onClick={(event) => {
-                  event.preventDefault()
-                  scrollToSection(item.id)
-                }}
+                href={sectionHref(item.id)}
+                onClick={(event) => handleNavClick(event, item.id)}
                 className="group flex items-center gap-2 px-2.5 py-2 text-sm text-muted-foreground xl:px-3.5 hover:text-foreground transition-colors duration-200"
               >
                 <item.icon className="size-[18px]" />
                 <span className="tracking-wide">{t(item.labelKey)}</span>
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -283,14 +298,11 @@ export function Header() {
         >
           <nav className="px-3 py-4 flex flex-col">
             {navItems.map((item, index) => (
-              <a
+              <Link
                 key={item.id}
                 ref={(el) => { navItemsRef.current[index] = el }}
-                href={`#${item.id}`}
-                onClick={(event) => {
-                  event.preventDefault()
-                  scrollToSection(item.id)
-                }}
+                href={sectionHref(item.id)}
+                onClick={(event) => handleNavClick(event, item.id)}
                 className={`group relative w-full text-left py-3 sm:py-4 overflow-hidden transition-all duration-300 hover:pl-4 active:scale-[0.98] ${index < navItems.length - 1 ? "border-b border-border/30" : ""}`}
               >
                 <div className="flex items-center justify-between">
@@ -302,7 +314,7 @@ export function Header() {
 
                 {/* Hover line indicator */}
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-foreground transition-all duration-300 group-hover:w-full" />
-              </a>
+              </Link>
             ))}
 
             {/* Mobile Open to Work Badge */}

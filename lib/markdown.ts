@@ -3,6 +3,7 @@
 // Every sentence here comes from the same data the page renders (lib/translations.ts and lib/profile.ts), so the
 // markdown twins (/index.md, /about.md, ...), /llms.txt and /llms-full.txt can never drift from the site.
 
+import { caseStudySlugs, getCaseStudy } from "./case-studies"
 import {
   certificates,
   education,
@@ -22,6 +23,7 @@ import {
   handle,
   pageUrl,
   personName,
+  projectPath,
   siteDescription,
   siteDescriptionEn,
   siteLastModified,
@@ -94,6 +96,7 @@ const text = {
     certificates: "Certificados",
     credential: "credencial",
     link: "Link",
+    caseStudy: "Estudo de caso",
     projectsTitle: "Projetos em destaque",
     contact: "Contato",
     faq: "Perguntas frequentes",
@@ -135,6 +138,7 @@ const text = {
     certificates: "Certificates",
     credential: "credential",
     link: "Link",
+    caseStudy: "Case study",
     projectsTitle: "Featured projects",
     contact: "Contact",
     faq: "Frequently asked questions",
@@ -270,6 +274,7 @@ function projectsSection(locale: Locale, level: number) {
   const t = text[locale]
   const items = projects.map((project) => {
     const access = project.url ? `**${t.link}:** ${project.url}` : project.note ? `*${localize(project.note, locale)}*` : ""
+    const caseStudy = getCaseStudy(project.id) ? `**${t.caseStudy}:** ${siteUrl}${projectPath(locale, project.id)}` : ""
     return [
       h(level + 1, localize(project.title, locale)),
       "",
@@ -279,6 +284,7 @@ function projectsSection(locale: Locale, level: number) {
       "",
       `**${t.tags}:** ${project.tags.map((tag) => localize(tag, locale)).join(", ")}`,
       ...(access ? ["", access] : []),
+      ...(caseStudy ? ["", caseStudy] : []),
       "",
     ].join("\n")
   })
@@ -471,7 +477,7 @@ export function renderLlmsTxt() {
     "",
     `> ${personName} (${siteName}, @${handle}) is a Brazilian Product Engineer and the founder of ${brandName}. He builds MVPs, SaaS products, dashboards, integrations and operational automations with Next.js. Português: Product Engineer e desenvolvedor full-stack, fundador da ${brandName}, com 5+ anos criando MVPs, SaaS, dashboards, integrações e automações sob medida com Next.js.`,
     "",
-    "This site is a bilingual (pt-BR and en) one-page portfolio, one URL per language. The Markdown pages below contain the same content as the HTML pages, one topic per file, in both languages.",
+    "This site is a bilingual (pt-BR and en) portfolio: a one-page home per language, plus a case-study page per project. The Markdown pages below contain the same content as the home pages, one topic per file, in both languages.",
     "",
     `- Canonical URLs for citations: ${pageUrl("en-US")} (English), ${pageUrl("pt-BR")} (Português)`,
     `- Content language: en and pt-BR. Last updated: ${siteLastModified}.`,
@@ -482,7 +488,20 @@ export function renderLlmsTxt() {
     `- [Portfolio, English (HTML)](${pageUrl("en-US")}): the interactive one-page site in English`,
     `- [Portfolio, Português (HTML)](${pageUrl("pt-BR")}): the same page in Brazilian Portuguese`,
     "",
+    "## Case studies (HTML)",
+    "",
+    "One page per project: the problem, what Enzo did, features, engineering decisions and screenshots. English link first, then Portuguese.",
+    "",
   ]
+  for (const slug of caseStudySlugs) {
+    const study = getCaseStudy(slug)
+    const project = projects.find((item) => item.id === slug)
+    if (!study || !project) continue
+    lines.push(
+      `- [${localize(project.title, "en-US")}](${siteUrl}${projectPath("en-US", slug)}) ([pt-BR](${siteUrl}${projectPath("pt-BR", slug)})): ${localize(study.summary, "en-US")}`,
+    )
+  }
+  lines.push("")
 
   for (const locale of docLocales) {
     const heading = locale === "pt-BR" ? "Markdown pages: Português (pt-BR)" : "Markdown pages: English (en-US)"

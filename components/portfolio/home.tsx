@@ -5,6 +5,7 @@ import { Experience } from "@/components/portfolio/experience"
 import { Projects } from "@/components/portfolio/projects"
 import { Contact } from "@/components/portfolio/contact"
 import { Footer } from "@/components/portfolio/footer"
+import { HashScroll } from "@/components/portfolio/hash-scroll"
 import { Header } from "@/components/portfolio/header"
 import { LateralPinIndicator } from "@/components/portfolio/lateral-pin-indicator"
 import type { SiteLocale } from "@/lib/site"
@@ -17,6 +18,7 @@ export function Home({ locale }: { locale: SiteLocale }) {
     <>
       <script type="application/ld+json">{JSON.stringify(getProfileJsonLd(locale)).replace(/</g, "\\u003c")}</script>
       <LateralPinIndicator />
+      <HashScroll />
       <main className="relative z-10 min-h-screen overflow-x-hidden before:pointer-events-none before:fixed before:inset-y-0 before:left-[clamp(1.25rem,3vw,4rem)] before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-[clamp(1.25rem,3vw,4rem)] after:z-30 after:w-px after:bg-border/70">
         <Header />
         <Hero />

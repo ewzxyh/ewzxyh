@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
   },
   turbopack: {},
   images: {
+    // The project screenshots are large photos of interfaces: AVIF first (much smaller), WebP for the rest.
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",

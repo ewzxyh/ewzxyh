@@ -1,17 +1,21 @@
 "use client"
 
+import { usePathname } from "next/navigation"
 import { GithubIcon, InstagramIcon, LetterIcon, LinkedinIcon, WhatsappIcon, XIcon } from "@/components/ui/icons"
 import { atAmiga } from "@/lib/fonts"
 import { useI18n } from "@/lib/i18n"
-import { htmlLangs, localePaths, socialProfiles } from "@/lib/site"
+import { htmlLangs, localePaths, pathInLocale, socialProfiles } from "@/lib/site"
 import { useMounted } from "@/hooks/use-mounted"
 
 export function Footer() {
   const { t, locale, setLocale } = useI18n()
   const mounted = useMounted()
+  const pathname = usePathname()
   const currentYear = mounted ? new Date().getFullYear() : 2026
 
   const otherLocale = locale === "en-US" ? "pt-BR" : "en-US"
+  // The same page in the other language (the home pages, each project page).
+  const otherLanguageHref = pathInLocale(pathname, otherLocale) ?? localePaths[otherLocale]
 
   const socialLinks = [
     { icon: GithubIcon, href: socialProfiles.github, label: "GitHub" },
@@ -37,7 +41,7 @@ export function Footer() {
               {currentYear} Ewzxyh Labs. {t("footer.rights")}
             </p>
             <a
-              href={localePaths[otherLocale]}
+              href={otherLanguageHref}
               hrefLang={htmlLangs[otherLocale]}
               lang={htmlLangs[otherLocale]}
               onClick={(event) => {
