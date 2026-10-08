@@ -68,8 +68,10 @@ export function linkProgram(gl: GL, vertexSource: string, fragmentSource: string
   })
 }
 
-// Biome mistakes WebGL's `use*` methods for React hooks when they follow an early return, hence the wrapper.
+// Biome mistakes WebGL's `use*` methods for React hooks when they follow an early return, hence the wrapper. Since
+// Biome 2.5 it flags the call inside a plain function too, so the wrapper also carries the suppression.
 export function bindProgram(gl: GL, program: WebGLProgram) {
+  // biome-ignore lint/correctness/useHookAtTopLevel: WebGLRenderingContext.useProgram is not a React hook.
   gl.useProgram(program)
 }
 
