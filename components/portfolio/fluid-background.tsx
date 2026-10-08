@@ -8,8 +8,8 @@ import { openGpuGate } from "@/lib/image-fx"
 
 interface FluidBackgroundProps {
   className?: string
-  // The shader is created and compiled right away but nothing is drawn until this is false
-  // (e.g. while the page loader still covers the background).
+  // The shader is created and compiled right away but nothing is drawn, and the pointer is not tracked, while this is
+  // true (the page loader still covers it, or the section it lives in is off screen).
   paused?: boolean
 }
 
@@ -47,6 +47,7 @@ export function FluidBackground({ className = "", paused = false }: FluidBackgro
   return (
     <div
       ref={containerRef}
+      aria-hidden="true"
       className={`overflow-hidden pointer-events-none bg-stone-100 dark:bg-stone-950 ${className}`}
       style={{
         isolation: "isolate",

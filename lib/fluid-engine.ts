@@ -393,7 +393,7 @@ export interface FluidEngineCallbacks {
 // inside a worker (OffscreenCanvas) or on the main thread.
 export interface FluidEngine {
   resize: (width: number, height: number, deviceRatio: number) => void
-  // x/y are viewport-relative (0..1, y growing downwards); timeMs is on this thread's performance.now() clock.
+  // x/y are relative to the canvas (0..1, y growing downwards); timeMs is on this thread's performance.now() clock.
   pointer: (x: number, y: number, timeMs: number) => void
   setDark: (dark: boolean) => void
   setPaused: (paused: boolean) => void

@@ -133,7 +133,15 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
 
   if (!startWorker()) startOnMainThread()
 
+  // The pointer is expressed relative to the container (the hero), not the window. Its box is read again only after
+  // a scroll or resize, so a burst of pointer events costs a single layout read.
+  let box: DOMRect | null = null
+  const invalidateBox = () => {
+    box = null
+  }
+
   const resizeObserver = new ResizeObserver(() => {
+    invalidateBox()
     target?.resize(container.clientWidth, container.clientHeight, window.devicePixelRatio || 1)
   })
   resizeObserver.observe(container)
@@ -145,23 +153,42 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
   document.addEventListener("visibilitychange", handleVisibility)
 
   const handlePointerMove = (event: PointerEvent) => {
-    target?.pointer(event.clientX / window.innerWidth, event.clientY / window.innerHeight, event.timeStamp)
+    box ??= container.getBoundingClientRect()
+    if (box.width === 0 || box.height === 0) return
+    target?.pointer((event.clientX - box.left) / box.width, (event.clientY - box.top) / box.height, event.timeStamp)
   }
-  if (finePointer && !options.reducedMotion) {
-    document.addEventListener("pointermove", handlePointerMove, { passive: true })
+
+  // Pointer tracking only runs while the background is drawn: a paused background ignores the mouse entirely.
+  const tracksPointer = finePointer && !options.reducedMotion
+  let listening = false
+  function setListening(next: boolean) {
+    if (!tracksPointer || next === listening) return
+    listening = next
+    invalidateBox()
+    if (next) {
+      document.addEventListener("pointermove", handlePointerMove, { passive: true })
+      window.addEventListener("scroll", invalidateBox, { passive: true })
+      window.addEventListener("resize", invalidateBox)
+    } else {
+      document.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("scroll", invalidateBox)
+      window.removeEventListener("resize", invalidateBox)
+    }
   }
+  setListening(!paused)
 
   return {
     setPaused(next) {
       paused = next
       target?.paused(next)
+      setListening(!next)
     },
     dispose() {
       disposed = true
+      setListening(false)
       resizeObserver.disconnect()
       themeObserver.disconnect()
       document.removeEventListener("visibilitychange", handleVisibility)
-      document.removeEventListener("pointermove", handlePointerMove)
       target?.dispose()
       worker?.terminate()
       canvas.remove()

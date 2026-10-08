@@ -3,7 +3,6 @@
 import { useEffect, type ReactNode } from "react"
 import { ThemeProvider } from "next-themes"
 import { CustomCursor } from "@/components/portfolio/custom-cursor"
-import { FluidBackground } from "@/components/portfolio/fluid-background"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { PageLoader } from "@/components/portfolio/page-loader"
 import { SmoothScroll } from "@/components/smooth-scroll"
@@ -67,11 +66,7 @@ function InteractionSounds() {
   return null
 }
 
-function DeferredBackground() {
-  const { isAlmostComplete } = useLoading()
-  return <FluidBackground className="fixed inset-0 z-0 pointer-events-none" paused={!isAlmostComplete} />
-}
-
+// The animated WebGL background (and its pointer trail) lives in the home hero only, see components/portfolio/hero.tsx.
 export function Providers({
   locale,
   restoreChoice,
@@ -86,7 +81,6 @@ export function Providers({
       <I18nProvider locale={locale} restoreChoice={restoreChoice}>
         <LoadingProvider>
           <InteractionSounds />
-          <DeferredBackground />
           <PageLoader />
           <CustomCursor />
           <SmoothScroll>{children}</SmoothScroll>

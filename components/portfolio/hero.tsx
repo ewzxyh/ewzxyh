@@ -16,12 +16,13 @@ import {
   type Icon as SolarIcon,
 } from "@/components/ui/icons"
 import { getImageProps } from "next/image"
-import { useEffect, useId, useRef } from "react"
+import { type RefObject, useEffect, useId, useRef, useState } from "react"
 import type { IconType } from "react-icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { atAmiga } from "@/lib/fonts"
 import { useI18n } from "@/lib/i18n"
 import { socialProfiles } from "@/lib/site"
+import { FluidBackground } from "./fluid-background"
 import { useLoading } from "./loading-context"
 import { ShaderImage } from "./shader-image"
 
@@ -87,6 +88,41 @@ function SocialRail({ locale, label }: { locale: "pt-BR" | "en-US"; label: strin
   )
 }
 
+// Whether any part of the hero can still be seen. The next section slides over the pinned hero (pinSpacing: false),
+// so the hero is gone exactly when the scroll position passes its own height; on small screens, where it is not
+// pinned, it scrolls out at the same point. The height is cached, so scrolling never reads layout.
+function useStillOnScreen(ref: RefObject<HTMLElement | null>) {
+  const [onScreen, setOnScreen] = useState(true)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    let height = element.offsetHeight
+    let current = true
+    const update = () => {
+      const next = window.scrollY < height
+      if (next === current) return
+      current = next
+      setOnScreen(next)
+    }
+    const resizeObserver = new ResizeObserver(() => {
+      height = element.offsetHeight
+      update()
+    })
+
+    resizeObserver.observe(element)
+    window.addEventListener("scroll", update, { passive: true })
+    update()
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener("scroll", update)
+    }
+  }, [ref])
+
+  return onScreen
+}
+
 function scrollToSection(sectionId: string) {
   gsap.to(window, {
     duration: 1,
@@ -97,11 +133,12 @@ function scrollToSection(sectionId: string) {
 
 export function Hero() {
   const { t, locale } = useI18n()
-  const { isRevealing } = useLoading()
+  const { isRevealing, isAlmostComplete } = useLoading()
   const reducedMotion = useReducedMotion()
   const titleId = useId()
   const sectionRef = useRef<HTMLElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
+  const onScreen = useStillOnScreen(sectionRef)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -204,6 +241,10 @@ export function Hero() {
       aria-labelledby={titleId}
       className="relative isolate flex min-h-svh flex-col overflow-hidden px-[clamp(1.25rem,3vw,4rem)] pb-4 pt-20 sm:pb-5 sm:pt-24 md:pb-6 md:pt-28"
     >
+      {/* The animated contour background and its pointer trail exist only here. They draw nothing while the loader
+          covers them or once the next section has covered the hero. */}
+      <FluidBackground className="absolute inset-0 -z-10" paused={!isAlmostComplete || !onScreen} />
+
       <div ref={contentRef} className="relative z-10 flex flex-1 flex-col gap-3 sm:gap-4">
         <div className="relative grid flex-1 grid-cols-1 grid-rows-[minmax(13rem,1fr)_auto_auto] border border-border md:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)_3.75rem] md:grid-rows-1">
           {CORNERS.map((position) => (
