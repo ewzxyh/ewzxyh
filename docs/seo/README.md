@@ -19,8 +19,9 @@ documentação das plataformas e estudos públicos na mesma data; onde algo não
    `humans.txt`, `.well-known/security.txt`.
 4. **Metadados completos** (Open Graph, X, ícones, canonical) e **JSON-LD** (WebSite, ProfilePage, Person, Organization)
    com as redes `@ewzxyh`.
-5. **Imagens:** o site já escolhe sozinho as imagens novas quando elas aparecerem em `public/og/` (briefs em
-   `docs/metadata-images`).
+5. **Imagens:** as quatro imagens de compartilhamento (Open Graph 1200×630 e cartão do X 1600×800, em português e em
+   inglês) já estão em `public/og/` e o site as usa sozinho, com o hash do arquivo na URL (briefs em
+   `docs/metadata-images`). O WebP escuro antigo só volta se um desses arquivos for apagado.
 
 ## 2. URLs
 

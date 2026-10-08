@@ -39,8 +39,9 @@ dias).
 | `/` (pt-BR) | `ewzxyh-og-light.png` | `ewzxyh-x-light.png`, senão a própria imagem Open Graph |
 | `/en` (inglês) | `ewzxyh-og-light-en.png`, senão `ewzxyh-og-light.png` | `ewzxyh-x-light-en.png`, senão a imagem Open Graph do inglês |
 
-Enquanto nenhum arquivo novo existir, continua valendo `enzo-yoshida-product-engineer.webp` (escuro, com o monograma
-EY). Os formatos aceitos são PNG e JPG (PNG é o recomendado para texto nítido).
+Os quatro arquivos já estão em `public/og/` (conferidos em 2026-10-06: PNG sRGB opaco, 1200×630 e 1600×800, abaixo de
+200 KB). O `enzo-yoshida-product-engineer.webp` (escuro, com o monograma EY) ficou só como reserva: volta a valer se
+algum arquivo for apagado. Os formatos aceitos são PNG e JPG (PNG é o recomendado para texto nítido).
 
 ## Fluxo recomendado
 
