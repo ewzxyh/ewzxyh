@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { siteDescription, siteName } from "@/lib/site"
 
-// Colours match the site's own dark theme, which is what opens first (see viewport in layout.tsx).
+// Colours match the site's own light theme, which is what opens first (see viewport in lib/seo.ts).
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: "/",
@@ -13,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     lang: "pt-BR",
     dir: "ltr",
-    background_color: "#0c0a09",
-    theme_color: "#0c0a09",
+    background_color: "#f5f5f4",
+    theme_color: "#f5f5f4",
     categories: ["business", "productivity"],
     icons: [
       { src: "/favicon/android-chrome-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },

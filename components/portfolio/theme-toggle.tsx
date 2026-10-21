@@ -15,8 +15,8 @@ export function ThemeToggle() {
   const mounted = useMounted()
   const buttonRef = useRef<HTMLButtonElement>(null)
 
-  // The theme is only known after mounting; until then the server render (dark, the default theme) is kept.
-  const isDark = !mounted || resolvedTheme !== "light"
+  // The theme is only known after mounting; until then the server render (light, the default theme) is kept.
+  const isDark = mounted && resolvedTheme === "dark"
   const label = isDark ? t("theme.toLight") : t("theme.toDark")
 
   const toggleTheme = async () => {

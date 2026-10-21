@@ -1,6 +1,8 @@
 import { Hero } from "@/components/portfolio/hero"
-import { Services } from "@/components/portfolio/services"
+// Hidden for a cleaner page for now; uncomment here and below to bring the services strip back.
+// import { Services } from "@/components/portfolio/services"
 import { About } from "@/components/portfolio/about"
+import { Skills } from "@/components/portfolio/skills"
 import { Experience } from "@/components/portfolio/experience"
 import { Projects } from "@/components/portfolio/projects"
 import { Contact } from "@/components/portfolio/contact"
@@ -22,8 +24,9 @@ export function Home({ locale }: { locale: SiteLocale }) {
       <main className="relative z-10 min-h-screen overflow-x-clip before:pointer-events-none before:fixed before:inset-y-0 before:left-(--gutter) before:z-30 before:w-px before:bg-border/70 after:pointer-events-none after:fixed after:inset-y-0 after:right-(--gutter) after:z-30 after:w-px after:bg-border/70">
         <Header />
         <Hero />
-        <Services />
+        {/* <Services /> */}
         <About />
+        <Skills />
         <Experience />
         <Projects />
         <Contact />

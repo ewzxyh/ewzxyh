@@ -1,52 +1,32 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
-import { atAmiga } from "@/lib/fonts"
 import {
-  type EducationItem,
-  education,
-  educationStatusKeys,
+  // Education is hidden for now (see the commented block at the end of the section).
+  // type EducationItem,
+  // education,
+  // educationStatusKeys,
   employmentTypes,
   type ExperienceItem,
   formatPeriod,
   localize,
   type Project,
   projects,
-  type TagId,
-  tagDescription,
-  tagLabel,
   workExperience,
   workplaces,
 } from "@/lib/profile"
 import { projectPath } from "@/lib/site"
-import { ArrowRightIcon, SquareAcademicCapIcon } from "@/components/ui/icons"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { ArrowRightIcon /* , SquareAcademicCapIcon */ } from "@/components/ui/icons"
 import { SectionHeading } from "./section-heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const EXPERIENCE_SECTION_ID = "experience"
-const VISIBLE_TAGS = 6
-
-// A chip with its one-line explanation on hover or focus.
-function TagChip({ tag }: { tag: TagId }) {
-  const { locale } = useI18n()
-  return (
-    <Tooltip>
-      <TooltipTrigger className="skill-tag inline-flex min-h-6 cursor-help items-center border border-border px-2 text-[11px] text-foreground/80 transition-colors duration-200 hover:border-foreground/50 hover:bg-foreground/5 sm:text-xs">
-        {tagLabel(tag, locale)}
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-[220px] text-center">
-        <p className="text-xs">{tagDescription(tag, locale)}</p>
-      </TooltipContent>
-    </Tooltip>
-  )
-}
 
 function Logo({ src, alt, size, invertInDark }: { src?: string; alt: string; size: "sm" | "md"; invertInDark?: boolean }) {
   const box = size === "md" ? "size-10 sm:size-12" : "size-8"
@@ -60,18 +40,15 @@ function Logo({ src, alt, size, invertInDark }: { src?: string; alt: string; siz
   )
 }
 
-// One role on the timeline: who, what, when, the story, the stack, and the project pages it produced.
+// One role on the timeline: who, what, when, the story and the project pages it produced. The stack lives in Skills.
 function WorkItem({ job }: { job: ExperienceItem }) {
   const { t, locale } = useI18n()
-  const [showAllTags, setShowAllTags] = useState(false)
-  const tags = showAllTags ? job.tags : job.tags.slice(0, VISIBLE_TAGS)
-  const hidden = job.tags.length - tags.length
   const related = (job.projects ?? [])
     .map((id) => projects.find((project) => project.id === id))
     .filter((project): project is Project => Boolean(project))
 
   return (
-    <li className="experience-item relative pb-12 pl-9 last:pb-0 sm:pl-12">
+    <li className="experience-item relative pb-14 pl-9 last:pb-0 sm:pb-16 sm:pl-12">
       <span
         aria-hidden="true"
         className="timeline-dot absolute top-3 left-0 grid size-[15px] place-items-center border border-border bg-background"
@@ -89,28 +66,12 @@ function WorkItem({ job }: { job: ExperienceItem }) {
             </p>
           </div>
         </div>
-        <p className="shrink-0 pl-[3.25rem] font-mono text-xs whitespace-nowrap text-foreground/80 sm:pt-1 sm:pl-0 sm:text-sm">
+        <p className="shrink-0 pl-[3.25rem] font-mono text-xs whitespace-nowrap text-muted-foreground tabular-nums sm:pt-1.5 sm:pl-0 sm:text-sm">
           {formatPeriod(job.period, locale)}
         </p>
       </div>
 
-      <p className="mt-4 max-w-[72ch] text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{t(job.descKey)}</p>
-
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {tags.map((tag) => (
-          <TagChip key={tag} tag={tag} />
-        ))}
-        {hidden > 0 && (
-          <button
-            type="button"
-            onClick={() => setShowAllTags(true)}
-            className="inline-flex min-h-6 items-center border border-dashed border-border px-2 text-[11px] text-muted-foreground transition-colors hover:border-foreground/50 hover:text-foreground sm:text-xs"
-          >
-            +{hidden}
-            <span className="sr-only"> {t("experience.moreTags")}</span>
-          </button>
-        )}
-      </div>
+      <p className="mt-5 max-w-[65ch] text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{t(job.descKey)}</p>
 
       {related.length > 0 && (
         <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
@@ -132,6 +93,7 @@ function WorkItem({ job }: { job: ExperienceItem }) {
   )
 }
 
+/* Education card, hidden with the education block below.
 function EducationCard({ item }: { item: EducationItem }) {
   const { t, locale } = useI18n()
   const status = item.status ? t(educationStatusKeys[item.status]) : null
@@ -149,6 +111,7 @@ function EducationCard({ item }: { item: EducationItem }) {
     </article>
   )
 }
+*/
 
 export function Experience() {
   const { t } = useI18n()
@@ -197,6 +160,7 @@ export function Experience() {
         },
       })
 
+      // Finds nothing while the education block is hidden.
       for (const grid of gsap.utils.toArray<HTMLElement>(".credential-grid")) {
         gsap.from(grid.querySelectorAll(".credential-card"), {
           opacity: 0,
@@ -216,25 +180,13 @@ export function Experience() {
     return () => ctx.revert()
   }, [])
 
-  const firstYear = Math.min(...workExperience.map((job) => Number(job.period.from.slice(0, 4))))
-
   return (
     <section ref={sectionRef} id={EXPERIENCE_SECTION_ID} className="relative z-10 border-t border-border">
       <div className="mx-auto w-full max-w-screen-2xl px-(--gutter) py-16 sm:py-24 md:py-32">
         {/* Work */}
         <div className="grid gap-12 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[0] = el }} className="lg:sticky lg:top-28 lg:self-start">
-            <SectionHeading index="02" label={t("experience.label")} title={t("experience.work")} description={t("experience.description")} />
-            <dl className="mt-8 grid grid-cols-2 border-t border-l border-border">
-              <div className="border-r border-b border-border p-4 sm:p-5">
-                <dd className={`${atAmiga.className} text-[clamp(2rem,4vw,3rem)] leading-none`}>{workExperience.length}</dd>
-                <dt className="mt-2 text-xs text-muted-foreground sm:text-sm">{t("experience.roles")}</dt>
-              </div>
-              <div className="border-r border-b border-border p-4 sm:p-5">
-                <dd className={`${atAmiga.className} text-[clamp(2rem,4vw,3rem)] leading-none`}>{firstYear}</dd>
-                <dt className="mt-2 text-xs text-muted-foreground sm:text-sm">{t("experience.since")}</dt>
-              </div>
-            </dl>
+            <SectionHeading index="03" label={t("experience.label")} title={t("experience.work")} description={t("experience.description")} />
           </div>
 
           <ol ref={workRef} className="relative">
@@ -245,7 +197,8 @@ export function Experience() {
           </ol>
         </div>
 
-        {/* Higher education, lined up with the work grid */}
+        {/* Higher education, lined up with the work grid. Hidden for a cleaner page for now: uncomment this block,
+            EducationCard above and the education imports at the top to bring it back.
         <div className="mt-20 grid gap-6 px-(--inset) sm:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[1] = el }} className="flex items-center gap-2 lg:items-start lg:pt-5">
             <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
@@ -257,6 +210,7 @@ export function Experience() {
             ))}
           </div>
         </div>
+        */}
       </div>
     </section>
   )

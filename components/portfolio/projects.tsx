@@ -284,7 +284,7 @@ export function Projects() {
     <section ref={sectionRef} id={PROJECTS_SECTION_ID} className="relative z-10 border-t border-border py-16 sm:py-24 md:py-32">
       <div className="w-full px-(--gutter)">
         <div ref={headerRef} className="mb-10 flex flex-col justify-between gap-6 px-(--inset) sm:mb-16 lg:flex-row lg:items-end">
-          <SectionHeading index="03" label={t("projects.label")} title={t("projects.title")} description={t("projects.description")} />
+          <SectionHeading index="04" label={t("projects.label")} title={t("projects.title")} description={t("projects.description")} />
           <p className="font-mono text-xs text-muted-foreground lg:text-sm">
             {pad(projects.length)} {t("projects.count")}
           </p>

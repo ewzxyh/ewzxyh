@@ -78,7 +78,7 @@ export function Providers({
   children: ReactNode
 }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
       <I18nProvider locale={locale} restoreChoice={restoreChoice}>
         <SkipLink />
         <LoadingProvider>

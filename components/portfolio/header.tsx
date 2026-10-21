@@ -226,8 +226,8 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Open to Work Badge - Desktop only */}
-            <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-2 border border-green-500/30 bg-green-500/10 text-green-800 dark:text-green-400">
+            {/* Open to Work Badge - Desktop only, as tall as the square buttons next to it */}
+            <div className="hidden lg:flex h-9 sm:h-10 items-center gap-1.5 px-3 border border-green-500/30 bg-green-500/10 text-green-800 dark:text-green-400">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />

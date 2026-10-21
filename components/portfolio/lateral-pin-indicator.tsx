@@ -15,8 +15,9 @@ interface Section {
 
 const sections: Section[] = [
   { id: "about-content", labelKey: "nav.about", number: "01" },
-  { id: "experience", labelKey: "nav.experience", number: "02" },
-  { id: "projects", labelKey: "nav.projects", number: "03" },
+  { id: "skills", labelKey: "skills.title", number: "02" },
+  { id: "experience", labelKey: "nav.experience", number: "03" },
+  { id: "projects", labelKey: "nav.projects", number: "04" },
 ]
 
 function scrollToSection(sectionId: string) {
@@ -78,12 +79,14 @@ export function LateralPinIndicator() {
     window.addEventListener("resize", requestUpdate)
 
     const ctx = gsap.context(() => {
-      // Individual section triggers
+      // Individual section triggers. They are created before the gallery's pin (this component mounts first), so they
+      // refresh after it: otherwise they miss the pin spacer and light up one section early.
       sections.forEach((section, index) => {
         ScrollTrigger.create({
           trigger: `#${section.id}`,
           start: "top 60%",
           end: "bottom 40%",
+          refreshPriority: -1,
           onEnter: () => setActiveIndex(index),
           onEnterBack: () => setActiveIndex(index),
         })
