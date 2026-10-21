@@ -69,11 +69,22 @@ function firstExisting(candidates: string[]) {
 // The English page prefers its own files and otherwise shows the Portuguese ones.
 const languageChain: Record<SiteLocale, SiteLocale[]> = { "pt-BR": ["pt-BR"], "en-US": ["en-US", "pt-BR"] }
 
-export function getShareImages(locale: SiteLocale): { og: ShareImage; x: ShareImage } {
+function pickShareImages(locale: SiteLocale): { og: ShareImage; x: ShareImage } {
   const alt = `${siteName} (${personName}) - Product Engineer, Ewzxyh Labs`
   const chain = languageChain[locale]
   const og = describe(firstExisting(chain.flatMap((language) => ogCandidates[language])) ?? currentImage, alt)
   // X takes the native 2:1 card of a language when there is one, then that language's Open Graph image.
   const xPath = firstExisting(chain.flatMap((language) => [...xCandidates[language], ...ogCandidates[language]]))
   return { og, x: xPath ? describe(xPath, alt) : og }
+}
+
+// Read once when the module loads, never during a render: under `next dev`, watchpack's graceful-fs patch makes every
+// readFileSync call Date.now(), which Next.js rejects inside a prerender (blocking-prerender-current-time).
+const shareImages: Record<SiteLocale, { og: ShareImage; x: ShareImage }> = {
+  "pt-BR": pickShareImages("pt-BR"),
+  "en-US": pickShareImages("en-US"),
+}
+
+export function getShareImages(locale: SiteLocale) {
+  return shareImages[locale]
 }
