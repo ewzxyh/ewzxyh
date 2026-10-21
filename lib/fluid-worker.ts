@@ -25,8 +25,7 @@ scope.onmessage = (event: MessageEvent<Message>) => {
         onReveal: () => scope.postMessage({ type: "revealed" }),
         onFail: () => scope.postMessage({ type: "failed" }),
       })
-      // "ready" = the GL context exists, i.e. the GPU is awake (the page waits for this before creating its own).
-      scope.postMessage({ type: engine ? "ready" : "failed" })
+      if (!engine) scope.postMessage({ type: "failed" })
       break
     case "resize":
       engine?.resize(message.width, message.height, message.deviceRatio)

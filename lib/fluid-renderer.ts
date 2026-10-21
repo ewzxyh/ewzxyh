@@ -8,8 +8,6 @@ export interface FluidController {
 interface FluidOptions {
   reducedMotion: boolean
   paused: boolean
-  // Called once the first GL context has been created (or definitively failed): the GPU is awake by then.
-  onContextReady?: () => void
 }
 
 // Whatever runs the engine (a worker or the main thread) is driven through the same small surface.
@@ -69,7 +67,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
     void import("./fluid-engine").then(({ createFluidEngine }) => {
       if (disposed) return
       const engine = createFluidEngine(canvas, engineOptions(), { onReveal: reveal, onFail: () => {} })
-      options.onContextReady?.()
       if (!engine) return
       target = {
         resize: engine.resize,
@@ -107,7 +104,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
       const offscreen = canvas.transferControlToOffscreen()
       instance.onmessage = (event: MessageEvent<{ type: string }>) => {
         if (event.data.type === "revealed") reveal()
-        else if (event.data.type === "ready") options.onContextReady?.()
         else if (event.data.type === "failed") fallBackToMainThread()
       }
       instance.onerror = fallBackToMainThread

@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { createFluid, type FluidController } from "@/lib/fluid-renderer"
 import { onIdle } from "@/lib/idle"
-import { openGpuGate } from "@/lib/image-fx"
 
 interface FluidBackgroundProps {
   className?: string
@@ -28,7 +27,6 @@ export function FluidBackground({ className = "", paused = false }: FluidBackgro
       controllerRef.current = createFluid(container, {
         reducedMotion,
         paused: pausedRef.current,
-        onContextReady: openGpuGate,
       })
     }, 1500)
 

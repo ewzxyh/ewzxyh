@@ -3,11 +3,11 @@
 import { gsap } from "gsap"
 import { Flip } from "gsap/dist/Flip"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
+import Image from "next/image"
 import { useEffect, useRef } from "react"
 import { useI18n } from "@/lib/i18n"
 import { CanvasParticles } from "./canvas-particles"
 import { ScrollFillLogo } from "./scroll-fill-logo"
-import { ShaderImage } from "./shader-image"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
@@ -128,7 +128,14 @@ export function BentoGallery() {
                 </div>
               </div>
             ) : (
-              <ShaderImage src={image.src} alt={image.alt} position={image.position} grayscale />
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                sizes="(max-width: 768px) 70vw, 45vw"
+                className="object-cover"
+                style={{ objectPosition: `center ${image.position}`, filter: "grayscale(1)" }}
+              />
             )}
           </div>
         ))}

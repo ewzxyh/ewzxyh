@@ -24,7 +24,6 @@ import { useI18n } from "@/lib/i18n"
 import { socialProfiles } from "@/lib/site"
 import { FluidBackground } from "./fluid-background"
 import { useLoading } from "./loading-context"
-import { ShaderImage } from "./shader-image"
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, ScrambleTextPlugin)
 
@@ -269,19 +268,16 @@ export function Hero() {
             data-hero-reveal=""
             className="hero-portrait relative min-h-0 overflow-hidden border-b border-border opacity-0 md:border-b-0 md:border-r"
           >
-            {/* The hover distortion on the portrait is a fifth of the gallery's: a hint of movement, the face stays intact. */}
-            <ShaderImage grayscale hoverOnly grain={0.035} position="22%" maxPixels={3e6} intensity={0.2}>
-              <picture>
-                <source media="(min-width: 768px)" srcSet={desktopSrcSet} sizes="52vw" />
-                <img
-                  {...imageProps}
-                  srcSet={mobileSrcSet}
-                  alt={imageProps.alt}
-                  className="object-cover"
-                  style={{ ...imageProps.style, objectPosition: "50% 22%", filter: "grayscale(1)" }}
-                />
-              </picture>
-            </ShaderImage>
+            <picture>
+              <source media="(min-width: 768px)" srcSet={desktopSrcSet} sizes="52vw" />
+              <img
+                {...imageProps}
+                srcSet={mobileSrcSet}
+                alt={imageProps.alt}
+                className="object-cover"
+                style={{ ...imageProps.style, objectPosition: "50% 22%", filter: "grayscale(1)" }}
+              />
+            </picture>
           </figure>
 
           <div className="@container relative z-20 flex flex-col justify-between gap-6 px-5 py-5 sm:px-6 sm:py-6 md:gap-4 md:px-[clamp(1.5rem,3vw,3.5rem)] md:py-[clamp(1.25rem,3vw,3rem)]">
