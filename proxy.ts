@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
+import { countryOf } from "./lib/geo-ip"
 import { pathInLocale } from "./lib/site"
 
 // Where "/" (and each Portuguese project page) opens. Portuguese lives at "/" and "/projetos/<slug>", English at "/en"
@@ -15,10 +16,11 @@ const PORTUGUESE_SPEAKING_COUNTRIES = ["BR", "PT"]
 const AUTOMATED =
   /bot|crawl|spider|slurp|yeti|seznam|archiver|facebookexternalhit|meta-external|whatsapp|telegram|slack|discord|linkedin|twitter|embedly|pinterest|preview|lighthouse|headless|curl|wget|python|axios|undici|node-fetch|okhttp|go-http|chatgpt|oai-|claude|perplexity|anthropic|mistral|cohere|google|yandex|baidu/i
 
-// Visitors from outside Brazil and Portugal get English. The country comes from the host (x-vercel-ip-country); a
-// request without it (local development, other hosts) is never treated as foreign.
+// Visitors from outside Brazil and Portugal get English. The country comes from the visitor's IP, which Caddy sends as
+// X-Real-IP (overwriting any value the client sent); a request without it or with an unknown IP (local development) is
+// never treated as foreign.
 function isForeign(request: NextRequest) {
-  const country = request.headers.get("x-vercel-ip-country")?.toUpperCase()
+  const country = countryOf(request.headers.get("x-real-ip"))
   return Boolean(country) && !PORTUGUESE_SPEAKING_COUNTRIES.includes(country as string)
 }
 

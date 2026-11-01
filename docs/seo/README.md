@@ -54,10 +54,10 @@ Todo o texto vem de uma única fonte: `lib/translations.ts` (copy), `lib/profile
   ou compartilhar a URL abre o idioma que estava na tela. O link do rodapé é um `<a href>` de verdade, para
   crawlers sem JavaScript acharem a outra versão.
 - `proxy.ts` decide para onde `/` abre. **Visitantes estrangeiros recebem `/en`**: sem escolha salva, quem chega de um
-  país que não é Brasil nem Portugal (header `x-vercel-ip-country`) é redirecionado (307, sem cache, mantendo `?utm`),
+  país que não é Brasil nem Portugal (GeoIP local do IP em `X-Real-IP`, base DB-IP Country Lite baixada no build) é redirecionado (307, sem cache, mantendo `?utm`),
   seja qual for o idioma do navegador. Quem escolheu um idioma no botão (cookie `locale-choice`) sempre recebe o que
   escolheu. Só **pessoas** são redirecionadas: crawlers, previews de link e ferramentas (o regex de user agents está no
-  arquivo) recebem sempre a página pedida, para o Google e os cartões sociais verem as duas versões. Sem o header de país
+  arquivo) recebem sempre a página pedida, para o Google e os cartões sociais verem as duas versões. Sem IP conhecido
   (dev local), nada redireciona.
 - **Um layout raiz por idioma**, como a documentação do Next prevê
   ([layout raiz](https://nextjs.org/docs/app/api-reference/file-conventions/layout#root-layout) e
@@ -221,9 +221,9 @@ curl -s https://ewzxyh.com/robots.txt
 # <html lang> do HTML estático de cada idioma
 curl -s https://ewzxyh.com/    | grep -o '<html[^>]*>'
 curl -s https://ewzxyh.com/en  | grep -o '<html[^>]*>'
-# visitante estrangeiro: deve responder 307 para /en (em produção a Vercel já envia o header de país;
+# visitante estrangeiro: deve responder 307 para /en (em produção o Caddy envia o IP real em X-Real-IP;
 # fora dela o header é simulado, e a localhost ele só vale com o dev server ou o build rodando)
-curl -sI -A "Mozilla/5.0 Chrome/130" -H "x-vercel-ip-country: US" http://localhost:3000/
+curl -sI -A "Mozilla/5.0 Chrome/130" -H "X-Real-IP: 8.8.8.8" http://localhost:3000/
 ```
 
 Ferramentas: Teste de Resultados Rich do Google (https://search.google.com/test/rich-results), validador do schema.org

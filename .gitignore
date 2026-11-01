@@ -8,3 +8,6 @@ node_modules/
 # serwist
 public/sw.js
 public/serwist-*.js
+
+# DB-IP Country Lite, downloaded at build (scripts/fetch-geoip.mjs)
+/.geoip/
