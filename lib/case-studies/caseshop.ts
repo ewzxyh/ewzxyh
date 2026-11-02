@@ -16,7 +16,7 @@ export const caseshop: CaseStudy = {
   period: "2025",
   status: tx("No ar", "Live"),
   platform: "Landing page",
-  links: [{ label: "caseshop.vercel.app", url: "https://caseshop.vercel.app" }],
+  links: [{ label: "caseshop.ewzxyh.com", url: "https://caseshop.ewzxyh.com" }],
   stack: ["Next.js", "Tailwind CSS", "Radix UI", "Vercel"],
   challenge: [
     tx(

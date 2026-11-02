@@ -417,7 +417,7 @@ export const projects: Project[] = [
         "Landing page for CaseShop, a platform that turns WhatsApp into a store: catalog, AI-assisted service, cart recovery, campaigns and analytics.",
     },
     tags: ["Next.js", "Chat commerce", "Landing page"],
-    url: "https://caseshop.vercel.app",
+    url: "https://caseshop.ewzxyh.com",
   },
   {
     id: "lorenzpay",
@@ -431,7 +431,7 @@ export const projects: Project[] = [
         "Landing page for LorenzPay, a PIX collection service that takes over the defense against MED 2.0 disputes. It explains the flow step by step, answers common questions and leads to WhatsApp contact.",
     },
     tags: ["Next.js", "PIX", "Landing page"],
-    url: "https://lorenzpay.vercel.app",
+    url: "https://lorenzpay.ewzxyh.com",
   },
 ]
 

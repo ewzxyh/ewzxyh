@@ -15,7 +15,7 @@ export const lorenzpay: CaseStudy = {
   client: "LorenzPay",
   status: tx("No ar", "Live"),
   platform: "Landing page",
-  links: [{ label: "lorenzpay.vercel.app", url: "https://lorenzpay.vercel.app" }],
+  links: [{ label: "lorenzpay.ewzxyh.com", url: "https://lorenzpay.ewzxyh.com" }],
   stack: ["Next.js", "Tailwind CSS", "Radix UI", "JSON-LD", "Vercel"],
   challenge: [
     tx(
