@@ -39,7 +39,7 @@ function Logo({ src, alt, size }: { src?: string; alt: string; size: "sm" | "md"
   )
 }
 
-// One role on the timeline: who, what, when, the story and the project pages it produced. The stack lives in Skills.
+// One role on the timeline: who, what, when and the project pages it produced. The story is on those pages.
 function WorkItem({ job }: { job: ExperienceItem }) {
   const { t, locale } = useI18n()
   const related = (job.projects ?? [])
@@ -47,7 +47,7 @@ function WorkItem({ job }: { job: ExperienceItem }) {
     .filter((project): project is Project => Boolean(project))
 
   return (
-    <li className="experience-item relative pb-14 pl-9 last:pb-0 sm:pb-16 sm:pl-12">
+    <li className="experience-item relative pb-10 pl-9 last:pb-0 sm:pb-12 sm:pl-12">
       <span
         aria-hidden="true"
         className="timeline-dot absolute top-3 left-0 grid size-4 place-items-center border border-border bg-background"
@@ -70,11 +70,8 @@ function WorkItem({ job }: { job: ExperienceItem }) {
         </p>
       </div>
 
-      <p className="mt-5 max-w-[65ch] text-base leading-relaxed text-pretty text-muted-foreground">{t(job.descKey)}</p>
-
       {related.length > 0 && (
-        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-          <span className="text-xs text-muted-foreground">{t("experience.related")}</span>
+        <div className="mt-3 flex flex-wrap items-center gap-x-5 pl-13 text-sm sm:pl-16">
           {related.map((project) => (
             <Link
               key={project.id}
@@ -185,7 +182,7 @@ export function Experience() {
         {/* Work */}
         <div className="grid gap-12 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[0] = el }} className="lg:sticky lg:top-28 lg:self-start">
-            <SectionHeading title={t("experience.work")} description={t("experience.description")} />
+            <SectionHeading title={t("experience.work")} />
           </div>
 
           <ol ref={workRef} className="relative">

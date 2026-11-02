@@ -23,9 +23,7 @@ export const translations = {
     // Hero
     "hero.role": "Product Engineer · Ewzxyh Labs",
     "hero.subtitle": "Transformo ideias e operações manuais em produtos digitais prontos para operar.",
-    "hero.years": "anos de experiência",
-    "hero.projects": "projetos",
-    "hero.operators": "lotéricas atendidas",
+    "hero.work": "Projetos recentes",
     "hero.cta": "Ver projetos",
     "hero.contactCta": "Falar comigo",
     "hero.imageAlt": "Retrato de Enzo Yoshida, Product Engineer",
@@ -105,14 +103,14 @@ export const translations = {
     "skills.bash.desc": "Scripts e automação no terminal",
     "skills.n8n.desc": "Fluxos e integrações low-code",
     "skills.chatcase.desc": "Chatbots e automação no WhatsApp",
-    "skills.openai.desc": "Modelos GPT em produtos e automações",
-    "skills.claude.desc": "Programação assistida e agentes",
+    "skills.jev.desc": "Decisões tipadas da TypeSafe AI: sim ou não, escolha e nota",
+    "skills.openai.desc": "Codex e modelos GPT em produtos e automações",
+    "skills.claude.desc": "Claude Code: programação assistida e agentes",
+    "skills.openrouter.desc": "Um ponto de acesso para vários modelos de IA",
     "skills.gemini.desc": "Modelos do Google em automações",
 
     // Experience Section Headers
     "experience.work": "Experiência",
-    "experience.description": "Meu estúdio, os produtos que fundei e os times que lidero, em paralelo desde 2021.",
-    "experience.related": "Projetos",
     "experience.education": "Formação",
     "experience.status.inProgress": "Em andamento",
     "experience.status.upcoming": "Em breve",
@@ -145,7 +143,6 @@ export const translations = {
 
     // Projects
     "projects.title": "Projetos em destaque",
-    "projects.count": "projetos",
     "projects.more": "Outros projetos",
     "projects.live": "No ar",
     "projects.description": "Produtos próprios, de sócios e de clientes: o que cada um faz e qual foi a minha parte.",
@@ -181,10 +178,8 @@ export const translations = {
     "contact.title": "Um projeto ou uma vaga? Fale direto comigo.",
     "contact.description": "O contato é direto comigo, em português ou inglês, para projetos da Ewzxyh Labs ou oportunidades profissionais.",
     "contact.clients.title": "Tenho um projeto",
-    "contact.clients.desc": "Conte o que precisa lançar, integrar ou automatizar: MVP, SaaS, painel, API ou automação.",
     "contact.clients.cta": "Conversar no WhatsApp",
     "contact.hiring.title": "Estou contratando",
-    "contact.hiring.desc": "Product Engineer com Next.js, do banco de dados à interface. Disponível para trabalho remoto.",
     "contact.hiring.cta": "Ver perfil no LinkedIn",
     "contact.email": "Enviar e-mail",
 
@@ -218,9 +213,7 @@ export const translations = {
     // Hero
     "hero.role": "Product Engineer · Ewzxyh Labs",
     "hero.subtitle": "I turn ideas and manual operations into digital products ready to run.",
-    "hero.years": "years of experience",
-    "hero.projects": "projects",
-    "hero.operators": "lottery retailers served",
+    "hero.work": "Recent work",
     "hero.cta": "View projects",
     "hero.contactCta": "Let's talk",
     "hero.imageAlt": "Portrait of Enzo Yoshida, Product Engineer",
@@ -298,14 +291,14 @@ export const translations = {
     "skills.bash.desc": "Terminal scripts and automation",
     "skills.n8n.desc": "Low-code workflows and integrations",
     "skills.chatcase.desc": "WhatsApp chatbots and automation",
-    "skills.openai.desc": "GPT models in products and automations",
-    "skills.claude.desc": "Assisted coding and agents",
+    "skills.jev.desc": "TypeSafe AI's typed decisions: yes or no, choice and score",
+    "skills.openai.desc": "Codex and GPT models in products and automations",
+    "skills.claude.desc": "Claude Code: assisted coding and agents",
+    "skills.openrouter.desc": "One endpoint for many AI models",
     "skills.gemini.desc": "Google models in automations",
 
     // Experience Section Headers
     "experience.work": "Work Experience",
-    "experience.description": "My studio, the products I founded and the teams I lead, running in parallel since 2021.",
-    "experience.related": "Projects",
     "experience.education": "Education",
     "experience.status.inProgress": "In progress",
     "experience.status.upcoming": "Upcoming",
@@ -338,7 +331,6 @@ export const translations = {
 
     // Projects
     "projects.title": "Featured projects",
-    "projects.count": "projects",
     "projects.more": "More projects",
     "projects.live": "Live",
     "projects.description": "My own products, partner products and client work: what each one does and what my part was.",
@@ -374,10 +366,8 @@ export const translations = {
     "contact.title": "A project or a role? Talk to me directly.",
     "contact.description": "You reach me directly, in Portuguese or English, about Ewzxyh Labs projects or professional opportunities.",
     "contact.clients.title": "I have a project",
-    "contact.clients.desc": "Tell me what you need to launch, integrate or automate: an MVP, SaaS, dashboard, API or automation.",
     "contact.clients.cta": "Chat on WhatsApp",
     "contact.hiring.title": "I'm hiring",
-    "contact.hiring.desc": "Product Engineer with Next.js, from the database to the interface. Available for remote work.",
     "contact.hiring.cta": "View LinkedIn profile",
     "contact.email": "Send an email",
 

@@ -25,6 +25,7 @@ function getReader() {
 export function countryOf(ip: string | null): string | null {
   if (!ip) return null
   try {
+    // ai-design-check-ignore-next-line locale-aware-case -- ISO 3166 country codes are ASCII, no locale applies
     return getReader()?.get(ip)?.country?.iso_code?.toUpperCase() ?? null
   } catch {
     // Not a valid IP: same as an unknown one.

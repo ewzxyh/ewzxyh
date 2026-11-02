@@ -1,6 +1,6 @@
 {
   "include": ["app", "components", "lib", "hooks"],
-  "ignore": ["components/stageshow/kit/**"],
+  "ignore": [],
   "properNouns": ["Enzo Yoshida", "Enzo Hideki Yoshida", "Ewzxyh Labs", "Grapnel", "LotoHub", "CasePay", "ChatCase", "CaseZap", "CaseShop", "LorenzPay", "SELOESGO"],
   "componentDirs": ["**/components/ui/**"],
   "rules": {},

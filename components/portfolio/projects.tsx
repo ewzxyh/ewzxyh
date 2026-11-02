@@ -14,14 +14,12 @@ import { useI18n } from "@/lib/i18n"
 import { localize, type Project, projectHost, projects } from "@/lib/profile"
 import { projectPath } from "@/lib/site"
 import { BrowserFrame, PhoneFrame } from "./case-study/frames"
-import { ProjectDemo, hasProjectDemo } from "./demos"
 import { SectionHeading } from "./section-heading"
 import { Heading } from "@/components/ui/heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const PROJECTS_SECTION_ID = "projects"
-const pad = (value: number) => String(value).padStart(2, "0")
 
 // The first projects in lib/profile.ts are the big stacked cards; the rest are a compact list under them, each still
 // with its case study.
@@ -47,8 +45,7 @@ function titleSize(title: string) {
   return "text-[clamp(1.9rem,3.9vw,3.5rem)]"
 }
 
-// The product: an animated demo of what it does, its real interface, or for an internal system the number that sums
-// it up.
+// The product: its real interface, or for an internal system the number that sums it up.
 function ProjectVisual({ project }: { project: Project }) {
   const { locale } = useI18n()
   const study = getCaseStudy(project.id)
@@ -56,12 +53,10 @@ function ProjectVisual({ project }: { project: Project }) {
   const phone = study?.media.mobile
   const title = localize(project.title, locale)
 
-  if (hasProjectDemo(project.id)) return <ProjectDemo id={project.id} />
-
   if (shot) {
     return (
       <div className="relative lg:pr-[9%] lg:pb-8">
-        <BrowserFrame address={project.url ? projectHost(project.url) : undefined}>
+        <BrowserFrame address={project.url ? new URL(project.url).hostname : undefined}>
           <div className="relative aspect-[16/10] overflow-hidden">
             <Image src={shot.src} alt="" fill sizes="(min-width: 1024px) 48vw, 100vw" className="project-shot object-cover object-top" />
           </div>
@@ -92,11 +87,6 @@ function ProjectVisual({ project }: { project: Project }) {
 // before it while that one recedes (the scrubbed part lives in Projects).
 function ProjectCard({ project, index, total }: { project: Project; index: number; total: number }) {
   const { t, locale } = useI18n()
-  const study = getCaseStudy(project.id)
-  const highlights = study?.highlights ?? []
-  // Without a screenshot or a demo, the first number is the picture and the list below starts at the second.
-  const pictured = Boolean(study?.media.desktop) || hasProjectDemo(project.id)
-  const stats = (pictured ? highlights : highlights.slice(1)).slice(0, 2)
   const title = localize(project.title, locale)
   const titleId = `project-${project.id}`
 
@@ -106,47 +96,23 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
         aria-labelledby={titleId}
         className="project-card group relative grid origin-top overflow-hidden border border-border bg-background lg:min-h-[min(calc(100svh-var(--stack-top)-20px),46rem)] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
       >
-        {/* A demo bleeds to the panel edges; a screenshot sits inside it. */}
-        <div
-          className={`relative flex flex-col overflow-hidden border-b border-border bg-card lg:order-2 lg:border-b-0 lg:border-l ${
-            hasProjectDemo(project.id) ? "justify-end pt-6" : "justify-center p-4 sm:p-6 lg:p-10"
-          }`}
-        >
+        <div className="relative flex flex-col justify-center overflow-hidden border-b border-border bg-card p-4 sm:p-6 lg:order-2 lg:border-b-0 lg:border-l lg:p-10">
           <ProjectVisual project={project} />
         </div>
 
-        {/* What it is, what came out of it, where to read more */}
+        {/* What it is and whose, the name, where to go next: the picture says the rest. */}
         <div className="flex flex-col gap-5 p-5 sm:gap-6 sm:p-8 lg:order-1 lg:p-12">
-          <p className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
-            <span className="flex min-w-0 items-center gap-3">
-              <span aria-hidden="true" className="size-2 shrink-0 bg-orange-500" />
-              {localize(project.kind, locale)} · {localize(project.context, locale)}
-            </span>
-            <span className="shrink-0 font-mono tabular-nums">
-              {pad(index + 1)} / {pad(total)}
-            </span>
+          <p className="flex min-w-0 items-center gap-3 text-sm text-muted-foreground">
+            <span aria-hidden="true" className="size-2 shrink-0 bg-orange-500" />
+            {localize(project.kind, locale)} · {localize(project.context, locale)}
           </p>
 
-          <div className="flex flex-1 flex-col justify-center gap-4 sm:gap-5">
+          <div className="flex flex-1 flex-col justify-center">
             {/* ai-design-check-ignore-next-line use-shared-looks -- the display face sized to the name, like the hero */}
             <h3 id={titleId} className={`${atAmiga.className} ${titleSize(title)} leading-[0.95] font-normal break-words uppercase`}>
               {title}
             </h3>
-            <p className="max-w-[52ch] text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">{localize(project.description, locale)}</p>
           </div>
-
-          {stats.length > 0 && (
-            <dl className="grid grid-cols-2 border-t border-border">
-              {stats.map((stat) => (
-                <div key={localize(stat.label, locale)} className="flex flex-col-reverse justify-end border-border pt-4 pr-4 odd:border-r even:pl-4">
-                  <dt className="mt-1 text-sm leading-snug text-pretty text-muted-foreground">{localize(stat.label, locale)}</dt>
-                  <dd className="text-xl font-semibold tracking-tight tabular-nums sm:text-2xl">{localize(stat.value, locale)}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          <p className="font-mono text-sm text-muted-foreground">{project.tags.map((tag) => localize(tag, locale)).join("  /  ")}</p>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             {/* The whole card opens the case study; the live link sits above that overlay. */}
@@ -166,7 +132,7 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
                 rel="noopener noreferrer"
                 className="group/link relative z-20 inline-flex min-h-11 min-w-0 items-center gap-1.5 font-mono text-sm text-muted-foreground underline-offset-4 transition-colors duration-200 hover:text-foreground hover:underline"
               >
-                <span className="truncate">{projectHost(project.url)}</span>
+                <span className="wrap-anywhere">{projectHost(project.url)}</span>
                 <span className="sr-only"> ({t("projects.newTab")})</span>
                 <ArrowRightUpIcon aria-hidden="true" strokeWidth={2} className="size-4 shrink-0" />
               </a>
@@ -183,6 +149,24 @@ function ProjectCard({ project, index, total }: { project: Project; index: numbe
   )
 }
 
+// A small preview of the live site; an internal system without one shows its headline number.
+function ProjectThumb({ project }: { project: Project }) {
+  const { locale } = useI18n()
+  const study = getCaseStudy(project.id)
+  const shot = study?.media.desktop
+  const stat = study?.highlights?.[0]
+
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden border border-border bg-card">
+      {shot ? (
+        <Image src={shot.src} alt="" fill sizes="(min-width: 640px) 8rem, 5rem" className="object-cover object-top" />
+      ) : (
+        stat && <span className={`${atAmiga.className} absolute inset-0 grid place-items-center text-sm`}>{localize(stat.value, locale)}</span>
+      )}
+    </div>
+  )
+}
+
 // The rest of the work, one line each: the whole row opens the case study.
 function OtherProjects() {
   const { t, locale } = useI18n()
@@ -193,24 +177,19 @@ function OtherProjects() {
         <Heading size="md">{t("projects.more")}</Heading>
       </div>
       <ul className="other-projects border-t border-border">
-        {others.map((project, index) => (
+        {others.map((project) => (
           <li
             key={project.id}
-            className="other-project group relative grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-x-4 border-b border-border px-(--inset) py-4 transition-colors duration-200 hover:bg-card sm:grid-cols-[3rem_minmax(0,1fr)_minmax(0,1fr)_auto] sm:py-5"
+            className="other-project group relative grid grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-x-4 border-b border-border px-(--inset) py-3 transition-colors duration-200 hover:bg-card sm:grid-cols-[8rem_minmax(0,1fr)_minmax(0,1fr)_auto] sm:gap-x-6 sm:py-4"
           >
-            <span className="font-mono text-xs text-muted-foreground tabular-nums">{pad(FEATURED_COUNT + index + 1)}</span>
-            <div className="min-w-0">
-              <Link
-                href={projectPath(locale, project.id)}
-                prefetch={false}
-                className={`${atAmiga.className} block text-xl leading-tight uppercase after:absolute after:inset-0 sm:text-2xl`}
-              >
-                {localize(project.title, locale)}
-              </Link>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {localize(project.kind, locale)} · {localize(project.context, locale)}
-              </p>
-            </div>
+            <ProjectThumb project={project} />
+            <Link
+              href={projectPath(locale, project.id)}
+              prefetch={false}
+              className={`${atAmiga.className} min-w-0 text-xl leading-tight uppercase after:absolute after:inset-0 sm:text-2xl`}
+            >
+              {localize(project.title, locale)}
+            </Link>
             <p className="hidden font-mono text-sm text-muted-foreground sm:block">
               {project.url ? projectHost(project.url) : project.note && localize(project.note, locale)}
             </p>
@@ -300,7 +279,7 @@ export function Projects() {
         opacity: 0,
         y: 30,
         duration: 0.6,
-        scrollTrigger: { trigger: headerRef.current, start: "top 85%", toggleActions: "play none none reverse" },
+        scrollTrigger: { trigger: headerRef.current, start: "top 95%", toggleActions: "play none none reverse" },
       })
 
       gsap.from(".other-project", {
@@ -358,13 +337,10 @@ export function Projects() {
   }, [reducedMotion])
 
   return (
-    <section ref={sectionRef} id={PROJECTS_SECTION_ID} className="relative z-20 border-t border-border bg-background py-16 sm:py-24 md:py-32">
+    <section ref={sectionRef} id={PROJECTS_SECTION_ID} className="relative z-20 border-t border-border bg-background pt-12 pb-16 sm:pt-16 sm:pb-24 md:pt-20 md:pb-32">
       <div className="w-full px-(--gutter)">
-        <div ref={headerRef} className="mb-10 flex flex-col justify-between gap-6 px-(--inset) sm:mb-16 lg:flex-row lg:items-end">
-          <SectionHeading title={t("projects.title")} description={t("projects.description")} />
-          <p className="font-mono text-sm text-muted-foreground">
-            {pad(projects.length)} {t("projects.count")}
-          </p>
+        <div ref={headerRef} className="mb-8 px-(--inset) sm:mb-12">
+          <SectionHeading title={t("projects.title")} />
         </div>
 
         <ol ref={listRef} aria-label={t("projects.title")} className="project-stack relative">

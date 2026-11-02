@@ -15,14 +15,17 @@ import {
   XIcon,
   type Icon as SolarIcon,
 } from "@/components/ui/icons"
-import { getImageProps } from "next/image"
+import Image, { getImageProps } from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { type RefObject, useEffect, useId, useRef, useState } from "react"
 import type { IconType } from "react-icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
+import { getCaseStudy } from "@/lib/case-studies"
 import { atAmiga } from "@/lib/fonts"
 import { useI18n } from "@/lib/i18n"
-import { socialProfiles } from "@/lib/site"
+import { localize, projects } from "@/lib/profile"
+import { projectPath, socialProfiles } from "@/lib/site"
 import { FluidBackground } from "./fluid-background"
 import { useLoading } from "./loading-context"
 
@@ -83,6 +86,34 @@ function SocialRail({ locale, label }: { locale: "pt-BR" | "en-US"; label: strin
         </a>
       ))}
     </nav>
+  )
+}
+
+// Three live products, each opening its case study: the work itself instead of numbers about it.
+const HERO_WORK = ["grapnel", "lotohub", "casepay"]
+
+function HeroWork({ label }: { label: string }) {
+  const { locale } = useI18n()
+
+  return (
+    <ul aria-label={label} className="hidden grid-cols-3 gap-3 md:[@media(min-height:720px)]:grid">
+      {HERO_WORK.map((id) => {
+        const project = projects.find((item) => item.id === id)
+        const shot = getCaseStudy(id)?.media.desktop
+        if (!project || !shot) return null
+        return (
+          <li key={id} data-hero-reveal="" className="hero-work opacity-0">
+            <Link
+              href={projectPath(locale, id)}
+              className="relative block aspect-[16/10] overflow-hidden border border-border bg-card transition-colors duration-200 ease-ui hover:border-foreground"
+            >
+              <Image src={shot.src} alt="" fill sizes="14vw" className="object-cover object-top" />
+              <span className="sr-only">{localize(project.title, locale)}</span>
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
@@ -186,7 +217,7 @@ export function Hero() {
         )
       })
       tl.fromTo(".hero-statement", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.4 }, "-=0.4")
-        .fromTo(".hero-stat", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.06 }, "-=0.25")
+        .fromTo(".hero-work", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.06 }, "-=0.25")
         .fromTo(".hero-cta", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, stagger: 0.07 }, "-=0.25")
         .fromTo(".hero-social", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.25, stagger: 0.05 }, "-=0.3")
         .fromTo(corners, { opacity: 0 }, { opacity: 0.5, duration: 0.3, stagger: 0.03 }, "-=0.3")
@@ -205,18 +236,13 @@ export function Hero() {
       if (section.offsetHeight <= window.innerHeight + 8) {
         ScrollTrigger.create({ trigger: section, start: "top top", end: "bottom top", pin: true, pinSpacing: false })
       }
-      // The next section slides over the pinned hero, so its content has to be gone before the two meet.
-      // These use absolute scroll positions: a trigger shared with the pin would be measured after its spacer.
-      const scrub = (fraction: number) => ({
-        start: 0,
-        end: () => section.offsetHeight * fraction,
-        scrub: true,
-        invalidateOnRefresh: true,
-      })
-      gsap.to(content, { yPercent: 10, ease: "none", scrollTrigger: scrub(0.45) })
-      gsap.to(content, { opacity: 0, ease: "none", scrollTrigger: scrub(0.2) })
+      // The next section slides over the pinned hero like a sheet. The hero stays in view under it and recedes
+      // (smaller, paler) for the whole way, so what is left of it is always on screen until the sheet covers it.
+      // Absolute scroll positions: a trigger shared with the pin would be measured after its spacer.
+      const cover = { start: 0, end: () => section.offsetHeight, scrub: true, invalidateOnRefresh: true }
+      gsap.to(content, { scale: 0.92, opacity: 0.4, ease: "none", scrollTrigger: cover })
       corners.forEach((corner, i) => {
-        gsap.to(corner, { y: (i % 2 === 0 ? -1 : 1) * 50, ease: "none", scrollTrigger: scrub(0.3) })
+        gsap.to(corner, { y: (i % 2 === 0 ? -1 : 1) * 50, ease: "none", scrollTrigger: cover })
       })
     })
     mm.add("(max-width: 767px), (max-height: 599px)", () => {
@@ -253,7 +279,7 @@ export function Hero() {
           covers them or once the next section has covered the hero. */}
       <FluidBackground className="absolute inset-0 -z-10" paused={!isAlmostComplete || !onScreen} />
 
-      <div ref={contentRef} className="relative z-10 flex flex-1 flex-col gap-3 sm:gap-4">
+      <div ref={contentRef} className="relative z-10 flex flex-1 origin-top flex-col gap-3 sm:gap-4">
         <div className="relative grid flex-1 grid-cols-1 grid-rows-[minmax(13rem,1fr)_auto_auto] border border-border md:grid-cols-[minmax(0,1.08fr)_minmax(0,1fr)_3.75rem] md:grid-rows-1">
           {CORNERS.map((position) => (
             <span
@@ -287,6 +313,7 @@ export function Hero() {
               <span className="flex items-center gap-2 text-xs leading-snug text-muted-foreground sm:text-sm">
                 <ProgrammingIcon className="size-4 shrink-0" aria-hidden="true" />
                 <span className="hero-chip-text min-w-0">{t("hero.role")}</span>
+                {/* ai-design-check-ignore-next-line pulse-for-live-only -- a terminal caret after the typed role */}
                 <span aria-hidden="true" className="h-3.5 w-1.5 shrink-0 animate-pulse bg-foreground" />
               </span>
             </div>
@@ -299,22 +326,7 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col gap-4 md:gap-5">
-              <dl className="hidden grid-cols-3 divide-x divide-border border-y border-border md:[@media(min-height:720px)]:grid">
-                {[
-                  { value: "5+", label: t("hero.years") },
-                  { value: "50+", label: t("hero.projects") },
-                  { value: "630+", label: t("hero.operators") },
-                ].map((stat) => (
-                  <div
-                    key={stat.value}
-                    data-hero-reveal=""
-                    className="hero-stat flex flex-col-reverse px-3 py-3 opacity-0 first:pl-0 last:pr-0 xl:px-4 xl:py-4"
-                  >
-                    <dt className="text-xs text-muted-foreground">{stat.label}</dt>
-                    <dd className="text-xl font-semibold tabular-nums xl:text-2xl">{stat.value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <HeroWork label={t("hero.work")} />
 
               <div className="grid grid-cols-1 gap-3 @[19rem]:grid-cols-2">
                 <Button size="lg" data-hero-reveal="" onClick={() => scrollToSection("projects")} className="hero-cta group opacity-0">

@@ -28,7 +28,6 @@ export function Contact() {
       key: "clients",
       icon: WhatsappIcon,
       title: t("contact.clients.title"),
-      description: t("contact.clients.desc"),
       action: { href: `https://wa.me/5562984268492?text=${whatsappMessage}`, label: t("contact.clients.cta") },
       email: projectMail,
     },
@@ -36,7 +35,6 @@ export function Contact() {
       key: "hiring",
       icon: LinkedinIcon,
       title: t("contact.hiring.title"),
-      description: t("contact.hiring.desc"),
       action: { href: linkedinUrl, label: t("contact.hiring.cta") },
       email: hiringMail,
     },
@@ -45,16 +43,15 @@ export function Contact() {
   return (
     <section id={CONTACT_SECTION_ID} className="relative z-10 border-t border-border bg-background py-16 sm:py-24 md:py-32">
       <div className="mx-auto w-full max-w-screen-2xl px-(--gutter)">
-        <SectionHeading title={t("contact.title")} description={t("contact.description")} className="mb-10 px-(--inset) sm:mb-14" />
+        <SectionHeading title={t("contact.title")} className="mb-10 px-(--inset) sm:mb-14" />
 
         <ul className="grid border border-border md:grid-cols-2">
-          {doors.map(({ key, icon: Icon, title, description, action, email }) => (
+          {doors.map(({ key, icon: Icon, title, action, email }) => (
             <li key={key} className="flex flex-col gap-6 border-b border-border p-6 last:border-b-0 sm:p-10 md:border-r md:border-b-0 md:last:border-r-0">
               <Icon aria-hidden="true" className="size-6 text-muted-foreground" />
-              <div className="flex-1">
-                <Heading size="lg">{title}</Heading>
-                <p className="mt-3 max-w-[46ch] text-base leading-relaxed text-pretty text-muted-foreground">{description}</p>
-              </div>
+              <Heading size="lg" className="flex-1">
+                {title}
+              </Heading>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <a href={action.href} target="_blank" rel="noopener noreferrer" className={buttonVariants({ size: "lg" })}>
                   {action.label}

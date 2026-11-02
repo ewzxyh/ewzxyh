@@ -508,10 +508,12 @@ export const skillCategories: SkillCategory[] = [
   {
     titleKey: "skills.ai",
     skills: [
+      { name: "Jev", icon: "typesafe", descriptionKey: "skills.jev.desc" },
+      { name: "OpenAI Codex", icon: "openai", descriptionKey: "skills.openai.desc" },
+      { name: "Claude Code", icon: "claude", descriptionKey: "skills.claude.desc" },
+      { name: "OpenRouter", icon: "openrouter", descriptionKey: "skills.openrouter.desc" },
       { name: "n8n", icon: "n8n", descriptionKey: "skills.n8n.desc" },
       { name: "ChatCase", icon: "chatcase", descriptionKey: "skills.chatcase.desc" },
-      { name: "OpenAI", icon: "openai", descriptionKey: "skills.openai.desc" },
-      { name: "Claude", icon: "claude", descriptionKey: "skills.claude.desc" },
       { name: "Gemini", icon: "gemini", descriptionKey: "skills.gemini.desc" },
     ],
   },

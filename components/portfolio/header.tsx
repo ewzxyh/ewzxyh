@@ -229,6 +229,7 @@ export function Header() {
             {/* Open to Work Badge - Desktop only, as tall as the square buttons next to it */}
             <div className="hidden lg:flex h-10 items-center gap-2 px-3 border border-green-500/30 bg-green-500/10 text-green-800">
               <span className="relative flex h-2.5 w-2.5">
+                {/* ai-design-check-ignore-next-line pulse-for-live-only -- availability is a live status */}
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
@@ -304,6 +305,7 @@ export function Header() {
             {/* Mobile Open to Work Badge */}
             <div className="lg:hidden flex items-center gap-2 pt-3">
               <span className="relative flex h-2.5 w-2.5">
+                {/* ai-design-check-ignore-next-line pulse-for-live-only -- availability is a live status */}
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>

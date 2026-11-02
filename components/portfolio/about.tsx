@@ -10,11 +10,7 @@ import { SectionHeading } from "./section-heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
-const highlightsData = [
-  { titleKey: "about.product", descKey: "about.product.desc" },
-  { titleKey: "about.design", descKey: "about.design.desc" },
-  { titleKey: "about.fullstack", descKey: "about.fullstack.desc" },
-] as const
+const highlightsData = ["about.product", "about.design", "about.fullstack"] as const
 
 const ABOUT_SECTION_ID = "about"
 const ABOUT_CONTENT_ID = "about-content"
@@ -122,15 +118,14 @@ export function About() {
               <DitherWave className="h-44 sm:h-60 lg:h-72" />
             </div>
 
-            {/* How Enzo works: three short statements in a row, the title above its line */}
-            <dl className="grid border-t border-border sm:grid-cols-3" aria-label={t("about.principles")}>
-              {highlightsData.map((item) => (
-                <div key={item.titleKey} className="highlight-card border-b border-border p-5 last:border-b-0 sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0">
-                  <dt className="text-lg font-medium">{t(item.titleKey)}</dt>
-                  <dd className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{t(item.descKey)}</dd>
-                </div>
+            {/* How Enzo works, in three words each */}
+            <ul className="grid border-t border-border sm:grid-cols-3" aria-label={t("about.principles")}>
+              {highlightsData.map((key) => (
+                <li key={key} className="highlight-card border-b border-border p-5 text-lg font-medium last:border-b-0 sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0">
+                  {t(key)}
+                </li>
               ))}
-            </dl>
+            </ul>
           </div>
         </div>
       </div>

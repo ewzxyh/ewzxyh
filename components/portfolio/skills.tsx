@@ -29,6 +29,8 @@ function getIconUrl(iconName: string): string {
     whatsapp: "/whatsapp.svg",
     meta: "/meta.svg",
     googleads: "/google-ads.svg",
+    typesafe: "/typesafe-ai.png",
+    openrouter: "/openrouter.svg",
   }
 
   if (localIcons[iconName]) {
@@ -72,8 +74,27 @@ function getIconUrl(iconName: string): string {
 }
 
 // Only the tools that carry most of the work, grouped as the catalog groups them (front-end, back-end, payments,
-// infra). The full list stays in lib/profile.ts and in the markdown twins.
-const coreSkillNames = new Set(["Next.js", "React", "TypeScript", "GSAP", "Node.js", "Go", "PostgreSQL", "Supabase", "PIX", "Stripe", "WhatsApp", "Docker"])
+// infra, AI). The full list and what each one is for stay in lib/profile.ts and in the markdown twins.
+const coreSkillNames = new Set([
+  "Next.js",
+  "React",
+  "TypeScript",
+  "GSAP",
+  "Node.js",
+  "Go",
+  "PostgreSQL",
+  "Supabase",
+  "PIX",
+  "Stripe",
+  "WhatsApp",
+  "Docker",
+  "Coolify",
+  "Cloudflare",
+  "Jev",
+  "OpenAI Codex",
+  "Claude Code",
+  "OpenRouter",
+])
 const groups = skillCategories
   .map((category) => ({ titleKey: category.titleKey, skills: category.skills.filter((skill) => coreSkillNames.has(skill.name)) }))
   .filter((group) => group.skills.length > 0)
@@ -120,7 +141,7 @@ export function Skills() {
     <section ref={sectionRef} id={SKILLS_SECTION_ID} className="relative z-10 border-t border-border">
       <div className="mx-auto w-full max-w-screen-2xl px-(--gutter) py-16 sm:py-24 md:py-32">
         <div ref={titleRef} className="mb-10 px-(--inset) sm:mb-14">
-          <SectionHeading title={t("skills.title")} description={t("skills.description")} />
+          <SectionHeading title={t("skills.title")} />
         </div>
 
         <div ref={listRef} className="border-t border-border">
@@ -130,22 +151,19 @@ export function Skills() {
               className="skill-group grid gap-5 border-b border-border px-(--inset) py-6 sm:py-8 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] lg:gap-10"
             >
               <Heading size="sm">{t(group.titleKey)}</Heading>
-              <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2 xl:grid-cols-4">
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 xl:grid-cols-4">
                 {group.skills.map((skill) => (
-                  <li key={skill.name} className="skill-tile group flex items-start gap-3">
-                    {/* Grey until pointed at, so twelve brand colors do not compete with the page. */}
+                  <li key={skill.name} className="skill-tile group flex items-center gap-3">
+                    {/* Grey until pointed at, so the brand colors do not compete with the page. */}
                     <Image
                       src={getIconUrl(skill.icon)}
                       alt=""
                       width={28}
                       height={28}
-                      className="mt-0.5 size-7 shrink-0 object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0"
+                      className="size-7 shrink-0 object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0"
                       unoptimized
                     />
-                    <div className="min-w-0">
-                      <p className="font-medium">{skill.name}</p>
-                      <p className="mt-1 text-sm leading-snug text-pretty text-muted-foreground">{t(skill.descriptionKey)}</p>
-                    </div>
+                    <span className="min-w-0 font-medium">{skill.name}</span>
                   </li>
                 ))}
               </ul>

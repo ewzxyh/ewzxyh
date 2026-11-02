@@ -117,7 +117,11 @@
     outline: 2px solid var(--foreground);
     outline-offset: 2px;
   }
-  /* Interactive elements - cursor pointer */
+  /* The site's own arrow (public/cursor.svg), orange over anything clickable; the PNG and the system cursor are
+     fallbacks. The hotspot (6 3) is the arrow's tip. */
+  html {
+    cursor: url("/cursor.svg") 6 3, url("/cursor.png") 6 3, default;
+  }
   button,
   [role="button"],
   [type="button"],
@@ -141,25 +145,8 @@
   [role="listbox"],
   [role="combobox"],
   [tabindex]:not([tabindex="-1"]),
-  .cursor-pointer,
   .clickable {
-    cursor: pointer;
-  }
-
-  .custom-cursor {
-    display: none;
-  }
-
-  @media (any-hover: hover) and (any-pointer: fine) {
-    html.has-custom-cursor,
-    html.has-custom-cursor * {
-      /* biome-ignore lint/complexity/noImportantStyles: custom cursor must override utility cursor classes */
-      cursor: none !important;
-    }
-
-    .custom-cursor {
-      display: block;
-    }
+    cursor: url("/cursor-pointer.svg") 6 3, url("/cursor-pointer.png") 6 3, pointer;
   }
 
 }

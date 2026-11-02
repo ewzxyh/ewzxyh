@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, type ReactNode } from "react"
-import { CustomCursor } from "@/components/portfolio/custom-cursor"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { PageLoader } from "@/components/portfolio/page-loader"
 import { SkipLink } from "@/components/portfolio/skip-link"
@@ -82,7 +81,6 @@ export function Providers({
       <LoadingProvider>
         <InteractionSounds />
         <PageLoader />
-        <CustomCursor />
         <SmoothScroll>{children}</SmoothScroll>
       </LoadingProvider>
     </I18nProvider>
