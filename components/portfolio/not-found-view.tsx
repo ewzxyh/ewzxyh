@@ -2,22 +2,21 @@
 
 import Link from "next/link"
 import dynamic from "next/dynamic"
-import { useTheme } from "next-themes"
 import { Home2Icon } from "@/components/ui/icons"
 import { useI18n } from "@/lib/i18n"
 import { localePaths } from "@/lib/site"
 import { HeaderActions } from "@/components/portfolio/header-actions"
 import { useMounted } from "@/hooks/use-mounted"
 import animationData from "@/public/Not found.json"
+import { Heading } from "@/components/ui/heading"
+import { buttonVariants } from "@/components/ui/button-variants"
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false })
 
 // Body of the 404 page; app/global-not-found.tsx wraps it in the document shell.
 export function NotFoundView() {
   const { t, locale } = useI18n()
-  const { resolvedTheme } = useTheme()
   const mounted = useMounted()
-  const isDark = mounted && resolvedTheme === "dark"
 
   return (
     <main id="content" tabIndex={-1} className="min-h-screen flex flex-col items-center justify-center px-6 focus-visible:outline-none">
@@ -29,15 +28,14 @@ export function NotFoundView() {
             loop={true}
             autoplay={true}
             className="w-48 h-48 sm:w-72 sm:h-72 md:w-96 md:h-96 mx-auto"
-            style={isDark ? { filter: "invert(1) brightness(0.85)" } : undefined}
           />
         )}
 
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4">404</h1>
+        <Heading as="h1" size="xl" className="mb-4">404</Heading>
 
-        <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-2">
+        <Heading as="h2" size="md" className="mb-2">
           {t("notFound.title")}
-        </h2>
+        </Heading>
 
         <p className="text-sm sm:text-base text-muted-foreground mb-8">
           {t("notFound.description")}
@@ -45,9 +43,9 @@ export function NotFoundView() {
 
         <Link
           href={localePaths[locale]}
-          className="inline-flex items-center justify-center px-4 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium tracking-wider border border-foreground bg-foreground text-background hover:bg-background hover:text-foreground transition-all duration-300"
+          className={buttonVariants()}
         >
-          <Home2Icon className="w-4 h-4 mr-2" />
+          <Home2Icon aria-hidden="true" className="size-4" />
           {t("notFound.backHome")}
         </Link>
 

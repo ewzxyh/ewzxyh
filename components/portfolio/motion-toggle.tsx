@@ -1,5 +1,6 @@
 "use client"
 
+import { Button } from "@/components/ui/button"
 import { PauseIcon, PlayIcon } from "@/components/ui/icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { useI18n } from "@/lib/i18n"
@@ -13,14 +14,9 @@ export function MotionToggle() {
   const label = reduced ? t("motion.play") : t("motion.pause")
 
   return (
-    <button
-      type="button"
-      onClick={() => setMotionReduced(!reduced)}
-      title={label}
-      className="flex size-9 flex-shrink-0 items-center justify-center border border-border bg-background text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background sm:size-10"
-    >
+    <Button variant="quiet" size="icon" onClick={() => setMotionReduced(!reduced)} title={label}>
       {reduced ? <PlayIcon aria-hidden="true" className="size-4" /> : <PauseIcon aria-hidden="true" className="size-4" />}
       <span className="sr-only">{label}</span>
-    </button>
+    </Button>
   )
 }

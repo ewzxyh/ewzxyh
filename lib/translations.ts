@@ -18,18 +18,16 @@ export const translations = {
     "nav.language": "mudar o idioma para inglês",
     "motion.pause": "Pausar animações",
     "motion.play": "Retomar animações",
-    "theme.toLight": "Mudar para o tema claro",
-    "theme.toDark": "Mudar para o tema escuro",
     "skip.content": "Pular para o conteúdo",
 
     // Hero
-    "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
+    "hero.role": "Product Engineer · Ewzxyh Labs",
     "hero.subtitle": "Transformo ideias e operações manuais em produtos digitais prontos para operar.",
-    "hero.years": "ANOS EXP.",
-    "hero.projects": "PROJETOS",
-    "hero.operators": "OPERADORES",
-    "hero.cta": "VER PROJETOS",
-    "hero.contactCta": "FALAR COMIGO",
+    "hero.years": "anos de experiência",
+    "hero.projects": "projetos",
+    "hero.operators": "lotéricas atendidas",
+    "hero.cta": "Ver projetos",
+    "hero.contactCta": "Falar comigo",
     "hero.imageAlt": "Retrato de Enzo Yoshida, Product Engineer",
     "hero.social": "Redes e contato",
 
@@ -45,7 +43,6 @@ export const translations = {
     "services.automation.desc": "Fluxos que substituem tarefas manuais por processos rápidos, rastreáveis e escaláveis.",
 
     // About
-    "about.label": "SOBRE",
     "about.title": "Quem sou eu",
     "about.principles": "Como trabalho",
     // Names between ** are highlighted on the page and printed in bold in the markdown twins.
@@ -64,7 +61,6 @@ export const translations = {
 
     // Skills
     "skills.title": "Habilidades",
-    "skills.label": "HABILIDADES",
     "skills.description": "As principais ferramentas que uso para levar um produto da ideia à operação.",
     "skills.frontend": "Front-end",
     "skills.backend": "Back-end e dados",
@@ -115,7 +111,6 @@ export const translations = {
 
     // Experience Section Headers
     "experience.work": "Experiência",
-    "experience.label": "EXPERIÊNCIA",
     "experience.description": "Meu estúdio, os produtos que fundei e os times que lidero, em paralelo desde 2021.",
     "experience.related": "Projetos",
     "experience.education": "Formação",
@@ -124,7 +119,7 @@ export const translations = {
 
     // Work Experience - Roles
     "experience.ewzxyh.role": "Fundador",
-    "experience.ewzxyh.desc": "Meu estúdio de produto. Crio produtos próprios, como a Grapnel (distribuição de contatos e gestão de números de WhatsApp para equipes de vendas), e desenvolvo sob medida para startups, empresas e empreendedores: MVPs, SaaS, dashboards, APIs, integrações e automações. Entre os trabalhos estão o Loteria Marketplace, o site da Loteria Amazonas e a landing page da LorenzPay.",
+    "experience.ewzxyh.desc": "Meu estúdio de produto. Crio produtos próprios, como a Grapnel (distribuição de contatos e gestão de números de WhatsApp para equipes de vendas) e a Grapnel para agentes (WhatsApp para agentes de IA, por MCP e API), e desenvolvo sob medida para startups, empresas e empreendedores: MVPs, SaaS, dashboards, APIs, integrações e automações. Entre os trabalhos estão o Loteria Marketplace, o site da Loteria Amazonas e a landing page da LorenzPay.",
 
     "experience.casepay.role": "Co-Founder & Lead Engineer",
     "experience.casepay.desc": "Cofundei a CasePay, plataforma para lotéricas que gera cobranças PIX Copia e Cola, confirma o pagamento automaticamente, avisa o cliente e registra tudo no CRM. Desenvolvi o produto de ponta a ponta, da primeira versão em Laravel à atual em Next.js: cobranças, CRM com histórico por cliente, notificações por e-mail, métricas da operação, metas por atendente, painel e site. Próximos passos: WhatsApp, SMS e integrações com LotoHub, ChatCase e DouraSoft.",
@@ -149,9 +144,9 @@ export const translations = {
     "experience.edu.puc": "Tecnólogo em Análise e Desenvolvimento de Sistemas",
 
     // Projects
-    "projects.label": "TRABALHOS",
     "projects.title": "Projetos em destaque",
     "projects.count": "projetos",
+    "projects.more": "Outros projetos",
     "projects.live": "No ar",
     "projects.description": "Produtos próprios, de sócios e de clientes: o que cada um faz e qual foi a minha parte.",
     "projects.newTab": "abre em nova aba",
@@ -183,11 +178,15 @@ export const translations = {
     "case.next": "Próximo projeto",
     "case.internal": "Sistema interno: sem capturas públicas.",
     // Contact
-    "contact.section": "04 // CONTATO",
-    "contact.title": "O que você precisa lançar, integrar ou automatizar?",
-    "contact.description": "Conte brevemente o contexto. O contato é direto com Enzo Yoshida para projetos da Ewzxyh Labs ou oportunidades profissionais.",
-    "contact.cta": "FALAR SOBRE MEU PROJETO",
-    "contact.alternative": "Ou me encontre no",
+    "contact.title": "Um projeto ou uma vaga? Fale direto comigo.",
+    "contact.description": "O contato é direto comigo, em português ou inglês, para projetos da Ewzxyh Labs ou oportunidades profissionais.",
+    "contact.clients.title": "Tenho um projeto",
+    "contact.clients.desc": "Conte o que precisa lançar, integrar ou automatizar: MVP, SaaS, painel, API ou automação.",
+    "contact.clients.cta": "Conversar no WhatsApp",
+    "contact.hiring.title": "Estou contratando",
+    "contact.hiring.desc": "Product Engineer com Next.js, do banco de dados à interface. Disponível para trabalho remoto.",
+    "contact.hiring.cta": "Ver perfil no LinkedIn",
+    "contact.email": "Enviar e-mail",
 
     // Footer
     "footer.rights": "Todos os direitos reservados.",
@@ -197,8 +196,8 @@ export const translations = {
     // 404
     "notFound.title": "Página não encontrada",
     "notFound.description": "Ops! A página que você está procurando não existe ou foi movida.",
-    "notFound.backHome": "VOLTAR AO INÍCIO",
-    "notFound.goBack": "VOLTAR",
+    "notFound.backHome": "Voltar ao início",
+    "notFound.goBack": "Voltar",
   },
   "en-US": {
     // Navigation
@@ -214,18 +213,16 @@ export const translations = {
     "nav.language": "switch the language to Portuguese",
     "motion.pause": "Pause animations",
     "motion.play": "Play animations",
-    "theme.toLight": "Switch to the light theme",
-    "theme.toDark": "Switch to the dark theme",
     "skip.content": "Skip to content",
 
     // Hero
-    "hero.role": "PRODUCT ENGINEER · EWZXYH LABS",
+    "hero.role": "Product Engineer · Ewzxyh Labs",
     "hero.subtitle": "I turn ideas and manual operations into digital products ready to run.",
-    "hero.years": "YEARS EXP.",
-    "hero.projects": "PROJECTS",
-    "hero.operators": "OPERATORS",
-    "hero.cta": "VIEW PROJECTS",
-    "hero.contactCta": "LET'S TALK",
+    "hero.years": "years of experience",
+    "hero.projects": "projects",
+    "hero.operators": "lottery retailers served",
+    "hero.cta": "View projects",
+    "hero.contactCta": "Let's talk",
     "hero.imageAlt": "Portrait of Enzo Yoshida, Product Engineer",
     "hero.social": "Social links and contact",
 
@@ -241,7 +238,6 @@ export const translations = {
     "services.automation.desc": "Workflows that replace manual tasks with fast, traceable, and scalable processes.",
 
     // About
-    "about.label": "ABOUT",
     "about.title": "About me",
     "about.principles": "How I work",
     "about.bio": "I'm **Enzo Hideki Yoshida**, a Product Engineer. For more than 5 years I have been building digital products end to end: I learn the process, design the solution and write the code, from the database to the interface. I speak Portuguese and English and take on remote projects.",
@@ -258,7 +254,6 @@ export const translations = {
 
     // Skills
     "skills.title": "Skills",
-    "skills.label": "SKILLS",
     "skills.description": "The main tools I use to take a product from idea to operation.",
     "skills.frontend": "Front-end",
     "skills.backend": "Back-end and data",
@@ -309,7 +304,6 @@ export const translations = {
 
     // Experience Section Headers
     "experience.work": "Work Experience",
-    "experience.label": "EXPERIENCE",
     "experience.description": "My studio, the products I founded and the teams I lead, running in parallel since 2021.",
     "experience.related": "Projects",
     "experience.education": "Education",
@@ -318,7 +312,7 @@ export const translations = {
 
     // Work Experience - Roles
     "experience.ewzxyh.role": "Founder",
-    "experience.ewzxyh.desc": "My product studio. I build my own products, such as Grapnel (contact distribution and WhatsApp number management for sales teams), and custom work for startups, companies and founders: MVPs, SaaS products, dashboards, APIs, integrations and automations. Work includes Loteria Marketplace, the Loteria Amazonas website and the LorenzPay landing page.",
+    "experience.ewzxyh.desc": "My product studio. I build my own products, such as Grapnel (contact distribution and WhatsApp number management for sales teams) and Grapnel for agents (WhatsApp for AI agents, over MCP and an API), and custom work for startups, companies and founders: MVPs, SaaS products, dashboards, APIs, integrations and automations. Work includes Loteria Marketplace, the Loteria Amazonas website and the LorenzPay landing page.",
 
     "experience.casepay.role": "Co-Founder & Lead Engineer",
     "experience.casepay.desc": "I co-founded CasePay, a platform for lottery retailers that creates PIX charges, confirms payment automatically, notifies the customer and records everything in a CRM. I built the product end to end, from the first version in Laravel to the current one in Next.js: charges, a CRM with per-customer history, email notifications, operational metrics, per-agent goals, the dashboard and the website. Next up: WhatsApp, SMS and integrations with LotoHub, ChatCase and DouraSoft.",
@@ -343,9 +337,9 @@ export const translations = {
     "experience.edu.puc": "Technologist degree in Systems Analysis and Development",
 
     // Projects
-    "projects.label": "WORK",
-    "projects.title": "Featured Projects",
+    "projects.title": "Featured projects",
     "projects.count": "projects",
+    "projects.more": "More projects",
     "projects.live": "Live",
     "projects.description": "My own products, partner products and client work: what each one does and what my part was.",
     "projects.newTab": "opens in a new tab",
@@ -377,11 +371,15 @@ export const translations = {
     "case.next": "Next project",
     "case.internal": "Internal system: no public screenshots.",
     // Contact
-    "contact.section": "04 // CONTACT",
-    "contact.title": "What do you need to launch, integrate, or automate?",
-    "contact.description": "Share the context briefly. You will speak directly with Enzo Yoshida about Ewzxyh Labs projects or professional opportunities.",
-    "contact.cta": "DISCUSS MY PROJECT",
-    "contact.alternative": "Or find me on",
+    "contact.title": "A project or a role? Talk to me directly.",
+    "contact.description": "You reach me directly, in Portuguese or English, about Ewzxyh Labs projects or professional opportunities.",
+    "contact.clients.title": "I have a project",
+    "contact.clients.desc": "Tell me what you need to launch, integrate or automate: an MVP, SaaS, dashboard, API or automation.",
+    "contact.clients.cta": "Chat on WhatsApp",
+    "contact.hiring.title": "I'm hiring",
+    "contact.hiring.desc": "Product Engineer with Next.js, from the database to the interface. Available for remote work.",
+    "contact.hiring.cta": "View LinkedIn profile",
+    "contact.email": "Send an email",
 
     // Footer
     "footer.rights": "All rights reserved.",
@@ -391,8 +389,8 @@ export const translations = {
     // 404
     "notFound.title": "Page not found",
     "notFound.description": "Oops! The page you're looking for doesn't exist or has been moved.",
-    "notFound.backHome": "BACK TO HOME",
-    "notFound.goBack": "GO BACK",
+    "notFound.backHome": "Back to home",
+    "notFound.goBack": "Go back",
   },
 } as const
 

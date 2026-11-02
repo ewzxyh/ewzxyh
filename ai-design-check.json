@@ -1,0 +1,12 @@
+{
+  "include": ["app", "components", "lib", "hooks"],
+  "ignore": ["components/stageshow/kit/**"],
+  "properNouns": ["Enzo Yoshida", "Enzo Hideki Yoshida", "Ewzxyh Labs", "Grapnel", "LotoHub", "CasePay", "ChatCase", "CaseZap", "CaseShop", "LorenzPay", "SELOESGO"],
+  "componentDirs": ["**/components/ui/**"],
+  "rules": {},
+  "allow": {
+    "type-scale": [],
+    "radius-scale": [],
+    "glow-in-charts-only": []
+  }
+}

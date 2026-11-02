@@ -122,8 +122,6 @@ export interface ExperienceItem {
   type: keyof typeof employmentTypes
   tags: TagId[]
   logo?: string
-  // A black logo on a transparent background, drawn white in the dark theme.
-  invertLogoInDark?: boolean
   // Project pages (ids in `projects`) that came out of this role.
   projects?: string[]
 }
@@ -155,8 +153,7 @@ export const workExperience: ExperienceItem[] = [
     type: "self-employed",
     tags: ["productDevelopment", "softwareDevelopment", "fullStack", "nextjs", "react", "javascript", "postgresql", "restApis", "webApps", "webgl", "design", "uxDesign", "webDesign", "itConsulting"],
     logo: "/empresas/ewzxyh-logo-black.png",
-    invertLogoInDark: true,
-    projects: ["grapnel", "loteria-amazonas", "lorenzpay"],
+    projects: ["grapnel", "grapnel-agentes", "loteria-amazonas", "lorenzpay"],
   },
   {
     company: "CasePay",
@@ -281,18 +278,48 @@ export const projects: Project[] = [
     url: "https://grapnel.com.br",
   },
   {
+    // The AI-agent product at bot.grapnel.com.br, on the same API as Grapnel.
+    id: "grapnel-agentes",
+    title: { "pt-BR": "Grapnel para agentes", "en-US": "Grapnel for agents" },
+    kind: { "pt-BR": "API e MCP", "en-US": "API and MCP" },
+    context: { "pt-BR": "Produto próprio", "en-US": "Own product" },
+    description: {
+      "pt-BR":
+        "Conecta um WhatsApp por QR Code a um agente de IA, por MCP ou API HTTP. O agente lê conversas e grupos, responde e envia PDF, áudio e localização, com chaves de permissões limitadas, webhooks assinados e preço por número, não por mensagem.",
+      "en-US":
+        "Connects a WhatsApp number to an AI agent by QR code, over MCP or an HTTP API. The agent reads chats and groups, replies and sends PDFs, audio and locations, with scoped keys, signed webhooks and pricing per number, not per message.",
+    },
+    tags: ["Next.js", "MCP", "Webhooks", "Stripe"],
+    url: "https://bot.grapnel.com.br",
+  },
+  {
     id: "lotohub",
     title: "LotoHub",
     kind: "SaaS",
     context: { "pt-BR": "Fundador", "en-US": "Founder" },
     description: {
       "pt-BR":
-        "Cria o site de uma lotérica em minutos, com bolões, resultados, endereço e botão de WhatsApp. Prévia antes de pagar, bolões cadastrados por foto ou importados do Marketplace CAIXA, artes para divulgar e domínio próprio.",
+        "Cria o site de uma lotérica em minutos, com bolões, resultados, endereço e botão de WhatsApp. Prévia antes de pagar, bolões por foto ou pelo Marketplace CAIXA, um Radar que mostra quais bolões abrir, chat com respostas automáticas e artes para divulgar.",
       "en-US":
-        "Builds a lottery retailer's website in minutes, with lottery pools, results, address and a WhatsApp button. Preview before paying, pools added from a photo or imported from the CAIXA Marketplace, promo artwork and a custom domain.",
+        "Builds a lottery retailer's website in minutes, with lottery pools, results, address and a WhatsApp button. Preview before paying, pools from a photo or the CAIXA Marketplace, a Radar that shows which pools to open, a chat with automatic replies and promo artwork.",
     },
     tags: ["Next.js", "Supabase", "Stripe", "Multi-tenant"],
     url: "https://lotohub.com.br",
+  },
+  {
+    // The agency product at api.loteriamarketplace.com.br/agencia (the Loteria Marketplace API with its panel).
+    id: "marketplace-api",
+    title: { "pt-BR": "LotoHub Agências", "en-US": "LotoHub Agencies" },
+    kind: { "pt-BR": "Painel e API", "en-US": "Panel and API" },
+    context: "LotoHub",
+    description: {
+      "pt-BR":
+        "Painel e API para agências lotéricas acompanharem os bolões das suas ULs no marketplace da CAIXA, do registro ao resultado oficial: entrada por código no e-mail, UL conferida no catálogo nacional, chaves de API com validade e cobrança por UL na Stripe.",
+      "en-US":
+        "A panel and API for lottery agencies to follow their units' pools on CAIXA's marketplace, from the first record to the official result: e-mail code sign-in, units checked against the national catalog, API keys with expiry and per-unit billing on Stripe.",
+    },
+    tags: ["Go", "React", { "pt-BR": "API REST", "en-US": "REST API" }, "Stripe"],
+    url: "https://api.loteriamarketplace.com.br/agencia/",
   },
   {
     id: "casepay",
@@ -321,21 +348,6 @@ export const projects: Project[] = [
     },
     tags: [{ "pt-BR": "Automação", "en-US": "Automation" }, "ConectaLot API", { "pt-BR": "Geração de imagens", "en-US": "Image generation" }, "Design Ops"],
     note: { "pt-BR": "Sistema interno", "en-US": "Internal system" },
-  },
-  {
-    // The agency product at api.loteriamarketplace.com.br/agencia (the Loteria Marketplace API with its panel).
-    id: "marketplace-api",
-    title: { "pt-BR": "LotoHub Agências", "en-US": "LotoHub Agencies" },
-    kind: { "pt-BR": "Painel e API", "en-US": "Panel and API" },
-    context: "LotoHub",
-    description: {
-      "pt-BR":
-        "Painel e API para agências lotéricas acompanharem os bolões das suas ULs no marketplace da CAIXA, do registro ao resultado oficial: entrada por código no e-mail, UL conferida no catálogo nacional, chaves de API com validade e cobrança por UL na Stripe.",
-      "en-US":
-        "A panel and API for lottery agencies to follow their units' pools on CAIXA's marketplace, from the first record to the official result: e-mail code sign-in, units checked against the national catalog, API keys with expiry and per-unit billing on Stripe.",
-    },
-    tags: ["Go", "React", { "pt-BR": "API REST", "en-US": "REST API" }, "Stripe"],
-    url: "https://api.loteriamarketplace.com.br/agencia/",
   },
   {
     id: "casezap",

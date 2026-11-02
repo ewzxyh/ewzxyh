@@ -1,7 +1,6 @@
 import { JetBrains_Mono } from "next/font/google"
 import Script from "next/script"
 import type { ReactNode } from "react"
-import { preload } from "react-dom"
 import { motionBootScript } from "@/lib/motion"
 import { htmlLangs, type SiteLocale } from "@/lib/site"
 import { Providers } from "./providers"
@@ -25,9 +24,6 @@ export function RootDocument({
   restoreChoice?: boolean
   children: ReactNode
 }) {
-  // The loader's ASCII art is fetched by the client; hinting it here starts the request during HTML parsing.
-  preload("/loader-ascii-column-4.txt", { as: "fetch", crossOrigin: "anonymous" })
-
   return (
     <html lang={htmlLangs[locale]} className={jetbrainsMono.variable} suppressHydrationWarning>
       {/* overflow-x: clip (not hidden) keeps the body from becoming a scroll container, so position: sticky works. */}

@@ -120,7 +120,7 @@ export function DitherWave({ className = "" }: { className?: string }) {
 
   return (
     <div ref={boxRef} aria-hidden="true" className={`overflow-hidden ${className}`}>
-      <canvas ref={canvasRef} className="block [image-rendering:pixelated] dark:invert" />
+      <canvas ref={canvasRef} className="block [image-rendering:pixelated]" />
     </div>
   )
 }

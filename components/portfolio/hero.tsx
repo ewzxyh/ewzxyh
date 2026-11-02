@@ -16,6 +16,7 @@ import {
   type Icon as SolarIcon,
 } from "@/components/ui/icons"
 import { getImageProps } from "next/image"
+import { Button } from "@/components/ui/button"
 import { type RefObject, useEffect, useId, useRef, useState } from "react"
 import type { IconType } from "react-icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
@@ -72,12 +73,10 @@ function SocialRail({ locale, label }: { locale: "pt-BR" | "en-US"; label: strin
           rel="noopener noreferrer"
           aria-label={name}
           data-hero-reveal=""
-          className="hero-social group relative flex min-h-12 items-center justify-center border-r border-border bg-card/30 text-foreground opacity-0 transition-colors duration-300 last:border-r-0 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background focus-visible:outline-none md:min-h-0 md:border-b md:border-r-0 md:last:border-b-0"
+          // ai-design-check-ignore-next-line tap-target -- from md up the rail's six rows split the hero's full height
+          className="hero-social group relative flex min-h-12 items-center justify-center border-r border-border bg-card/30 text-foreground opacity-0 transition-colors duration-200 ease-ui last:border-r-0 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background focus-visible:outline-none md:min-h-0 md:border-b md:border-r-0 md:last:border-b-0"
         >
-          <Icon
-            aria-hidden="true"
-            className="size-6 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-125 group-focus-visible:scale-125"
-          />
+          <Icon aria-hidden="true" className="size-6 transition-transform duration-200 ease-ui group-hover:-rotate-6 group-focus-visible:-rotate-6" />
           <span className="pointer-events-none absolute right-full top-1/2 mr-3 hidden -translate-y-1/2 whitespace-nowrap bg-foreground px-2 py-1 text-xs text-background opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 md:block">
             {name}
           </span>
@@ -275,7 +274,7 @@ export function Hero() {
                 srcSet={mobileSrcSet}
                 alt={imageProps.alt}
                 className="object-cover"
-                style={{ ...imageProps.style, objectPosition: "50% 22%", filter: "grayscale(1)" }}
+                style={{ ...imageProps.style, objectPosition: "50% 22%" }}
               />
             </picture>
           </figure>
@@ -285,8 +284,8 @@ export function Hero() {
               data-hero-reveal=""
               className="hero-chip w-fit max-w-full border border-border bg-card/70 px-3 py-1.5 opacity-0"
             >
-              <span className="flex items-center gap-2 text-xs leading-snug tracking-[0.1em] text-muted-foreground sm:tracking-[0.14em] xl:text-sm">
-                <ProgrammingIcon className="size-4 shrink-0 sm:size-[18px]" aria-hidden="true" />
+              <span className="flex items-center gap-2 text-xs leading-snug text-muted-foreground sm:text-sm">
+                <ProgrammingIcon className="size-4 shrink-0" aria-hidden="true" />
                 <span className="hero-chip-text min-w-0">{t("hero.role")}</span>
                 <span aria-hidden="true" className="h-3.5 w-1.5 shrink-0 animate-pulse bg-foreground" />
               </span>
@@ -311,30 +310,20 @@ export function Hero() {
                     data-hero-reveal=""
                     className="hero-stat flex flex-col-reverse px-3 py-3 opacity-0 first:pl-0 last:pr-0 xl:px-4 xl:py-4"
                   >
-                    <dt className="text-xs tracking-[0.12em] text-muted-foreground">{stat.label}</dt>
-                    <dd className="text-xl font-bold xl:text-2xl">{stat.value}</dd>
+                    <dt className="text-xs text-muted-foreground">{stat.label}</dt>
+                    <dd className="text-xl font-semibold tabular-nums xl:text-2xl">{stat.value}</dd>
                   </div>
                 ))}
               </dl>
 
               <div className="grid grid-cols-1 gap-3 @[19rem]:grid-cols-2">
-                <button
-                  type="button"
-                  data-hero-reveal=""
-                  onClick={() => scrollToSection("projects")}
-                  className="hero-cta group inline-flex h-12 items-center justify-center gap-2 border border-foreground bg-foreground px-3 text-xs text-background opacity-0 transition-colors duration-300 hover:bg-background hover:text-foreground focus-visible:bg-background focus-visible:text-foreground focus-visible:outline-none sm:h-14 sm:text-sm"
-                >
+                <Button size="lg" data-hero-reveal="" onClick={() => scrollToSection("projects")} className="hero-cta group opacity-0">
                   {t("hero.cta")}
-                  <AltArrowDownIcon className="size-5 transition-transform group-hover:translate-y-1" aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  data-hero-reveal=""
-                  onClick={() => scrollToSection("contact")}
-                  className="hero-cta inline-flex h-12 items-center justify-center border border-foreground bg-background/60 px-3 text-xs text-foreground opacity-0 transition-colors duration-300 hover:bg-foreground hover:text-background focus-visible:bg-foreground focus-visible:text-background focus-visible:outline-none sm:h-14 sm:text-sm"
-                >
+                  <AltArrowDownIcon className="size-5 transition-transform duration-200 ease-ui group-hover:translate-y-0.5" aria-hidden="true" />
+                </Button>
+                <Button variant="outline" size="lg" data-hero-reveal="" onClick={() => scrollToSection("contact")} className="hero-cta opacity-0">
                   {t("hero.contactCta")}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -342,9 +331,11 @@ export function Hero() {
           <SocialRail locale={locale} label={t("hero.social")} />
         </div>
 
-        <div className="hero-name-fit px-(--inset)">
+        {/* On phones the name comes first, so it is on screen before the portrait. */}
+        <div className="hero-name-fit order-first px-(--inset) md:order-none">
           <h1
             id={titleId}
+            // ai-design-check-ignore-next-line sentence-case -- a person's name
             aria-label="Enzo Yoshida"
             data-hero-reveal=""
             className={`${atAmiga.className} hero-title hero-name pointer-events-none flex flex-col font-normal leading-[0.9] text-foreground opacity-0 md:flex-row md:gap-[0.35em]`}

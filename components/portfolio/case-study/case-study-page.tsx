@@ -10,6 +10,7 @@ import { Footer } from "@/components/portfolio/footer"
 import { Header } from "@/components/portfolio/header"
 import { useLoading } from "@/components/portfolio/loading-context"
 import { SectionHeading } from "@/components/portfolio/section-heading"
+import { buttonVariants } from "@/components/ui/button-variants"
 import { AltArrowDownIcon, ArrowRightIcon, ArrowRightUpIcon } from "@/components/ui/icons"
 import { useReducedMotion } from "@/hooks/use-reduced-motion"
 import { adjacentProjects, caseStudySlugs, caseStudyTitle, getCaseStudy, getProject } from "@/lib/case-studies"
@@ -19,6 +20,7 @@ import { localize, type Project, projectHost, type Text } from "@/lib/profile"
 import { localePaths, projectPath, siteName } from "@/lib/site"
 import { BrowserFrame, PhoneFrame } from "./frames"
 import { ScrollThrough } from "./scroll-through"
+import { Heading } from "@/components/ui/heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -51,15 +53,15 @@ function ProjectLink({ project, label, align }: { project: Project; label: strin
           width={shot.width}
           height={shot.height}
           sizes="(min-width: 640px) 50vw, 100vw"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-[opacity,scale] duration-500 group-hover:scale-[1.03] group-hover:opacity-[0.12]"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top opacity-0 transition-opacity duration-500 group-hover:opacity-10"
         />
       )}
-      <span className="relative text-xs tracking-[0.25em] text-muted-foreground uppercase">{label}</span>
+      <span className="relative text-sm text-muted-foreground">{label}</span>
       <span className="relative">
         <span className={`${atAmiga.className} block text-[clamp(1.75rem,4vw,3.5rem)] leading-none uppercase`}>
           {localize(project.title, locale)}
         </span>
-        <span className="mt-3 block text-xs tracking-[0.18em] text-muted-foreground uppercase">
+        <span className="mt-3 block text-sm text-muted-foreground">
           {localize(project.kind, locale)} · {localize(project.context, locale)}
         </span>
       </span>
@@ -178,7 +180,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
                     {t("case.position")} {pad(caseStudySlugs.indexOf(slug) + 1)} {t("case.of")} {pad(caseStudySlugs.length)}
                   </span>
                 </nav>
-                <p className="flex items-center gap-3 text-xs tracking-[0.25em] text-muted-foreground uppercase opacity-0 sm:text-sm">
+                <p className="flex items-center gap-3 text-sm text-muted-foreground opacity-0">
                   <span aria-hidden="true" className="size-2 shrink-0 bg-orange-500" />
                   {L(project.kind)} · {L(project.context)}
                 </p>
@@ -197,7 +199,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
                       href={live.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group inline-flex h-12 items-center gap-2 border border-foreground bg-foreground px-5 text-sm text-background transition-colors duration-300 hover:bg-background hover:text-foreground"
+                      className={`group ${buttonVariants()}`}
                     >
                       {t("case.visit")}
                       <ArrowRightUpIcon aria-hidden="true" strokeWidth={2} className="size-4 transition-transform group-hover:rotate-12" />
@@ -205,7 +207,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
                   )}
                   <a
                     href="#contact"
-                    className="inline-flex h-12 items-center gap-2 border border-foreground px-5 text-sm transition-colors duration-300 hover:bg-foreground hover:text-background"
+                    className={buttonVariants({ variant: "outline" })}
                   >
                     {t("case.contactCta")}
                     <AltArrowDownIcon aria-hidden="true" className="size-4" />
@@ -216,12 +218,12 @@ export function CaseStudyPage({ slug }: { slug: string }) {
               <dl className="case-meta grid grid-cols-2 content-start border-t border-border lg:grid-cols-1 lg:border-t-0">
                 {meta.map((item) => (
                   <div key={item.label} className="border-b border-r border-border p-4 opacity-0 even:border-r-0 sm:p-5 lg:border-r-0">
-                    <dt className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{item.label}</dt>
+                    <dt className="text-xs text-muted-foreground">{item.label}</dt>
                     <dd className="mt-1.5 text-sm text-pretty sm:text-base">{item.value}</dd>
                   </div>
                 ))}
                 <div className="col-span-2 p-4 opacity-0 sm:p-5 lg:col-span-1">
-                  <dt className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{t("case.stack")}</dt>
+                  <dt className="text-xs text-muted-foreground">{t("case.stack")}</dt>
                   <dd className="mt-2.5 flex flex-wrap gap-1.5">
                     {study.stack.map((item) => (
                       <span key={item} className="border border-border px-2 py-1 text-xs text-muted-foreground">
@@ -241,7 +243,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
             <dl className={`grid border border-border ${study.highlights.length === 3 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
               {study.highlights.map((item) => (
                 <div key={L(item.label)} data-reveal="" className="border-b border-border p-5 last:border-b-0 sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0">
-                  <dd className="text-3xl font-bold tracking-tight sm:text-4xl">{L(item.value)}</dd>
+                  <dd className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{L(item.value)}</dd>
                   <dt className="mt-2 max-w-[34ch] text-sm text-pretty text-muted-foreground">{L(item.label)}</dt>
                 </div>
               ))}
@@ -281,7 +283,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
               >
                 {title.split(" ")[0]}
               </span>
-              <p className="relative flex items-center gap-3 text-xs tracking-[0.25em] text-muted-foreground uppercase sm:text-sm">
+              <p className="relative flex items-center gap-3 text-sm text-muted-foreground">
                 <span aria-hidden="true" className="size-2 bg-orange-500" />
                 {t("case.internal")}
               </p>
@@ -292,7 +294,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         {/* The challenge */}
         <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
           <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
-            <SectionHeading index="01" label={t("case.challenge")} title={t("case.challenge")} className="lg:sticky lg:top-28 lg:self-start" />
+            <SectionHeading title={t("case.challenge")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="max-w-[68ch] space-y-5" data-reveal="">
               {study.challenge.map((paragraph) => (
                 <p key={L(paragraph).slice(0, 32)} className="text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg">
@@ -305,7 +307,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
 
         {/* What Enzo did: his own part, before the product it produced */}
         <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
-          <SectionHeading index="02" label={t("case.contributions")} title={t("case.contributions")} className="mb-10 px-(--inset) sm:mb-14" />
+          <SectionHeading title={t("case.contributions")} className="mb-10 px-(--inset) sm:mb-14" />
           <ol className="mx-(--inset) grid border-t border-border md:grid-cols-2">
             {study.contributions.map((item, index) => (
               <li
@@ -323,7 +325,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         {/* The solution and its features */}
         <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
           <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
-            <SectionHeading index="03" label={t("case.solution")} title={t("case.solution")} className="lg:sticky lg:top-28 lg:self-start" />
+            <SectionHeading title={t("case.solution")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="max-w-[68ch] space-y-5" data-reveal="">
               {study.solution.map((paragraph) => (
                 <p key={L(paragraph).slice(0, 32)} className="text-base leading-relaxed text-pretty text-foreground/90 sm:text-lg">
@@ -332,7 +334,9 @@ export function CaseStudyPage({ slug }: { slug: string }) {
               ))}
             </div>
           </div>
-          <h3 className="mt-14 mb-6 px-(--inset) text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mt-20 sm:text-sm">{t("case.features")}</h3>
+          <div className="mt-14 mb-6 px-(--inset) sm:mt-20">
+            <Heading size="md">{t("case.features")}</Heading>
+          </div>
           <div className="grid border-t border-l border-border sm:grid-cols-2 lg:grid-cols-3">
             {study.features.map((feature, index) => (
               <article
@@ -341,7 +345,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
                 className="group border-r border-b border-border p-5 transition-colors duration-300 hover:bg-card sm:p-7"
               >
                 <span className="font-mono text-xs text-muted-foreground tabular-nums">{pad(index + 1)}</span>
-                <h3 className="mt-6 text-lg font-medium sm:text-xl">{L(feature.title)}</h3>
+                <Heading size="md" className="mt-6">{L(feature.title)}</Heading>
                 <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{L(feature.description)}</p>
               </article>
             ))}
@@ -351,11 +355,11 @@ export function CaseStudyPage({ slug }: { slug: string }) {
         {/* Engineering */}
         <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
           <div className="grid gap-10 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)] lg:gap-16">
-            <SectionHeading index="04" label={t("case.engineering")} title={t("case.engineering")} className="lg:sticky lg:top-28 lg:self-start" />
+            <SectionHeading title={t("case.engineering")} className="lg:sticky lg:top-28 lg:self-start" />
             <div className="border-t border-border">
               {study.engineering.map((item) => (
                 <div key={L(item.title)} data-reveal="" className="grid gap-2 border-b border-border py-6 sm:grid-cols-[minmax(0,14rem)_minmax(0,1fr)] sm:gap-8">
-                  <h3 className="font-medium">{L(item.title)}</h3>
+                  <Heading size="md">{L(item.title)}</Heading>
                   <p className="text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{L(item.description)}</p>
                 </div>
               ))}
@@ -368,7 +372,7 @@ export function CaseStudyPage({ slug }: { slug: string }) {
           <section className="border-t border-border px-(--gutter) py-16 sm:py-24">
             {full && (
               <>
-                <SectionHeading index="05" label={t("case.fullPage")} title={t("case.fullPage")} description={t("case.fullPageHint")} className="mb-10 px-(--inset) sm:mb-14" />
+                <SectionHeading title={t("case.fullPage")} description={t("case.fullPageHint")} className="mb-10 px-(--inset) sm:mb-14" />
                 <ScrollThrough src={full.src} width={full.width} height={full.height} alt={L(full.alt)} address={address} />
               </>
             )}
@@ -376,9 +380,9 @@ export function CaseStudyPage({ slug }: { slug: string }) {
             {(extra?.length || phoneShots.length > 0) && (
               <div className={full ? "mt-16 px-(--inset) sm:mt-24" : "px-(--inset)"}>
                 {full ? (
-                  <h3 className="mb-8 text-xs tracking-[0.25em] text-muted-foreground uppercase sm:mb-10 sm:text-sm">{t("case.moreScreens")}</h3>
+                  <Heading size="md" className="mb-8 sm:mb-10">{t("case.moreScreens")}</Heading>
                 ) : (
-                  <SectionHeading index="05" label={t("case.moreScreens")} title={t("case.moreScreens")} className="mb-10 sm:mb-14" />
+                  <SectionHeading title={t("case.moreScreens")} className="mb-10 sm:mb-14" />
                 )}
                 <div className="space-y-12 sm:space-y-16">
                   {/* Each desktop screen with what it shows beside it */}

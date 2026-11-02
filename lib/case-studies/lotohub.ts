@@ -34,8 +34,12 @@ export const lotohub: CaseStudy = {
       "LotoHub builds the site from the retailer's name and city, and the preview appears before any payment. Customers see pools, results and the address on their phone and message the retailer on WhatsApp with a ready-made text; the sale stays with the retailer.",
     ),
     tx(
-      "Os bolões entram por uma foto ou, para quem usa o Marketplace CAIXA, direto pelo código da lotérica, por uma API própria em Go. O plano inclui artes para divulgar, página de links para o Instagram, domínio próprio e contagem de visitas.",
-      "Pools come in from a photo or, for retailers on the CAIXA Marketplace, straight from the retailer code through an in-house Go API. The plan includes promo artwork, an Instagram link page, a custom domain and visit counts.",
+      "Os bolões entram por uma foto ou, para quem usa o Marketplace CAIXA, direto pelo código da lotérica, por uma API própria em Go. O Radar lê os bolões do Brasil inteiro a cada 10 minutos e mostra o que abrir agora e o melhor horário para divulgar.",
+      "Pools come in from a photo or, for retailers on the CAIXA Marketplace, straight from the retailer code through an in-house Go API. The Radar reads pools from all over Brazil every 10 minutes and shows what to open now and the best time to promote.",
+    ),
+    tx(
+      "No dia a dia, o chat separa as conversas por assunto e responde as perguntas repetidas, as artes saem de uma descrição, um blog automático traz visitas do Google e, com a CasePay integrada, a cota paga por PIX vira venda anotada.",
+      "Day to day, the chat sorts conversations by topic and answers the repeated questions, promo artwork comes from a description, an automatic blog brings visits from Google and, with CasePay built in, a share paid by PIX becomes a recorded sale.",
     ),
   ],
   contributions: [
@@ -55,22 +59,31 @@ export const lotohub: CaseStudy = {
       description: tx("O cliente escolhe o bolão e abre o WhatsApp com a mensagem pronta.", "Customers pick a pool and open WhatsApp with the message already written."),
     },
     {
-      title: tx("Resultados automáticos", "Automatic results"),
-      description: tx("Os resultados das loterias aparecem sozinhos no site.", "Lottery results show up on the site by themselves."),
+      title: tx("Radar dos bolões", "Pool Radar"),
+      description: tx(
+        "Lê os bolões do Brasil a cada 10 minutos: quantas cotas têm boa chance de esgotar, a hora de ouro para divulgar e os preços que vendem na cidade.",
+        "Reads pools across Brazil every 10 minutes: how many shares are likely to sell out, the golden hour to promote and the prices that sell in town.",
+      ),
     },
     {
-      title: tx("Bolão por foto", "Pools from a photo"),
-      description: tx("A lotérica fotografa o bolão e confere os dados antes de publicar.", "The retailer photographs a pool and checks the details before publishing."),
+      title: tx("Foto ou código", "Photo or code"),
+      description: tx(
+        "A lotérica fotografa o bolão e confere os dados, ou informa o código e os bolões do Marketplace CAIXA entram sozinhos.",
+        "The retailer photographs a pool and checks the details, or enters its code and the CAIXA Marketplace pools come in by themselves.",
+      ),
     },
     {
-      title: tx("Marketplace CAIXA", "CAIXA Marketplace"),
-      description: tx("Com o código da lotérica, os bolões oficiais entram sozinhos.", "With the retailer code, the official pools come in automatically."),
+      title: tx("Chat com triagem", "Chat with triage"),
+      description: tx(
+        "Conversas separadas por assunto (bolão, resultado, pagamento) e respostas automáticas para as perguntas de sempre.",
+        "Conversations sorted by topic (pool, result, payment) and automatic replies to the usual questions.",
+      ),
     },
     {
       title: tx("Divulgação", "Promotion"),
       description: tx(
-        "Artes dos bolões sem designer, página de links para o Instagram, domínio próprio e contagem de visitas.",
-        "Pool artwork without a designer, an Instagram link page, a custom domain and visit counts.",
+        "Artes a partir de uma descrição, blog automático, página de links para o Instagram, domínio próprio e visitas dia a dia.",
+        "Artwork from a description, an automatic blog, an Instagram link page, a custom domain and daily visits.",
       ),
     },
   ],
@@ -99,15 +112,15 @@ export const lotohub: CaseStudy = {
     {
       title: tx("Um plano, sem atrito", "One plan, no friction"),
       description: tx(
-        "Plano completo mensal ou anual, cancelado pelo painel, com acesso até o fim do período pago.",
-        "One complete plan, monthly or yearly, cancelled from the dashboard with access until the end of the paid period.",
+        "Plano completo anual em 12x de R$ 97 ou mensal de R$ 147 sem compromisso, cancelado pelo painel.",
+        "One complete plan, yearly at 12 × R$ 97 or monthly at R$ 147 with no commitment, cancelled from the dashboard.",
       ),
     },
   ],
   highlights: [
     { value: tx("Prévia grátis", "Free preview"), label: tx("do site pronto, antes de assinar", "of the finished site, before subscribing") },
-    { value: "R$ 97", label: tx("por mês no plano anual", "per month, yearly plan") },
-    { value: tx("Foto ou código", "Photo or code"), label: tx("os dois jeitos de publicar bolões", "the two ways to publish pools") },
+    { value: "10 min", label: tx("entre cada leitura do Radar nos bolões do Brasil", "between Radar reads of pools across Brazil") },
+    { value: "R$ 97", label: tx("por mês no plano anual (R$ 147 no mensal)", "per month, yearly plan (R$ 147 monthly)") },
   ],
-  media: capturedMedia("lotohub", "LotoHub", 6608),
+  media: capturedMedia("lotohub", "LotoHub", 7616),
 }

@@ -30,6 +30,8 @@ export { UserIcon } from "@solar-icons/react/linear/user"
 export { Widget4Icon } from "@solar-icons/react/linear/widget-4"
 
 export {
+  // WhatsApp's read receipt, for the product demos.
+  PiChecks as ChecksIcon,
   PiGithubLogo as GithubIcon,
   PiInstagramLogo as InstagramIcon,
   PiLinkedinLogo as LinkedinIcon,

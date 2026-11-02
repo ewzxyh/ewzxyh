@@ -1,9 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { useTheme } from "next-themes"
 import { gsap } from "gsap"
-import { useMounted } from "@/hooks/use-mounted"
 import { useLoading } from "./loading-context"
 
 interface LogoProps {
@@ -12,19 +10,15 @@ interface LogoProps {
 }
 
 export function Logo({ className = "", animate = true }: LogoProps) {
-  const { resolvedTheme } = useTheme()
   const { isRevealing } = useLoading()
   const svgRef = useRef<SVGSVGElement>(null)
   const pathsRef = useRef<SVGPathElement[]>([])
   const hasAnimatedRef = useRef(false)
   const hoverTimelineRef = useRef<gsap.core.Timeline | null>(null)
   const isHoveringRef = useRef(false)
-  const mounted = useMounted()
   const [animationComplete, setAnimationComplete] = useState(!animate)
 
-  const isDark = mounted && resolvedTheme === "dark"
-
-  const lightGradients = [
+  const gradients = [
     { id: "grad0", stops: [{ color: "#433636", offset: 0 }, { color: "#000000", offset: 1 }] },
     { id: "grad1", stops: [{ color: "#514242", offset: 0 }, { color: "#000000", offset: 1 }] },
     { id: "grad2", stops: [{ color: "#483939", offset: 0 }, { color: "#000000", offset: 1 }] },
@@ -32,18 +26,6 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     { id: "grad4", stops: [{ color: "#4A3E3E", offset: 0 }, { color: "#000000", offset: 1 }] },
     { id: "grad5", stops: [{ color: "#524141", offset: 0 }, { color: "#000000", offset: 1 }] },
   ]
-
-  const darkGradients = [
-    { id: "grad0", stops: [{ color: "#C8C0C0", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-    { id: "grad1", stops: [{ color: "#BEBABA", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-    { id: "grad2", stops: [{ color: "#B5AFAF", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-    { id: "grad3", stops: [{ color: "#AAA1A1", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-    { id: "grad4", stops: [{ color: "#BAB0B0", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-    { id: "grad5", stops: [{ color: "#A19A9A", offset: 0 }, { color: "#ffffff", offset: 1 }] },
-  ]
-
-  const gradients = isDark ? darkGradients : lightGradients
-  const strokeColor = isDark ? "#ffffff" : "#000000"
 
   const paths = [
     "M85.2494 5.73718C38.2427 5.73718 0 43.9798 0 90.9878C0 137.996 38.2427 176.239 85.2494 176.239H115.687C125.663 176.239 133.776 168.124 133.776 158.148C133.776 148.173 125.663 140.058 115.687 140.058H85.2494C58.1934 140.058 36.18 118.045 36.18 90.9878C36.18 63.9305 58.1934 41.9172 85.2494 41.9172H115.687C125.663 41.9172 133.776 33.8012 133.776 23.8278C133.776 13.8518 125.663 5.73718 115.687 5.73718H85.2494Z",
@@ -124,7 +106,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
   }
 
   useEffect(() => {
-    if (!mounted || !animate || !svgRef.current || hasAnimatedRef.current || !isRevealing) return
+    if (!animate || !svgRef.current || hasAnimatedRef.current || !isRevealing) return
 
     const pathElements = pathsRef.current.filter(Boolean)
     if (pathElements.length === 0) return
@@ -178,17 +160,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
     }, svgRef)
 
     return () => ctx.revert()
-  }, [mounted, animate, isRevealing])
-
-  if (!mounted) {
-    return (
-      <div
-        className={className}
-        style={{ aspectRatio: "525/182" }}
-        aria-hidden="true"
-      />
-    )
-  }
+  }, [animate, isRevealing])
 
   return (
     <svg
@@ -207,7 +179,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
       <defs>
         {gradients.map((grad, i) => (
           <linearGradient
-            key={`${grad.id}-${isDark ? "dark" : "light"}`}
+            key={grad.id}
             id={`logo-${grad.id}`}
             x1={i === 0 ? "-37.4297" : i === 1 ? "53.6536" : i === 2 ? "164.166" : i === 3 ? "190.266" : i === 4 ? "545.041" : "518.941"}
             y1={i === 0 ? "198.991" : i === 1 ? "100.784" : i === 2 ? "23.4832" : i === 3 ? "-11.5033" : i === 4 ? "158.492" : "193.479"}
@@ -229,7 +201,7 @@ export function Logo({ className = "", animate = true }: LogoProps) {
           }}
           d={d}
           fill={`url(#logo-grad${i})`}
-          stroke={strokeColor}
+          stroke="#000000"
           strokeWidth="2"
           style={
             animate && !animationComplete

@@ -13,11 +13,12 @@ interface Section {
   number: string
 }
 
+// The page's sections in order: the rail shows from the first section's title to the end of the last one.
 const sections: Section[] = [
-  { id: "about-content", labelKey: "nav.about", number: "01" },
-  { id: "skills", labelKey: "skills.title", number: "02" },
-  { id: "experience", labelKey: "nav.experience", number: "03" },
-  { id: "projects", labelKey: "nav.projects", number: "04" },
+  { id: "projects", labelKey: "nav.projects", number: "01" },
+  { id: "about-content", labelKey: "nav.about", number: "02" },
+  { id: "skills", labelKey: "skills.title", number: "03" },
+  { id: "experience", labelKey: "nav.experience", number: "04" },
 ]
 
 function scrollToSection(sectionId: string) {
@@ -46,25 +47,25 @@ export function LateralPinIndicator() {
     function updateVisibility() {
       frame = 0
 
-      const aboutTitle = document.querySelector("#about-content h2")
-      const aboutContent = document.getElementById("about-content")
-      const projects = document.getElementById("projects")
-      if (!aboutTitle || !aboutContent || !projects) return
+      const first = document.getElementById(sections[0].id)
+      const firstTitle = first?.querySelector("h2")
+      const last = document.getElementById(sections[sections.length - 1].id)
+      if (!first || !firstTitle || !last) return
 
-      const titleRect = aboutTitle.getBoundingClientRect()
-      const contentRect = aboutContent.getBoundingClientRect()
-      const projectsRect = projects.getBoundingClientRect()
+      const titleRect = firstTitle.getBoundingClientRect()
+      const firstRect = first.getBoundingClientRect()
+      const lastRect = last.getBoundingClientRect()
       const startLine = window.innerHeight * 0.5
       const endLine = window.innerHeight * 0.4
 
-      const nextVisible = titleRect.top <= startLine && projectsRect.bottom >= endLine
+      const nextVisible = titleRect.top <= startLine && lastRect.bottom >= endLine
       if (nextVisible !== visible) {
         visible = nextVisible
         setIsVisible(nextVisible)
       }
 
-      const total = projectsRect.bottom - contentRect.top
-      const current = window.innerHeight - contentRect.top
+      const total = lastRect.bottom - firstRect.top
+      const current = window.innerHeight - firstRect.top
       const progress = total > 0 ? gsap.utils.clamp(0, 1, current / total) : 0
       if (progressRef.current) progressRef.current.style.transform = `scaleY(${progress})`
     }
@@ -129,6 +130,7 @@ export function LateralPinIndicator() {
             const isActive = activeIndex === index
             const label = t(section.labelKey as never)
             return (
+              // ai-design-check-ignore-next-line use-shared-components -- a tick on the progress rail, not a button look
               <button
                 key={section.id}
                 type="button"
@@ -159,7 +161,7 @@ export function LateralPinIndicator() {
                 {/* Name, only while hovered or focused */}
                 <span
                   aria-hidden="true"
-                  className="pointer-events-none absolute top-1/2 left-full ml-2 -translate-x-1 -translate-y-1/2 whitespace-nowrap rounded-sm border border-border bg-background/95 px-2 py-1 font-medium text-[13px] text-foreground uppercase tracking-wider opacity-0 shadow-sm transition-[opacity,translate] duration-200 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
+                  className="pointer-events-none absolute top-1/2 left-full ml-2 -translate-x-1 -translate-y-1/2 whitespace-nowrap border border-border bg-background px-2 py-1 font-medium text-sm text-foreground opacity-0 transition-[opacity,translate] duration-200 ease-ui group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100 motion-reduce:transition-none"
                 >
                   {label}
                 </span>

@@ -3,7 +3,7 @@
 import { gsap } from "gsap";
 import { MorphSVGPlugin } from "gsap/MorphSVGPlugin";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { atAmiga } from "@/lib/fonts";
 import { isHomePath } from "@/lib/site";
@@ -68,29 +68,30 @@ const LETTER_SLOT_HEIGHT = 182;
 const LETTER_SLOT_CLASS =
 	"absolute left-1/2 top-16 h-auto w-[clamp(5.5rem,12vw,13rem)] max-w-[72%] overflow-visible opacity-0 sm:top-[22%]";
 
-const ICON_REVEAL_SECONDS = 0.16;
-const ICON_HOLD_SECONDS = 0.5;
+// The whole intro, in real seconds: the icon, its morph through E, H and Y, then the three letters drawn and filled
+// over the counter. With the column wipe after it, the page shows up about 1.5 s after the first paint.
+const ICON_REVEAL_SECONDS = 0.07;
+const ICON_HOLD_SECONDS = 0.05;
 const MORPH_START_SECONDS = ICON_REVEAL_SECONDS + ICON_HOLD_SECONDS;
-const LETTER_DRAW_SECONDS = 0.82;
-const LETTER_FILL_SECONDS = 0.74;
-const LETTER_STEP_SECONDS = 0.88;
-const MORPH_EXIT_SECONDS = MORPH_START_SECONDS + 1.66;
-const FIRST_LETTER_DRAW_SECONDS = MORPH_EXIT_SECONDS + 0.18;
+// One morph (icon to E, E to H, H to Y) and the time from one to the next.
+const MORPH_SECONDS = 0.15;
+const MORPH_STEP_SECONDS = 0.13;
+const MORPH_EXIT_SECONDS = MORPH_START_SECONDS + 0.1 + MORPH_STEP_SECONDS * 3;
+const LETTER_DRAW_SECONDS = 0.26;
+const LETTER_FILL_SECONDS = 0.14;
+const LETTER_STEP_SECONDS = 0.05;
+const FIRST_LETTER_DRAW_SECONDS = MORPH_EXIT_SECONDS + 0.03;
 const LETTER_FILL_START_SECONDS =
-	FIRST_LETTER_DRAW_SECONDS +
-	LETTER_STEP_SECONDS * 2 +
-	LETTER_DRAW_SECONDS +
-	0.06;
-const LOADER_TIMELINE_SECONDS =
-	LETTER_FILL_START_SECONDS + LETTER_FILL_SECONDS + 0.03;
-const LOADER_TIMELINE_WALL_SECONDS = LOADER_TIMELINE_SECONDS - 2;
-const LOADER_TIMELINE_TIMESCALE =
-	LOADER_TIMELINE_SECONDS / LOADER_TIMELINE_WALL_SECONDS;
-const MIN_LOGO_SCREEN_MS = LOADER_TIMELINE_WALL_SECONDS * 1000;
+	FIRST_LETTER_DRAW_SECONDS + LETTER_STEP_SECONDS * 2 + LETTER_DRAW_SECONDS * 0.6;
+const LOADER_TIMELINE_SECONDS = LETTER_FILL_START_SECONDS + LETTER_FILL_SECONDS;
+const MIN_LOGO_SCREEN_MS = LOADER_TIMELINE_SECONDS * 1000;
+// The columns wipe away in this long (each column, plus the stagger between them).
+const EXIT_SECONDS = 0.34;
+const EXIT_STAGGER_SECONDS = 0.025;
 
 // The full intro plays once per tab session; later loads replay the same animation, just faster.
 const INTRO_SEEN_KEY = "ewzxyh:intro-seen";
-const QUICK_REPLAY_SPEED = 2.6;
+const QUICK_REPLAY_SPEED = 1.8;
 // The background (and everything behind the loader) is told to get ready at this point of the timeline.
 const READY_SIGNAL_SECONDS = MORPH_EXIT_SECONDS;
 
@@ -110,31 +111,10 @@ function markIntroSeen() {
 	}
 }
 
-type AsciiArt = { text: string; columns: number; lines: number };
-
-const ASCII_URL = "/loader-ascii-column-4.txt";
-let asciiRequest: Promise<AsciiArt | null> | null = null;
-
-function parseAscii(raw: string): AsciiArt {
-	const lines = raw.replace(/\r?\n$/, "").split(/\r?\n/);
-	const columns = Math.max(1, ...lines.map((line) => line.length));
-	return {
-		text: lines.map((line) => line.padEnd(columns, " ")).join("\n"),
-		columns,
-		lines: Math.max(1, lines.length),
-	};
-}
-
-// Started as soon as this module loads (and hinted in <head>) so the art is ready when the loader hydrates.
-function requestAscii() {
-	asciiRequest ??= fetch(ASCII_URL)
-		.then((response) => (response.ok ? response.text() : Promise.reject(new Error("ascii art"))))
-		.then(parseAscii)
-		.catch(() => null);
-	return asciiRequest;
-}
-
-if (typeof window !== "undefined") void requestAscii();
+// The ASCII drawing of Atlas in the wide column, rasterized once (300x298 characters of Courier New at 30%): as text,
+// those ~90k glyphs cost 40-70 ms of a phone's frame while the logo animates; as an image they cost one decode.
+const ATLAS_SRCSET = "/loader/atlas-400.avif 400w, /loader/atlas-640.avif 640w, /loader/atlas-960.avif 960w";
+const ATLAS_SIZES = "(min-width: 640px) 34vw, 32vw";
 
 type FinalLetter = keyof typeof finalLetterShapes;
 type CounterColumn = {
@@ -158,7 +138,7 @@ export function PageLoader() {
 	// came for the project, the full intro belongs to the home page.
 	const openedOnHome = useRef(isHomePath(usePathname()));
 	const [showLogoScreen, setShowLogoScreen] = useState(true);
-	const [ascii, setAscii] = useState<AsciiArt | null>(null);
+	const [atlasLoaded, setAtlasLoaded] = useState(false);
 	const { setLoadingComplete, setAlmostComplete, setRevealing } = useLoading();
 
 	// The animation effect must not restart when the provider re-renders: it reads the latest callbacks here.
@@ -182,16 +162,6 @@ export function PageLoader() {
 		counterDigitsRef.current.forEach((digit, index) => {
 			digit.textContent = formatted[index] ?? "0";
 		});
-	}, []);
-
-	useEffect(() => {
-		let active = true;
-		void requestAscii().then((art) => {
-			if (active && art) setAscii(art);
-		});
-		return () => {
-			active = false;
-		};
 	}, []);
 
 	useEffect(() => {
@@ -244,18 +214,18 @@ export function PageLoader() {
 				columns,
 				{
 					yPercent: -105,
-					duration: 0.75,
+					duration: EXIT_SECONDS,
 					ease: "power3.inOut",
-					stagger: 0.06,
+					stagger: EXIT_STAGGER_SECONDS,
 				},
-				0.05,
+				0,
 			);
 			// Page content starts entering while the columns are still wiping away.
-			exitTimeline.call(() => loadingRef.current.setRevealing(), undefined, 0.3);
-			exitTimeline.timeScale(quick ? 1.5 : 1);
+			exitTimeline.call(() => loadingRef.current.setRevealing(), undefined, 0.1);
+			exitTimeline.timeScale(quick ? 1.3 : 1);
 
 			// Keep the page usable if a throttled browser drops GSAP's completion callback.
-			exitFallbackTimer = window.setTimeout(finish, 1400);
+			exitFallbackTimer = window.setTimeout(finish, 900);
 		};
 
 		const requestExit = (immediate = false) => {
@@ -387,7 +357,7 @@ export function PageLoader() {
 							{
 								rotate: 0,
 								scale: 1,
-								duration: 0.4,
+								duration: 0.14,
 								ease: "expo.inOut",
 							},
 							MORPH_START_SECONDS,
@@ -397,10 +367,10 @@ export function PageLoader() {
 							morphGroup,
 							{
 								rotate: 8,
-								duration: 0.6,
+								duration: 0.2,
 								ease: "none",
 							},
-							MORPH_START_SECONDS + 0.18,
+							MORPH_START_SECONDS + 0.06,
 						);
 
 						const morphTo = (
@@ -414,7 +384,7 @@ export function PageLoader() {
 									y: state.y,
 									rotate: 0,
 									scale: 1,
-									duration: 0.36,
+									duration: MORPH_SECONDS,
 									ease: "power3.inOut",
 								},
 								position,
@@ -428,7 +398,7 @@ export function PageLoader() {
 											shape: state.paths[index],
 											shapeIndex: "auto",
 										},
-										duration: 0.36,
+										duration: MORPH_SECONDS,
 										ease: "power3.inOut",
 									},
 									position,
@@ -437,17 +407,17 @@ export function PageLoader() {
 									path,
 									{
 										opacity: state.opacities[index],
-										duration: 0.18,
+										duration: 0.08,
 										ease: "power2.out",
 									},
-									position + 0.08,
+									position + 0.04,
 								);
 							});
 						};
 
-						morphTo(morphStates.e, MORPH_START_SECONDS + 0.52);
-						morphTo(morphStates.h, MORPH_START_SECONDS + 0.9);
-						morphTo(morphStates.y, MORPH_START_SECONDS + 1.28);
+						morphTo(morphStates.e, MORPH_START_SECONDS + 0.1);
+						morphTo(morphStates.h, MORPH_START_SECONDS + 0.1 + MORPH_STEP_SECONDS);
+						morphTo(morphStates.y, MORPH_START_SECONDS + 0.1 + MORPH_STEP_SECONDS * 2);
 					}
 
 					if (morphSvg) {
@@ -456,7 +426,7 @@ export function PageLoader() {
 							{
 								opacity: 0,
 								scale: 1,
-								duration: 0.18,
+								duration: 0.08,
 								ease: "power3.inOut",
 							},
 							MORPH_EXIT_SECONDS,
@@ -475,7 +445,7 @@ export function PageLoader() {
 								autoAlpha: 1,
 								y: 0,
 								scale: 1,
-								duration: 0.12,
+								duration: 0.08,
 								ease: "power2.out",
 							},
 							position,
@@ -509,7 +479,7 @@ export function PageLoader() {
 
 					tl.call(markReady, undefined, READY_SIGNAL_SECONDS);
 					tl.to({}, { duration: 0.01 }, LOADER_TIMELINE_SECONDS - 0.01);
-					tl.timeScale(LOADER_TIMELINE_TIMESCALE * speed);
+					tl.timeScale(speed);
 				}, containerRef);
 			} catch {
 				showFinalState();
@@ -532,10 +502,10 @@ export function PageLoader() {
 		<div
 			ref={containerRef}
 			data-page-loader=""
-			className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-200 dark:bg-stone-800"
+			className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden bg-stone-200"
 		>
 			<div
-				className={`${atAmiga.className} absolute inset-0 grid grid-cols-[minmax(0,0.18fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.18fr)] sm:grid-cols-[minmax(0,0.06fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.06fr)] pointer-events-none select-none overflow-hidden text-foreground/10 dark:text-foreground/10`}
+				className={`${atAmiga.className} absolute inset-0 grid grid-cols-[minmax(0,0.18fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.18fr)] sm:grid-cols-[minmax(0,0.06fr)_repeat(3,minmax(0,0.78fr))_minmax(0,1.55fr)_minmax(0,0.06fr)] pointer-events-none select-none overflow-hidden text-foreground/10`}
 				aria-hidden="true"
 			>
 				{counterColumns.map(({ key, digitIndex, letter }, columnIndex) => (
@@ -544,7 +514,7 @@ export function PageLoader() {
 						ref={(el) => {
 							if (el) columnRefs.current[columnIndex] = el;
 						}}
-						className={`flex items-end justify-center overflow-hidden border-l border-foreground/10 bg-stone-200 pb-8 will-change-transform first:border-l-0 sm:pb-12 dark:bg-stone-800 ${
+						className={`flex items-end justify-center overflow-hidden border-l border-foreground/10 bg-stone-200 pb-8 will-change-transform first:border-l-0 sm:pb-12 ${
 							letter || key === "empty-main" ? "relative" : ""
 						}`}
 					>
@@ -623,27 +593,21 @@ export function PageLoader() {
 								0
 							</span>
 						)}
-						{key === "empty-main" && ascii && (
-							// Sized purely in CSS (container query units): no measuring, no resize jump.
-							<div className="absolute inset-x-2 bottom-8 top-8 flex items-end justify-center overflow-hidden [container-type:size] sm:inset-x-4 sm:bottom-12 sm:top-12">
-								<pre
-									className="animate-in fade-in duration-700 whitespace-pre text-center font-bold text-foreground/30"
-									style={
-										{
-											"--ascii-columns": ascii.columns,
-											"--ascii-lines": ascii.lines,
-											fontFamily: '"Courier New", monospace',
-											fontSize:
-												"min(calc(100cqw / (var(--ascii-columns) * 0.6)), calc(100cqh / var(--ascii-lines)))",
-											lineHeight: 1,
-											fontVariantLigatures: "none",
-											letterSpacing: 0,
-											tabSize: 1,
-										} as CSSProperties
-									}
-								>
-									{ascii.text}
-								</pre>
+						{key === "empty-main" && (
+							<div className="absolute inset-x-2 bottom-8 top-8 sm:inset-x-4 sm:bottom-12 sm:top-12">
+								{/* biome-ignore lint/performance/noImgElement: the three AVIF sizes are made for this slot already; the image optimizer would only add a round trip while the loader is up. */}
+								<img
+									srcSet={ATLAS_SRCSET}
+									sizes={ATLAS_SIZES}
+									alt=""
+									decoding="async"
+									// A cached image can finish before hydration, when onLoad is already gone.
+									ref={(image) => {
+										if (image?.complete) setAtlasLoaded(true);
+									}}
+									onLoad={() => setAtlasLoaded(true)}
+									className={`size-full object-contain object-bottom transition-opacity duration-300 ${atlasLoaded ? "opacity-100" : "opacity-0"}`}
+								/>
 							</div>
 						)}
 					</div>

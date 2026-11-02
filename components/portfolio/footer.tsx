@@ -32,12 +32,12 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 px-4 sm:px-6">
           {/* Logo/Name */}
           <div className="flex items-center gap-2">
-            <span className="text-xs sm:text-sm font-medium tracking-wider">EWZXYH_LABS</span>
+            <span className="text-sm font-medium tracking-wider">EWZXYH_LABS</span>
           </div>
 
           {/* Copyright and the link to the other language (a real link, so crawlers find the other version) */}
           <div className="flex flex-col items-center gap-1 text-center">
-            <p className="text-xs sm:text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {currentYear} Ewzxyh Labs. {t("footer.rights")}
             </p>
             <a
@@ -50,24 +50,24 @@ export function Footer() {
                 event.preventDefault()
                 setLocale(otherLocale)
               }}
-              className="text-xs sm:text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
+              className="inline-flex min-h-11 items-center text-sm text-muted-foreground underline underline-offset-4 transition-colors hover:text-foreground"
             >
               {t("footer.otherLanguage")}
             </a>
           </div>
 
           {/* Social Links */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             {socialLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                className="grid size-11 place-items-center text-muted-foreground transition-colors hover:text-foreground"
                 aria-label={link.label}
               >
-                <link.icon aria-hidden="true" className="w-4 h-4 sm:w-5 sm:h-5" />
+                <link.icon aria-hidden="true" className="size-5" />
               </a>
             ))}
           </div>

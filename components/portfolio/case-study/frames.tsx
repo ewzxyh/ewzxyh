@@ -11,7 +11,7 @@ export function BrowserFrame({ address, children, className = "" }: { address?: 
           <span className="size-2 rounded-full bg-foreground/20 sm:size-2.5" />
         </span>
         {address && (
-          <span className="min-w-0 flex-1 truncate bg-background/70 px-2 py-0.5 text-center font-mono text-[10px] text-muted-foreground sm:text-xs">
+          <span className="min-w-0 flex-1 truncate bg-background/70 px-2 py-0.5 text-center font-mono text-xs text-muted-foreground">
             {address}
           </span>
         )}
@@ -39,6 +39,7 @@ export function PhoneFrame({ children, className = "" }: { children: ReactNode; 
   return (
     <div className={`relative ${className}`}>
       {PHONE_BUTTONS.map((button) => (
+        // ai-design-check-ignore-next-line spacing-scale -- the side buttons are drawn at the device's 3px depth
         <span
           key={`${button.side}-${button.top}`}
           aria-hidden="true"
@@ -48,7 +49,10 @@ export function PhoneFrame({ children, className = "" }: { children: ReactNode; 
           }`}
         />
       ))}
+      {/* ai-design-check-ignore-next-line radius-scale -- iPhone corner geometry, in percent so it holds at any width */}
+      {/* ai-design-check-ignore-next-line no-heavy-card-shadow -- a device lifted off the card, not a card */}
       <div className="relative rounded-[13%/6.2%] border border-foreground/55 bg-background p-[1.6%] shadow-xl shadow-black/15">
+        {/* ai-design-check-ignore-next-line radius-scale -- the screen corner follows the body corner minus the bezel */}
         <div className="relative overflow-hidden rounded-[11.5%/5.4%] border-[3px] border-neutral-950 bg-neutral-950">
           {/* The status bar above the page (the captures are the page alone), with the Dynamic Island in it. Padding
               percentages follow the width, like the 54 of 390 points on the device. */}

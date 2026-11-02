@@ -25,10 +25,11 @@ export function Home({ locale }: { locale: SiteLocale }) {
         <Header />
         <Hero />
         {/* <Services /> */}
+        {/* The work first: it slides over the pinned hero. */}
+        <Projects />
         <About />
         <Skills />
         <Experience />
-        <Projects />
         <Contact />
         <Footer />
       </main>

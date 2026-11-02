@@ -1,13 +1,12 @@
 import { createFluidEngine, type FluidEngine, type FluidEngineOptions } from "./fluid-engine"
 
 // Runs the background shader off the main thread: context creation, shader work and draw calls never
-// block hydration, GSAP or scrolling. The page only forwards pointer, size and theme updates.
+// block hydration, GSAP or scrolling. The page only forwards pointer and size updates.
 
 type Message =
   | { type: "init"; canvas: OffscreenCanvas; options: FluidEngineOptions; timeOrigin: number }
   | { type: "resize"; width: number; height: number; deviceRatio: number }
   | { type: "pointer"; x: number; y: number; time: number }
-  | { type: "dark"; value: boolean }
   | { type: "paused"; value: boolean }
   | { type: "hidden"; value: boolean }
 
@@ -32,9 +31,6 @@ scope.onmessage = (event: MessageEvent<Message>) => {
       break
     case "pointer":
       engine?.pointer(message.x, message.y, message.time + clockOffset)
-      break
-    case "dark":
-      engine?.setDark(message.value)
       break
     case "paused":
       engine?.setPaused(message.value)

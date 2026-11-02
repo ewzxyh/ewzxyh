@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { DatabaseIcon, LightbulbIcon, PaletteIcon } from "@/components/ui/icons"
 import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { useI18n } from "@/lib/i18n"
@@ -12,22 +11,10 @@ import { SectionHeading } from "./section-heading"
 gsap.registerPlugin(ScrollTrigger)
 
 const highlightsData = [
-  {
-    icon: LightbulbIcon,
-    titleKey: "about.product" as const,
-    descKey: "about.product.desc" as const,
-  },
-  {
-    icon: PaletteIcon,
-    titleKey: "about.design" as const,
-    descKey: "about.design.desc" as const,
-  },
-  {
-    icon: DatabaseIcon,
-    titleKey: "about.fullstack" as const,
-    descKey: "about.fullstack.desc" as const,
-  },
-]
+  { titleKey: "about.product", descKey: "about.product.desc" },
+  { titleKey: "about.design", descKey: "about.design.desc" },
+  { titleKey: "about.fullstack", descKey: "about.fullstack.desc" },
+] as const
 
 const ABOUT_SECTION_ID = "about"
 const ABOUT_CONTENT_ID = "about-content"
@@ -124,9 +111,9 @@ export function About() {
             {/* Who, in one paragraph. The roles themselves are in Experience. */}
             <div className="grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.7fr)] lg:gap-16 lg:p-14">
               <div ref={headerRef}>
-                <SectionHeading index="01" label={t("about.label")} title={t("about.title")} />
+                <SectionHeading title={t("about.title")} />
               </div>
-              <p ref={bioRef} className="max-w-[40ch] text-xl leading-snug text-pretty text-muted-foreground sm:text-2xl xl:text-[1.75rem]">
+              <p ref={bioRef} className="max-w-[40ch] text-xl leading-snug text-pretty text-muted-foreground sm:text-2xl xl:text-3xl">
                 <Emphasis text={t("about.bio")} />
               </p>
             </div>
@@ -135,22 +122,15 @@ export function About() {
               <DitherWave className="h-44 sm:h-60 lg:h-72" />
             </div>
 
-            {/* How Enzo works */}
-            <ul className="grid border-t border-border sm:grid-cols-3" aria-label={t("about.principles")}>
-              {highlightsData.map((item, index) => (
-                <li
-                  key={item.titleKey}
-                  className="highlight-card group border-b border-border p-5 transition-colors duration-300 last:border-b-0 hover:bg-card sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0"
-                >
-                  <div className="flex items-center justify-between">
-                    <item.icon className="size-6 text-muted-foreground transition-colors group-hover:text-foreground" />
-                    <span className="font-mono text-xs text-muted-foreground">{String(index + 1).padStart(2, "0")}</span>
-                  </div>
-                  <h3 className="mt-6 font-medium sm:text-lg">{t(item.titleKey)}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{t(item.descKey)}</p>
-                </li>
+            {/* How Enzo works: three short statements in a row, the title above its line */}
+            <dl className="grid border-t border-border sm:grid-cols-3" aria-label={t("about.principles")}>
+              {highlightsData.map((item) => (
+                <div key={item.titleKey} className="highlight-card border-b border-border p-5 last:border-b-0 sm:border-r sm:border-b-0 sm:p-7 sm:last:border-r-0">
+                  <dt className="text-lg font-medium">{t(item.titleKey)}</dt>
+                  <dd className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">{t(item.descKey)}</dd>
+                </div>
               ))}
-            </ul>
+            </dl>
           </div>
         </div>
       </div>

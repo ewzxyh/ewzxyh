@@ -238,7 +238,7 @@ function experienceSection(locale: Locale, level: number) {
   )
 
   const schools = education.map((item) => {
-    const status = item.status ? `, ${tr(locale, educationStatusKeys[item.status]).toLowerCase()}` : ""
+    const status = item.status ? `, ${tr(locale, educationStatusKeys[item.status]).toLocaleLowerCase(locale)}` : ""
     return `**${item.institution}**, ${localize(item.location, locale)}: ${tr(locale, item.degreeKey)} (${formatPeriod(item.period, locale)}${status})`
   })
 

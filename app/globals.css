@@ -2,10 +2,10 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
   --breakpoint-xs: 320px;
+  /* One strong ease-out for interface motion (presses, hovers, reveals): fast start, long settle. */
+  --ease-ui: cubic-bezier(0.23, 1, 0.32, 1);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-jetbrains-mono);
@@ -95,42 +95,6 @@
   --sidebar-ring: oklch(0.553 0.013 58);
 }
 
-.dark {
-  --background: oklch(0.147 0.004 49);
-  --foreground: oklch(0.970 0.001 106);
-  --card: oklch(0.186 0.005 50);
-  --card-foreground: oklch(0.970 0.001 106);
-  --popover: oklch(0.147 0.004 49);
-  --popover-foreground: oklch(0.970 0.001 106);
-  --primary: oklch(0.970 0.001 106);
-  --primary-foreground: oklch(0.147 0.004 49);
-  --secondary: oklch(0.186 0.005 50);
-  --secondary-foreground: oklch(0.970 0.001 106);
-  --muted: oklch(0.186 0.005 50);
-  --muted-foreground: oklch(0.659 0.010 56);
-  --accent: oklch(0.970 0.001 106);
-  --accent-foreground: oklch(0.147 0.004 49);
-  --destructive: oklch(0.65 0.2 25);
-  --border: oklch(0.268 0.007 34);
-  --input: oklch(0.186 0.005 50);
-  --ring: oklch(0.553 0.013 58);
-  --glow: oklch(0.709 0.010 56);
-  --hover-bg: oklch(0.970 0.001 106);
-  --hover-text: oklch(0.147 0.004 49);
-  --chart-1: oklch(0.709 0.010 56);
-  --chart-2: oklch(0.659 0.010 56);
-  --chart-3: oklch(0.553 0.013 58);
-  --chart-4: oklch(0.444 0.011 74);
-  --chart-5: oklch(0.374 0.010 68);
-  --sidebar: oklch(0.147 0.004 49);
-  --sidebar-foreground: oklch(0.970 0.001 106);
-  --sidebar-primary: oklch(0.970 0.001 106);
-  --sidebar-primary-foreground: oklch(0.147 0.004 49);
-  --sidebar-accent: oklch(0.970 0.001 106);
-  --sidebar-accent-foreground: oklch(0.147 0.004 49);
-  --sidebar-border: oklch(0.268 0.007 34);
-  --sidebar-ring: oklch(0.553 0.013 58);
-}
 
 @layer base {
   * {
@@ -198,37 +162,6 @@
     }
   }
 
-  /* Icon hover animation */
-  svg,
-  .icon {
-    transition: transform 0.2s ease;
-  }
-
-  button:hover svg,
-  button:hover .icon,
-  a:hover svg,
-  a:hover .icon,
-  [role="button"]:hover svg,
-  [role="button"]:hover .icon,
-  [data-state]:hover svg,
-  label:hover svg,
-  .group:hover svg,
-  .group:hover .icon {
-    transform: scale(1.1);
-  }
-
-  button:active svg,
-  button:active .icon,
-  a:active svg,
-  a:active .icon,
-  [role="button"]:active svg,
-  [role="button"]:active .icon,
-  [data-state]:active svg,
-  label:active svg,
-  .group:active svg,
-  .group:active .icon {
-    transform: scale(0.95);
-  }
 }
 
 /* Hide Scrollbar - All Browsers */
@@ -270,25 +203,7 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* Cyberpunk Effects */
-@keyframes scan-line {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
-}
-
-@keyframes glow-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-@keyframes glitch {
-  0%, 100% { transform: translate(0); }
-  20% { transform: translate(-2px, 2px); }
-  40% { transform: translate(-2px, -2px); }
-  60% { transform: translate(2px, 2px); }
-  80% { transform: translate(2px, -2px); }
-}
-
+/* Hero name flicker */
 @keyframes flicker {
   0%, 100% { opacity: 1; }
   92% { opacity: 1; }
@@ -298,87 +213,21 @@ html.lenis body {
   97% { opacity: 1; }
 }
 
-@keyframes typewriter {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-.animate-scan-line {
-  animation: scan-line 8s linear infinite;
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
-.animate-glitch {
-  animation: glitch 0.3s ease-in-out;
-}
-
 .animate-flicker {
   animation: flicker 4s linear infinite;
-}
-
-.animate-typewriter {
-  overflow: hidden;
-  white-space: nowrap;
-  animation: typewriter 2s steps(40) forwards;
 }
 
 /* Animations that loop forever (status dots, the blinking cursor, the hero name flicker) stand still when motion is
    reduced: by the system setting until the visitor chooses otherwise, or by the pause button in the header
    (html[data-motion], see lib/motion.ts). WCAG 2.2.2 and 2.3.3. */
 @media (prefers-reduced-motion: reduce) {
-  html:not([data-motion="full"]) :is(.animate-ping, .animate-pulse, .animate-flicker, .animate-glow-pulse, .animate-scan-line) {
+  html:not([data-motion="full"]) :is(.animate-ping, .animate-pulse, .animate-flicker) {
     animation: none;
   }
 }
 
-html[data-motion="reduce"] :is(.animate-ping, .animate-pulse, .animate-flicker, .animate-glow-pulse, .animate-scan-line) {
+html[data-motion="reduce"] :is(.animate-ping, .animate-pulse, .animate-flicker) {
   animation: none;
-}
-
-/* Cyberpunk Utilities */
-.cyber-glow {
-  text-shadow: 0 0 10px var(--glow), 0 0 20px var(--glow), 0 0 40px var(--glow);
-}
-
-.cyber-border {
-  border: 1px solid var(--border);
-  position: relative;
-}
-
-.cyber-border::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  background: linear-gradient(90deg, transparent, var(--glow), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.cyber-border:hover::before {
-  opacity: 0.5;
-}
-
-.cyber-grid {
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-.cyber-noise {
-  position: relative;
-}
-
-.cyber-noise::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  opacity: 0.4;
 }
 
 /* Selection */

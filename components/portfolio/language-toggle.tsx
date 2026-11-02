@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useEffect } from "react"
+import { Button } from "@/components/ui/button"
 import { useI18n } from "@/lib/i18n"
 import { onIdle } from "@/lib/idle"
 import { useMounted } from "@/hooks/use-mounted"
@@ -25,15 +26,11 @@ export function LanguageToggle() {
   return (
     <>
       {/* Language Toggle Button. Its name starts with the code it shows (WCAG 2.5.3) and says what pressing it does. */}
-      <button
-        type="button"
-        data-cuelume-toggle
-        onClick={toggleLocale}
-        className="inline-flex h-9 flex-shrink-0 items-center border border-border bg-background px-2.5 text-xs font-medium tracking-wide text-foreground transition-colors duration-300 hover:bg-foreground hover:text-background sm:h-10 sm:text-sm"
-      >
+      <Button variant="quiet" size="chip" data-cuelume-toggle onClick={toggleLocale}>
+        {/* ai-design-check-ignore-next-line sentence-case -- language codes are written in capitals */}
         {locale === "pt-BR" ? "EN-US" : "PT-BR"}
         <span className="sr-only">, {t("nav.language")}</span>
-      </button>
+      </Button>
 
       {/* Bat Animation Overlay */}
       {isTransitioning && <BatOverlay />}

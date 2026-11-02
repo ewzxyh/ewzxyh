@@ -7,6 +7,7 @@ import { caseshop } from "./caseshop"
 import { casezap } from "./casezap"
 import { chatcase } from "./chatcase"
 import { grapnel } from "./grapnel"
+import { grapnelAgentes } from "./grapnel-agentes"
 import { lorenzpay } from "./lorenzpay"
 import { loteriaAmazonas } from "./loteria-amazonas"
 import { loteriaCaseshop } from "./loteria-caseshop"
@@ -18,7 +19,7 @@ import type { CaseStudy } from "./types"
 export type { CaseStudy, CaseStudyMedia, Shot } from "./types"
 
 const all: Record<string, CaseStudy> = Object.fromEntries(
-  [grapnel, lotohub, casepay, seloesgo, marketplaceApi, casezap, chatcase, loteriaAmazonas, loteriaCaseshop, caseshop, lorenzpay].map(
+  [grapnel, grapnelAgentes, lotohub, casepay, seloesgo, marketplaceApi, casezap, chatcase, loteriaAmazonas, loteriaCaseshop, caseshop, lorenzpay].map(
     (study) => [study.slug, study],
   ),
 )

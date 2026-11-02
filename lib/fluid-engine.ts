@@ -31,7 +31,6 @@ uniform vec2 uTrailVelocities[24];
 uniform float uTrailAges[24];
 uniform int uTrailCount;
 uniform float uHoleIntensity;
-uniform float uDarkMode;
 uniform float uWorld;
 uniform float uLineWidth;
 
@@ -294,22 +293,11 @@ void main() {
 
   float noise = getNoiseField(uvAspect + mouseOffset);
 
-  // Tailwind stone palette (light mode)
-  vec3 bgColorLight = vec3(0.961, 0.961, 0.957);
-  vec3 lineColorLight = vec3(0.839, 0.827, 0.820);
-  vec3 blobColorLight = vec3(0.873, 0.863, 0.857);
-  vec3 fillColorLight = vec3(0.749, 0.731, 0.720);
-
-  // Tailwind stone palette (dark mode)
-  vec3 bgColorDark = vec3(0.047, 0.039, 0.035);
-  vec3 lineColorDark = vec3(0.267, 0.251, 0.235);
-  vec3 blobColorDark = vec3(0.090, 0.078, 0.071);
-  vec3 fillColorDark = vec3(0.267, 0.251, 0.235);
-
-  vec3 bgColor = mix(bgColorLight, bgColorDark, uDarkMode);
-  vec3 lineColor = mix(lineColorLight, lineColorDark, uDarkMode);
-  vec3 blobColor = mix(blobColorLight, blobColorDark, uDarkMode);
-  vec3 fillColor = mix(fillColorLight, fillColorDark, uDarkMode);
+  // Tailwind stone palette
+  vec3 bgColor = vec3(0.961, 0.961, 0.957);
+  vec3 lineColor = vec3(0.839, 0.827, 0.820);
+  vec3 blobColor = vec3(0.873, 0.863, 0.857);
+  vec3 fillColor = vec3(0.749, 0.731, 0.720);
 
   float line1 = isoline(noise, 0.40, uLineWidth);
   float line2 = isoline(noise, 0.55, uLineWidth);
@@ -356,7 +344,6 @@ const uniformNames = [
   "uTrailAges",
   "uTrailCount",
   "uHoleIntensity",
-  "uDarkMode",
   "uWorld",
   "uLineWidth",
 ] as const
@@ -380,7 +367,6 @@ export interface FluidEngineOptions {
   // CSS pixels
   width: number
   height: number
-  dark: boolean
   paused: boolean
 }
 
@@ -395,7 +381,6 @@ export interface FluidEngine {
   resize: (width: number, height: number, deviceRatio: number) => void
   // x/y are relative to the canvas (0..1, y growing downwards); timeMs is on this thread's performance.now() clock.
   pointer: (x: number, y: number, timeMs: number) => void
-  setDark: (dark: boolean) => void
   setPaused: (paused: boolean) => void
   setHidden: (hidden: boolean) => void
   dispose: () => void
@@ -434,7 +419,6 @@ export function createFluidEngine(
   let deviceRatio = options.deviceRatio
   let paused = options.paused
   let hidden = false
-  let darkMode = options.dark ? 1 : 0
   let disposed = false
   let contextLost = false
   let ready = false
@@ -654,7 +638,6 @@ export function createFluidEngine(
     const count = trailBuffer.length
 
     gl.uniform1f(uniforms.uTime, timeSeconds)
-    gl.uniform1f(uniforms.uDarkMode, darkMode)
     gl.uniform2f(uniforms.uMouse, mouseX, mouseY)
     gl.uniform2f(uniforms.uVelocity, velocityX * 0.01, velocityY * 0.01)
     gl.uniform1f(uniforms.uHoleIntensity, holeIntensity)
@@ -753,10 +736,6 @@ export function createFluidEngine(
       schedule()
     },
     pointer: handlePointer,
-    setDark(dark) {
-      darkMode = dark ? 1 : 0
-      schedule()
-    },
     setPaused(next) {
       paused = next
       if (!next) schedule()

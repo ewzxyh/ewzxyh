@@ -1,5 +1,7 @@
 "use client"
 
+// ai-design-check-ignore-file use-shared-looks -- hidden section (commented out in home.tsx), kept as it was for a later restore
+
 import { BoxIcon, RoutingIcon, Widget4Icon } from "@/components/ui/icons"
 import { useI18n } from "@/lib/i18n"
 

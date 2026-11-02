@@ -114,8 +114,8 @@ export function ScrollFillLogo() {
               if (el) pathsRef.current[i] = el
             }}
             d={d}
-            fill="#ffffff"
-            stroke="#ffffff"
+            fill="currentColor"
+            stroke="currentColor"
             strokeWidth="2"
             style={{ fillOpacity: 0, strokeOpacity: 0.3 }}
           />

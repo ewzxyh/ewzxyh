@@ -52,10 +52,10 @@ export const siteMetadata: Metadata = {
   appleWebApp: { title: siteName, capable: false },
 }
 
-// The site opens in its light theme (next-themes, no system detection), so the browser UI starts light as well.
+// The site has a single light theme, so the browser UI (address bar, form controls) stays light as well.
 export const siteViewport: Viewport = {
   themeColor: "#f5f5f4",
-  colorScheme: "light dark",
+  colorScheme: "light",
 }
 
 const openGraphLocales: Record<SiteLocale, string> = { "pt-BR": "pt_BR", "en-US": "en_US" }

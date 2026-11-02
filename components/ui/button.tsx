@@ -8,8 +8,8 @@ import { buttonVariants } from "@/components/ui/button-variants"
 
 function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant = "solid",
+  size = "md",
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
   return (

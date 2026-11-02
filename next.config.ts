@@ -61,11 +61,10 @@ const nextConfig: NextConfig = {
       // One language per URL (see lib/site.ts): Bing and other consumers read the language from this header.
       { source: "/", headers: [{ key: "Content-Language", value: "pt-BR" }] },
       { source: "/en", headers: [{ key: "Content-Language", value: "en" }] },
-      ...["gallery", "hero", "empresas", "estudo", "certificados", "og", "favicon", "lottie"].map((directory) => ({
+      ...["gallery", "hero", "loader", "empresas", "estudo", "certificados", "og", "favicon", "lottie"].map((directory) => ({
         source: `/${directory}/:path*`,
         headers: staticAssetCacheControl,
       })),
-      { source: "/loader-ascii-column-4.txt", headers: staticAssetCacheControl },
       { source: "/:file([^/]+\\.(?:svg|png|webp|jpe?g|json|lottie))", headers: staticAssetCacheControl },
     ]
   },

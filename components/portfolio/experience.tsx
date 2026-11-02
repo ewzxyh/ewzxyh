@@ -23,19 +23,18 @@ import {
 import { projectPath } from "@/lib/site"
 import { ArrowRightIcon /* , SquareAcademicCapIcon */ } from "@/components/ui/icons"
 import { SectionHeading } from "./section-heading"
+import { Heading } from "@/components/ui/heading"
 
 gsap.registerPlugin(ScrollTrigger)
 
 const EXPERIENCE_SECTION_ID = "experience"
 
-function Logo({ src, alt, size, invertInDark }: { src?: string; alt: string; size: "sm" | "md"; invertInDark?: boolean }) {
+function Logo({ src, alt, size }: { src?: string; alt: string; size: "sm" | "md" }) {
   const box = size === "md" ? "size-10 sm:size-12" : "size-8"
   const image = size === "md" ? "size-6 sm:size-7" : "size-5"
   return (
     <div className={`flex shrink-0 items-center justify-center overflow-hidden border border-border bg-card ${box}`}>
-      {src && (
-        <Image src={src} alt={alt} width={28} height={28} className={`object-contain ${image} ${invertInDark ? "dark:invert" : ""}`} />
-      )}
+      {src && <Image src={src} alt={alt} width={28} height={28} className={`object-contain ${image}`} />}
     </div>
   )
 }
@@ -51,37 +50,37 @@ function WorkItem({ job }: { job: ExperienceItem }) {
     <li className="experience-item relative pb-14 pl-9 last:pb-0 sm:pb-16 sm:pl-12">
       <span
         aria-hidden="true"
-        className="timeline-dot absolute top-3 left-0 grid size-[15px] place-items-center border border-border bg-background"
+        className="timeline-dot absolute top-3 left-0 grid size-4 place-items-center border border-border bg-background"
       >
-        <span className="size-[7px] bg-orange-500" />
+        <span className="size-2 bg-orange-500" />
       </span>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <Logo src={job.logo} alt={job.company} size="md" invertInDark={job.invertLogoInDark} />
+          <Logo src={job.logo} alt={job.company} size="md" />
           <div className="min-w-0">
-            <h3 className="text-lg font-semibold tracking-tight sm:text-xl">{job.company}</h3>
+            <Heading size="md">{job.company}</Heading>
             <p className="text-sm text-pretty text-muted-foreground">
               {t(job.roleKey)} · {employmentTypes[job.type][locale]} · {workplaces[job.workplace][locale]}
             </p>
           </div>
         </div>
-        <p className="shrink-0 pl-[3.25rem] font-mono text-xs whitespace-nowrap text-muted-foreground tabular-nums sm:pt-1.5 sm:pl-0 sm:text-sm">
+        <p className="shrink-0 pl-13 font-mono text-sm whitespace-nowrap text-muted-foreground tabular-nums sm:pt-1.5 sm:pl-0">
           {formatPeriod(job.period, locale)}
         </p>
       </div>
 
-      <p className="mt-5 max-w-[65ch] text-sm leading-relaxed text-pretty text-muted-foreground sm:text-base">{t(job.descKey)}</p>
+      <p className="mt-5 max-w-[65ch] text-base leading-relaxed text-pretty text-muted-foreground">{t(job.descKey)}</p>
 
       {related.length > 0 && (
         <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
-          <span className="text-[11px] tracking-[0.2em] text-muted-foreground uppercase">{t("experience.related")}</span>
+          <span className="text-xs text-muted-foreground">{t("experience.related")}</span>
           {related.map((project) => (
             <Link
               key={project.id}
               href={projectPath(locale, project.id)}
               prefetch={true}
-              className="group inline-flex items-center gap-1.5 underline-offset-4 hover:underline"
+              className="group inline-flex min-h-11 items-center gap-1.5 underline-offset-4 hover:underline"
             >
               {localize(project.title, locale)}
               <ArrowRightIcon aria-hidden="true" className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -186,11 +185,11 @@ export function Experience() {
         {/* Work */}
         <div className="grid gap-12 px-(--inset) lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[0] = el }} className="lg:sticky lg:top-28 lg:self-start">
-            <SectionHeading index="03" label={t("experience.label")} title={t("experience.work")} description={t("experience.description")} />
+            <SectionHeading title={t("experience.work")} description={t("experience.description")} />
           </div>
 
           <ol ref={workRef} className="relative">
-            <span aria-hidden="true" className="timeline-line absolute top-3 bottom-3 left-[7px] w-px origin-top bg-border" />
+            <span aria-hidden="true" className="timeline-line absolute top-3 bottom-3 left-2 w-px -translate-x-1/2 origin-top bg-border" />
             {workExperience.map((job) => (
               <WorkItem key={`${job.company}-${job.period.from}`} job={job} />
             ))}
@@ -202,6 +201,7 @@ export function Experience() {
         <div className="mt-20 grid gap-6 px-(--inset) sm:mt-28 lg:grid-cols-[minmax(0,1fr)_minmax(0,2.1fr)] lg:gap-16">
           <div ref={(el) => { headersRef.current[1] = el }} className="flex items-center gap-2 lg:items-start lg:pt-5">
             <SquareAcademicCapIcon aria-hidden="true" className="size-5 text-muted-foreground sm:size-6" />
+            ai-design-check-ignore-next-line use-shared-looks -- commented-out block, restored as it was
             <h3 className="text-lg font-semibold tracking-tight sm:text-2xl">{t("experience.education")}</h3>
           </div>
           <div className="credential-grid grid gap-px border border-border bg-border sm:grid-cols-2">

@@ -46,7 +46,7 @@ export function FluidBackground({ className = "", paused = false }: FluidBackgro
     <div
       ref={containerRef}
       aria-hidden="true"
-      className={`overflow-hidden pointer-events-none bg-stone-100 dark:bg-stone-950 ${className}`}
+      className={`overflow-hidden pointer-events-none bg-stone-100 ${className}`}
       style={{
         isolation: "isolate",
         contain: "layout style paint",

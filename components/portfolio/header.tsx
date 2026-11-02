@@ -7,10 +7,10 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin"
 import { CaseIcon, FolderKanbanIcon, LetterIcon, UserIcon, type Icon } from "@/components/ui/icons"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { Button } from "@/components/ui/button"
 import { Logo } from "./logo"
 import { LanguageToggle } from "./language-toggle"
 import { MotionToggle } from "./motion-toggle"
-import { ThemeToggle } from "./theme-toggle"
 import { useLoading } from "./loading-context"
 import { useI18n, type TranslationKey } from "@/lib/i18n"
 import { isHomePath, localePaths } from "@/lib/site"
@@ -24,9 +24,9 @@ interface NavItemConfig {
 }
 
 const navItems: NavItemConfig[] = [
+  { id: "projects", icon: FolderKanbanIcon, labelKey: "nav.projects" },
   { id: "about-content", icon: UserIcon, labelKey: "nav.about" },
   { id: "experience", icon: CaseIcon, labelKey: "nav.experience" },
-  { id: "projects", icon: FolderKanbanIcon, labelKey: "nav.projects" },
   { id: "contact", icon: LetterIcon, labelKey: "nav.contact" },
 ]
 
@@ -219,7 +219,7 @@ export function Header() {
                 onClick={(event) => handleNavClick(event, item.id)}
                 className="group flex items-center gap-2 px-2.5 py-2 text-sm text-muted-foreground xl:px-3.5 hover:text-foreground transition-colors duration-200"
               >
-                <item.icon className="size-[18px]" />
+                <item.icon className="size-4" />
                 <span className="tracking-wide">{t(item.labelKey)}</span>
               </Link>
             ))}
@@ -227,25 +227,25 @@ export function Header() {
 
           <div className="flex items-center gap-2 flex-shrink-0">
             {/* Open to Work Badge - Desktop only, as tall as the square buttons next to it */}
-            <div className="hidden lg:flex h-9 sm:h-10 items-center gap-1.5 px-3 border border-green-500/30 bg-green-500/10 text-green-800 dark:text-green-400">
+            <div className="hidden lg:flex h-10 items-center gap-2 px-3 border border-green-500/30 bg-green-500/10 text-green-800">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
-              <span className="text-xs font-medium tracking-wide uppercase">
+              <span className="text-sm font-medium">
                 {t("nav.openToWork")}
               </span>
             </div>
 
-            <ThemeToggle />
             <MotionToggle />
             <LanguageToggle />
 
             {/* Mobile Menu Toggle */}
-            <button
-              type="button"
+            <Button
+              variant="quiet"
+              size="icon"
               onClick={toggleMenu}
-              className="md:hidden flex h-11 w-11 items-center justify-center flex-shrink-0 border border-border bg-background"
+              className="md:hidden"
               aria-label={isMenuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
@@ -253,21 +253,21 @@ export function Header() {
               <span aria-hidden="true" className="relative block h-3.5 w-5">
                 <span
                   className={`absolute left-0 top-0 h-0.5 w-full bg-current transition-transform duration-300 ${
-                    isMenuOpen ? "translate-y-[6px] rotate-45" : ""
+                    isMenuOpen ? "translate-y-1.5 rotate-45" : ""
                   }`}
                 />
                 <span
-                  className={`absolute left-0 top-[6px] h-0.5 w-full bg-current transition-opacity duration-200 ${
+                  className={`absolute left-0 top-1.5 h-0.5 w-full bg-current transition-opacity duration-200 ${
                     isMenuOpen ? "opacity-0" : ""
                   }`}
                 />
                 <span
-                  className={`absolute left-0 top-[12px] h-0.5 w-full bg-current transition-transform duration-300 ${
-                    isMenuOpen ? "-translate-y-[6px] -rotate-45" : ""
+                  className={`absolute left-0 top-3 h-0.5 w-full bg-current transition-transform duration-300 ${
+                    isMenuOpen ? "-translate-y-1.5 -rotate-45" : ""
                   }`}
                 />
               </span>
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -287,17 +287,17 @@ export function Header() {
                 ref={(el) => { navItemsRef.current[index] = el }}
                 href={sectionHref(item.id)}
                 onClick={(event) => handleNavClick(event, item.id)}
-                className={`group relative w-full text-left py-3 sm:py-4 overflow-hidden transition-all duration-300 hover:pl-4 active:scale-[0.98] ${index < navItems.length - 1 ? "border-b border-border/30" : ""}`}
+                className={`group relative block w-full text-left py-4 overflow-hidden transition-transform duration-200 ease-ui active:scale-98 ${index < navItems.length - 1 ? "border-b border-border/30" : ""}`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground transition-all duration-300 group-hover:text-muted-foreground">
+                  <span className="text-xl sm:text-2xl font-semibold tracking-tight text-foreground transition-[color,translate] duration-200 ease-ui group-hover:translate-x-2 group-hover:text-muted-foreground">
                     {t(item.labelKey)}
                   </span>
-                  <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground transition-all duration-300 group-hover:text-foreground group-hover:scale-110" />
+                  <item.icon className="size-5 sm:size-6 text-muted-foreground transition-colors duration-200 group-hover:text-foreground" />
                 </div>
 
                 {/* Hover line indicator */}
-                <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-foreground transition-all duration-300 group-hover:w-full" />
+                <div className="absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-foreground transition-transform duration-300 ease-ui group-hover:scale-x-100" />
               </Link>
             ))}
 
@@ -307,7 +307,7 @@ export function Header() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
               </span>
-              <span className="text-sm font-medium text-green-800 dark:text-green-400">
+              <span className="text-sm font-medium text-green-800">
                 {t("nav.openToWork")}
               </span>
             </div>

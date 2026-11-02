@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, type ReactNode } from "react"
-import { ThemeProvider } from "next-themes"
 import { CustomCursor } from "@/components/portfolio/custom-cursor"
 import { LoadingProvider, useLoading } from "@/components/portfolio/loading-context"
 import { PageLoader } from "@/components/portfolio/page-loader"
@@ -78,16 +77,14 @@ export function Providers({
   children: ReactNode
 }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-      <I18nProvider locale={locale} restoreChoice={restoreChoice}>
-        <SkipLink />
-        <LoadingProvider>
-          <InteractionSounds />
-          <PageLoader />
-          <CustomCursor />
-          <SmoothScroll>{children}</SmoothScroll>
-        </LoadingProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <I18nProvider locale={locale} restoreChoice={restoreChoice}>
+      <SkipLink />
+      <LoadingProvider>
+        <InteractionSounds />
+        <PageLoader />
+        <CustomCursor />
+        <SmoothScroll>{children}</SmoothScroll>
+      </LoadingProvider>
+    </I18nProvider>
   )
 }

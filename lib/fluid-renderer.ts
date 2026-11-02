@@ -14,7 +14,6 @@ interface FluidOptions {
 interface Target {
   resize: (width: number, height: number, deviceRatio: number) => void
   pointer: (x: number, y: number, time: number) => void
-  dark: (value: boolean) => void
   paused: (value: boolean) => void
   hidden: (value: boolean) => void
   dispose: () => void
@@ -37,7 +36,6 @@ function createCanvas() {
 // Renders the animated background into `container`. The shader runs in a worker (OffscreenCanvas) when the
 // browser supports it, and falls back to running on the main thread otherwise.
 export function createFluid(container: HTMLElement, options: FluidOptions): FluidController {
-  const root = document.documentElement
   const finePointer = window.matchMedia("(any-hover: hover) and (any-pointer: fine)").matches
   const coarse = window.matchMedia("(pointer: coarse)").matches
 
@@ -55,7 +53,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
     deviceRatio: window.devicePixelRatio || 1,
     width: container.clientWidth,
     height: container.clientHeight,
-    dark: root.classList.contains("dark"),
     paused,
   })
 
@@ -71,7 +68,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
       target = {
         resize: engine.resize,
         pointer: engine.pointer,
-        dark: engine.setDark,
         paused: engine.setPaused,
         hidden: engine.setHidden,
         dispose: engine.dispose,
@@ -115,7 +111,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
       target = {
         resize: (width, height, deviceRatio) => instance.postMessage({ type: "resize", width, height, deviceRatio }),
         pointer: (x, y, time) => instance.postMessage({ type: "pointer", x, y, time }),
-        dark: (value) => instance.postMessage({ type: "dark", value }),
         paused: (value) => instance.postMessage({ type: "paused", value }),
         hidden: (value) => instance.postMessage({ type: "hidden", value }),
         dispose: () => instance.terminate(),
@@ -141,9 +136,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
     target?.resize(container.clientWidth, container.clientHeight, window.devicePixelRatio || 1)
   })
   resizeObserver.observe(container)
-
-  const themeObserver = new MutationObserver(() => target?.dark(root.classList.contains("dark")))
-  themeObserver.observe(root, { attributes: true, attributeFilter: ["class"] })
 
   const handleVisibility = () => target?.hidden(document.hidden)
   document.addEventListener("visibilitychange", handleVisibility)
@@ -183,7 +175,6 @@ export function createFluid(container: HTMLElement, options: FluidOptions): Flui
       disposed = true
       setListening(false)
       resizeObserver.disconnect()
-      themeObserver.disconnect()
       document.removeEventListener("visibilitychange", handleVisibility)
       target?.dispose()
       worker?.terminate()

@@ -6,32 +6,32 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 import Image from "next/image"
 import { useEffect, useRef } from "react"
 import { useI18n } from "@/lib/i18n"
-import { CanvasParticles } from "./canvas-particles"
 import { ScrollFillLogo } from "./scroll-fill-logo"
 
 gsap.registerPlugin(ScrollTrigger, Flip)
 
-// `position` is the vertical focus in CSS object-position terms (0% = top of the image).
+// Digital art pieces around the logo tile (index 2). The files are already grayscale: a CSS filter on images that the
+// Flip resizes every scroll frame cost long frames on desktop. `position` is the vertical focus (0% = top).
 const localImagesByLocale = {
   "pt-BR": [
-    { src: "/gallery/ewzxyh (1).webp", alt: "Interface de produto web por Enzo Yoshida", position: "45%" },
-    { src: "/gallery/ewzxyh (3).webp", alt: "Dashboard SaaS desenvolvido por Enzo Yoshida", position: "45%" },
-    { src: "", alt: "Animação do logotipo Enzo Yoshida", position: "center" },
-    { src: "/gallery/ewzxyh (6).webp", alt: "Tela de automação para operação digital", position: "72%" },
-    { src: "/gallery/ewzxyh (5).webp", alt: "Aplicação web com foco em conversão e gestão", position: "center" },
-    { src: "/gallery/ewzxyh (4).webp", alt: "Experiência de usuário para produto digital", position: "center" },
-    { src: "/gallery/ewzxyh (8).webp", alt: "Sistema web responsivo criado por Enzo Yoshida", position: "88%" },
-    { src: "/gallery/ewzxyh (2).webp", alt: "Interface administrativa para produto SaaS", position: "28%" },
+    { src: "/gallery/ewzxyh (1).webp", alt: "Arte digital: cavaleiro com uma cruz diante de um incêndio", position: "45%" },
+    { src: "/gallery/ewzxyh (3).webp", alt: "Arte digital: husky sorrindo entre formas 3D", position: "45%" },
+    { src: "", alt: "", position: "center" },
+    { src: "/gallery/ewzxyh (6).webp", alt: "Arte digital: chaveiro cheio de miniaturas", position: "72%" },
+    { src: "/gallery/ewzxyh (5).webp", alt: "Arte digital: símbolos ligados por trilhas de circuito", position: "center" },
+    { src: "/gallery/ewzxyh (4).webp", alt: "Arte digital: figura com chifres segurando um buraco negro", position: "center" },
+    { src: "/gallery/ewzxyh (8).webp", alt: "Arte digital: rosto cromado diante de um sol, como capa de álbum", position: "88%" },
+    { src: "/gallery/ewzxyh (2).webp", alt: "Arte digital: figura cromada entre formas 3D", position: "28%" },
   ],
   "en-US": [
-    { src: "/gallery/ewzxyh (1).webp", alt: "Web product interface by Enzo Yoshida", position: "45%" },
-    { src: "/gallery/ewzxyh (3).webp", alt: "SaaS dashboard developed by Enzo Yoshida", position: "45%" },
-    { src: "", alt: "Enzo Yoshida logo animation", position: "center" },
-    { src: "/gallery/ewzxyh (6).webp", alt: "Automation screen for digital operations", position: "72%" },
-    { src: "/gallery/ewzxyh (5).webp", alt: "Web application focused on conversion and management", position: "center" },
-    { src: "/gallery/ewzxyh (4).webp", alt: "User experience for a digital product", position: "center" },
-    { src: "/gallery/ewzxyh (8).webp", alt: "Responsive web system created by Enzo Yoshida", position: "88%" },
-    { src: "/gallery/ewzxyh (2).webp", alt: "Administrative interface for a SaaS product", position: "28%" },
+    { src: "/gallery/ewzxyh (1).webp", alt: "Digital art: a knight holding a cross in front of a fire", position: "45%" },
+    { src: "/gallery/ewzxyh (3).webp", alt: "Digital art: a smiling husky among 3D shapes", position: "45%" },
+    { src: "", alt: "", position: "center" },
+    { src: "/gallery/ewzxyh (6).webp", alt: "Digital art: a keychain full of trinkets", position: "72%" },
+    { src: "/gallery/ewzxyh (5).webp", alt: "Digital art: symbols joined by circuit traces", position: "center" },
+    { src: "/gallery/ewzxyh (4).webp", alt: "Digital art: a horned figure holding a black hole", position: "center" },
+    { src: "/gallery/ewzxyh (8).webp", alt: "Digital art: a chrome face before a sun, like an album cover", position: "88%" },
+    { src: "/gallery/ewzxyh (2).webp", alt: "Digital art: a chrome figure among 3D shapes", position: "28%" },
   ],
 } as const
 
@@ -121,11 +121,9 @@ export function BentoGallery() {
         {localImagesByLocale[locale].map((image, index) => (
           <div key={image.src || "particles"} className="bento-item">
             {index === 2 ? (
-              <div className="relative w-full h-full">
-                <CanvasParticles />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <ScrollFillLogo />
-                </div>
+              // The logo draws itself as the tile grows to fill the screen.
+              <div className="flex size-full items-center justify-center bg-card text-foreground">
+                <ScrollFillLogo />
               </div>
             ) : (
               <Image
@@ -134,7 +132,7 @@ export function BentoGallery() {
                 fill
                 sizes="(max-width: 768px) 70vw, 45vw"
                 className="object-cover"
-                style={{ objectPosition: `center ${image.position}`, filter: "grayscale(1)" }}
+                style={{ objectPosition: `center ${image.position}` }}
               />
             )}
           </div>
