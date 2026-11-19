@@ -213,6 +213,24 @@ export function CaseStudyPage({ slug }: { slug: string }) {
                     <AltArrowDownIcon aria-hidden="true" className="size-4" />
                   </a>
                 </div>
+                {/* The first link is the "Visit" button; the others (help centers, sister sites, API docs) go below it. */}
+                {study.links.length > 1 && (
+                  <ul className="flex flex-col gap-2 text-sm opacity-0 sm:text-base">
+                    {study.links.slice(1).map((link) => (
+                      <li key={link.url}>
+                        <a
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group inline-flex items-center gap-1.5 underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                        >
+                          {L(link.label)}
+                          <ArrowRightUpIcon aria-hidden="true" className="size-3.5 transition-transform group-hover:rotate-12" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <dl className="case-meta grid grid-cols-2 content-start border-t border-border lg:grid-cols-1 lg:border-t-0">
