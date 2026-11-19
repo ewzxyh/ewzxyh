@@ -14,9 +14,12 @@ export const casepay: CaseStudy = {
   role: tx("Cofundador · Lead Engineer", "Co-founder · Lead Engineer"),
   client: tx("Produto próprio, com sócios", "Own product, with partners"),
   period: tx("nov 2025 – atual", "Nov 2025 – present"),
-  status: tx("No ar · plano Pro gratuito por enquanto", "Live · Pro plan free for now"),
+  status: tx("No ar", "Live"),
   platform: tx("Web app + landing page", "Web app + landing page"),
-  links: [{ label: "casepay.com.br", url: "https://casepay.com.br" }],
+  links: [
+    { label: "casepay.com.br", url: "https://casepay.com.br" },
+    { label: tx("Dúvidas de lotérica sobre PIX", "Help center for lottery retailers (Portuguese)"), url: "https://casepay.com.br/duvidas" },
+  ],
   stack: ["Next.js", "PIX", "React", "Vite", "GSAP", "Laravel (v1)", "Vercel"],
   challenge: [
     tx(

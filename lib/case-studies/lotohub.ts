@@ -16,7 +16,11 @@ export const lotohub: CaseStudy = {
   period: tx("dez 2024 – atual", "Dec 2024 – present"),
   status: tx("No ar", "Live"),
   platform: tx("SaaS multi-tenant + sites públicos", "Multi-tenant SaaS + public sites"),
-  links: [{ label: "lotohub.com.br", url: "https://lotohub.com.br" }],
+  links: [
+    { label: "lotohub.com.br", url: "https://lotohub.com.br" },
+    { label: tx("Dúvidas de lotérica: site, bolões e WhatsApp", "Help center for lottery retailers (Portuguese)"), url: "https://lotohub.com.br/duvidas" },
+    { label: tx("LotoHub Marketplace, a vitrine de bolões", "LotoHub Marketplace, the pool showcase"), url: "https://loteriamarketplace.com.br" },
+  ],
   stack: ["Next.js", "Tailwind CSS", "Supabase", "Stripe", "Go", "Vercel"],
   challenge: [
     tx(
